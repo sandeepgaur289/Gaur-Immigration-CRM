@@ -1,25 +1,23 @@
-GAUR CRM v3.4 - LEAD RANKING + FILTERS
+GAUR CRM v3.5 - MD COMPANY ANALYTICS DASHBOARD
 
-NEW FEATURES
-- Every client has Interest Ranking from 0 to 100%.
-- RED / HOT: 71-100%
-- GREEN / INTERESTED: 50-70%
-- BLUE / COLD / NOT CONTACTED / NOT INTERESTED: 0-49%
-- Counselor sets ranking inside Client Lead Profile.
-- Quick presets: 100, 85, 70, 60, 50, 25, 0.
-- AM My Leads is highlighted by color and can be filtered by ranking, status, search and sorting.
-- GM/MD Lead Upload & Allocation page has filters for company, AM, ranking, status, search and sorting.
-- Dashboard shows Hot / Interested / Cold counts and average interest percentage.
-- Existing client profile, enquiry form upload, PostgreSQL cloud database and all old data are preserved.
+NEW IN MD PORTAL
+- Smart Choice and White Wave shown separately.
+- Each company shows Total, Allocated, Unallocated, Positive Data, Hot, Interested, Enrolled and Revenue.
+- Separate live pie chart for Smart Choice and White Wave.
+- Positive Data = Interest Ranking 50% or above.
+- Pie chart: Red = Hot 71-100%, Green = Interested 50-70%, Blue = Cold/Not Contacted 0-49%.
+- Positive Rate and Average Interest shown company-wise.
+- AM-wise table now shows Positive Data count, Positive %, Hot count and Interested count.
+- Existing v3.4 ranking, filters, client profile and cloud PostgreSQL data remain unchanged.
 
-DEPLOY
-1. Extract ZIP.
+DEPLOYMENT
+1. Extract this ZIP.
 2. GitHub -> Gaur-Immigration-CRM -> Add file -> Upload files.
 3. Upload ONLY app.py to repository root.
 4. Commit directly to main.
-5. Commit message: CRM v3.4 Lead Ranking Filters
-6. Railway auto-deploys.
-7. After Active/Deployment successful, Ctrl+F5 CRM.
-8. Bottom right should show: CRM v3.4 • LEAD RANKING ACTIVE
+5. Commit message: CRM v3.5 MD Company Analytics
+6. Wait for Railway Active / Deployment successful.
+7. Ctrl+F5 the CRM.
+8. Bottom-right should show: CRM v3.5 • MD COMPANY ANALYTICS ACTIVE
 
 DO NOT change DATABASE_URL or Postgres.
