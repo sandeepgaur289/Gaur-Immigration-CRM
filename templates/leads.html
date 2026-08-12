@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">Lead Upload & AM Allocation</h1>
+<div class="card"><h2>Upload Excel Leads</h2><form method="post" enctype="multipart/form-data"><div class="grid">
+<div><label>Excel File (.xls / .xlsx)</label><input type="file" name="excel_file" accept=".xls,.xlsx" required></div>
+{% if u['role']=='MD' %}<div><label>Company</label><select name="company_code"><option>SCIC</option><option>WWIC</option></select></div>{% endif %}
+</div><br><button class="btn">Import Excel</button></form><p>Duplicates are never deleted: same-company = yellow, cross-company = red.</p></div>
+<div class="card"><h2>Allocate Unassigned Leads</h2><form method="post" action="{{url_for('allocate')}}"><div class="grid">
+<div><label>Assistant Manager</label><select name="am_id" required>
+<option value="">Select AM</option>
+{% for am in am_rows %}<option value="{{am['id']}}">{{am['company_code']}} - {{am['full_name']}} ({{am['login_id']}})</option>{% endfor %}
+</select></div><div><label>Quantity</label><input type="number" min="1" name="qty" value="20"></div></div>
+<br><button class="btn">Allocate Leads</button>
+</form></div>
+<div class="card"><h2>Imported Leads</h2><div class="tablewrap"><table><tr><th>Lead ID</th><th>Client</th><th>Mobile</th><th>Email</th><th>City</th><th>Country</th><th>Visa</th><th>Source</th><th>AM</th><th>Status</th></tr>
+{% for r in rows %}<tr class="{{r['duplicate_type']}}"><td>{{r['lead_id']}}</td><td>{{r['client_name']}}</td><td>{{r['mobile']}}</td><td>{{r['email']}}</td><td>{{r['city']}}</td><td>{{r['country']}}</td><td>{{r['visa_type']}}</td><td>{{r['source']}}</td><td>{{r['am_name'] or 'Unallocated'}}</td><td>{{r['status']}}</td></tr>{% endfor %}</table></div></div>
+<div class="card"><h2>Import History</h2><div class="tablewrap"><table><tr><th>Company</th><th>File</th><th>Total</th><th>New</th><th>Same Dup</th><th>Cross Dup</th><th>Invalid</th><th>By</th><th>At</th></tr>
+{% for r in imports %}<tr><td>{{r['company_code']}}</td><td>{{r['filename']}}</td><td>{{r['total_rows']}}</td><td>{{r['new_rows']}}</td><td>{{r['same_company_duplicates']}}</td><td>{{r['cross_company_duplicates']}}</td><td>{{r['invalid_mobiles']}}</td><td>{{r['imported_by']}}</td><td>{{r['imported_at']}}</td></tr>{% endfor %}</table></div></div>
+{% endblock %}

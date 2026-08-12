@@ -1,0 +1,95 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">Employee Information</h1>
+<div class="card" style="border-color:#e6b73f">
+<h2 style="color:#e6b73f">Performance Module Active</h2>
+<p>Har employee ke saamne <b>Performance</b> button hai. Weekly, Monthly, Yearly reports aur WhatsApp sharing us page par available hain.</p>
+<a class="btn" href="{{url_for('performance_directory')}}">Open Employee Performance Dashboard</a>
+</div>
+
+<div class="card">
+<h2>Add New Employee</h2>
+<form method="post" enctype="multipart/form-data">
+<div class="grid3">
+  <div><label>Employee Name *</label><input name="full_name" required></div>
+  <div><label>Father / Spouse Name</label><input name="father_spouse_name"></div>
+  <div><label>Designation</label>
+    <select name="designation">
+      <option>General Manager</option><option>Assistant Manager</option><option>Senior Counselor</option>
+      <option>Counselor</option><option>Telecaller</option><option>Receptionist</option>
+      <option>Filing Officer</option><option>Account Staff</option><option>HR</option><option>Other</option>
+    </select>
+  </div>
+
+  <div><label>Department</label>
+    <select name="department">
+      <option>Management</option><option>Sales</option><option>Telecalling</option><option>Counseling</option>
+      <option>Reception</option><option>Filing</option><option>Accounts</option><option>HR</option><option>Other</option>
+    </select>
+  </div>
+  <div><label>Mobile Number</label><input name="mobile"></div>
+  <div><label>Alternate Mobile</label><input name="alternate_mobile"></div>
+
+  <div><label>Email ID</label><input type="email" name="email"></div>
+  <div><label>Date of Birth</label><input type="date" name="date_of_birth"></div>
+  <div><label>Joining Date</label><input type="date" name="joining_date"></div>
+
+  <div><label>City</label><input name="city"></div>
+  <div><label>State</label><input name="state"></div>
+  <div><label>PIN Code</label><input name="pin_code"></div>
+
+  <div><label>Emergency Contact Name</label><input name="emergency_contact_name"></div>
+  <div><label>Emergency Contact Number</label><input name="emergency_contact_number"></div>
+  <div><label>Employment Status</label>
+    <select name="employment_status">
+      <option>Active</option><option>On Leave</option><option>Resigned</option>
+      <option>Transferred</option><option>Suspended</option><option>Terminated</option>
+    </select>
+  </div>
+
+  <div><label>Aadhaar Last 4 Digits</label><input name="aadhaar_last4" maxlength="4"></div>
+  <div><label>PAN Number</label><input name="pan_number"></div>
+  <div><label>Salary / Employee Reference</label><input name="salary_reference"></div>
+
+  <div><label>Bank Name</label><input name="bank_name"></div>
+  <div><label>Bank Account Last 4 Digits</label><input name="account_last4" maxlength="4"></div>
+  <div><label>IFSC Code</label><input name="ifsc_code"></div>
+
+  <div><label>Employee Photograph</label><input type="file" name="photograph" accept=".jpg,.jpeg,.png,.webp"></div>
+  {% if u['role']=='MD' %}
+  <div><label>Company</label>
+    <select name="company_code"><option value="SCIC">Smart Choice</option><option value="WWIC">White Wave</option></select>
+  </div>
+  {% endif %}
+</div>
+
+<label>Residential Address</label><textarea name="address"></textarea>
+<label>Remarks</label><textarea name="remarks"></textarea>
+<br><button class="btn">Save Employee Information</button>
+</form>
+</div>
+
+<div class="card">
+<h2>Employee Directory</h2>
+<div class="tablewrap">
+<table>
+<tr>
+  <th>Photo</th><th>Employee Code</th><th>Name</th><th>Company</th><th>Designation</th><th>Department</th>
+  <th>Mobile</th><th>Email</th><th>Joining Date</th><th>Status</th><th>Performance</th><th>Documents</th><th>Action</th>
+</tr>
+{% for r in rows %}
+<tr>
+  <td>{% if r['photo_path'] %}<img src="{{url_for('employee_photo',employee_id=r['id'])}}" style="width:58px;height:58px;object-fit:cover;border-radius:8px;border:1px solid #427398">{% else %}-{% endif %}</td>
+  <td>{{r['employee_code']}}</td>
+  <td><b>{{r['full_name']}}</b><br><small>{{r['father_spouse_name']}}</small></td>
+  <td>{{r['company_code']}}</td><td>{{r['designation']}}</td><td>{{r['department']}}</td>
+  <td>{{r['mobile']}}</td><td>{{r['email']}}</td><td>{{r['joining_date']}}</td>
+  <td>{{r['employment_status']}}</td>
+  <td><a class="btn" href="{{url_for('employee_performance',employee_id=r['id'])}}">Performance</a></td>
+  <td><a class="btn" href="{{url_for('employee_documents',employee_id=r['id'])}}">Documents ({{doc_counts.get(r['id'],0)}})</a></td>
+  <td><a class="btn" href="{{url_for('edit_employee',employee_id=r['id'])}}">Edit</a></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+</div>
+{% endblock %}

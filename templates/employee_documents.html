@@ -1,0 +1,58 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">Employee Documents</h1>
+<div class="card">
+<h2>{{employee['full_name']}} — {{employee['employee_code']}}</h2>
+<p>{{employee['company_code']}} • {{employee['designation']}} • {{employee['department']}}</p>
+{% if employee['photo_path'] %}
+<img src="{{url_for('employee_photo',employee_id=employee['id'])}}" style="width:140px;height:140px;object-fit:cover;border-radius:12px;border:1px solid #427398">
+{% endif %}
+</div>
+
+<div class="card">
+<h2>Upload Document</h2>
+<form method="post" enctype="multipart/form-data">
+<div class="grid3">
+  <div><label>Document Type</label>
+    <select name="document_type">
+      <option>Educational Certificate</option>
+      <option>Degree / Diploma</option>
+      <option>Experience Certificate</option>
+      <option>Offer / Appointment Letter</option>
+      <option>ID Proof</option>
+      <option>Address Proof</option>
+      <option>PAN Copy</option>
+      <option>Aadhaar Copy</option>
+      <option>Passport Copy</option>
+      <option>Bank Document</option>
+      <option>Resume / CV</option>
+      <option>Other</option>
+    </select>
+  </div>
+  <div><label>Document Name / Description</label><input name="document_name" placeholder="e.g. B.A. Degree, Passport, PAN"></div>
+  <div><label>Select File *</label><input type="file" name="document_file" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx" required></div>
+</div>
+<br><button class="btn">Upload Document</button>
+</form>
+</div>
+
+<div class="card">
+<h2>Uploaded Documents</h2>
+<div class="tablewrap">
+<table>
+<tr><th>Type</th><th>Description</th><th>File</th><th>Uploaded By</th><th>Date</th><th>Open</th></tr>
+{% for d in docs %}
+<tr>
+<td>{{d['document_type']}}</td>
+<td>{{d['document_name']}}</td>
+<td>{{d['file_name']}}</td>
+<td>{{d['uploaded_by']}}</td>
+<td>{{d['uploaded_at']}}</td>
+<td><a class="btn" target="_blank" href="{{url_for('employee_file',document_id=d['id'])}}">Open</a></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+</div>
+
+<a class="btn" href="{{url_for('employees')}}">Back to Employee Directory</a>
+{% endblock %}

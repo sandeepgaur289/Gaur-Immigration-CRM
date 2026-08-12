@@ -1,0 +1,7 @@
+GAUR CRM v2.0.2
+
+ONLY DOUBLE-CLICK:
+1_START_GAUR_CRM.bat
+
+Do not use any old START_CRM_FAST file from previous versions.
+If the server ever stops, the launcher now saves the exact reason in server_output.log.

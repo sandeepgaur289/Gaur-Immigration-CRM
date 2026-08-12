@@ -1,0 +1,61 @@
+GAUR | SCIC | WWIC Immigration CRM v3.0 — CLOUD EDITION
+=======================================================
+
+GOAL
+----
+One online CRM for Chandigarh, Mohali, home, travel, or any location.
+Every login uses ONE PostgreSQL database.
+No office PC needs to remain ON.
+
+RAILWAY DEPLOYMENT
+------------------
+1. Create/sign in to Railway.
+2. Create a new project.
+3. Add PostgreSQL to the project.
+4. Add this application as a service (GitHub repository or Railway CLI upload).
+5. In the APP service Variables, set:
+      DATABASE_URL = ${{Postgres.DATABASE_URL}}
+      CLOUD_MODE = 1
+      STORE_FILES_IN_DB = 1
+      GAUR_CRM_SECRET = a long random secret value
+6. Railway will use railway.toml / Procfile to start Gunicorn.
+7. In the application service Networking settings, Generate Domain.
+8. Open that HTTPS URL from Chandigarh, Mohali, mobile hotspot, or any internet connection.
+
+DEFAULT LOGINS
+--------------
+MD:               md.sandeep          / Sandeep@2026
+Smart Choice GM:  gm.smartchoice      / SCIC@GM2026#
+White Wave GM:    gm.whitewave        / WWIC@GM2026#
+SCIC Reception:   reception.scic      / Welcome@123
+WWIC Reception:   reception.wwic      / Welcome@123
+
+HOW SYNC WORKS
+--------------
+MD, GM, Reception and AM all connect to the same public HTTPS URL.
+The application reads/writes the same PostgreSQL database.
+A visitor entered in Mohali becomes visible to authorized Chandigarh users on refresh.
+An AM created by MD becomes visible to the correct GM on refresh.
+
+DOCUMENTS & PHOTOGRAPHS
+-----------------------
+Cloud edition stores employee photographs/documents inside PostgreSQL (BYTEA), not in the temporary app filesystem.
+This avoids losing uploaded files on a normal stateless redeploy.
+For very large document archives, move files to S3-compatible object storage later.
+
+SECURITY BEFORE REAL OFFICE USE
+-------------------------------
+- Change all default passwords after first login.
+- Set a strong GAUR_CRM_SECRET in Railway.
+- Never publish DATABASE_URL.
+- Use Railway's generated HTTPS domain or a custom HTTPS domain.
+- Restrict who can access Railway project settings.
+- Schedule PostgreSQL backups appropriate to your plan/business needs.
+
+HEALTH CHECK
+------------
+/healthz returns application/database health for the hosting platform.
+
+LOCAL FALLBACK
+--------------
+If DATABASE_URL is absent, the same code can still run locally with SQLite for testing only.

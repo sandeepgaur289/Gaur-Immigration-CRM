@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">{% if u['role']=='MD' %}Executive Dashboard{% elif u['role']=='GM' %}General Manager Dashboard{% elif u['role']=='RECEPTION' %}Reception Dashboard{% else %}Assistant Manager Dashboard{% endif %}</h1>
+<div class="metrics"><div class="metric">Total Leads<b>{{total_leads}}</b></div><div class="metric">Allocated<b>{{allocated}}</b></div><div class="metric">Unallocated<b>{{unallocated}}</b></div><div class="metric">Interested<b>{{interested}}</b></div></div>
+<br><div class="metrics"><div class="metric">Visitors<b>{{visitors}}</b></div><div class="metric">Client Cases<b>{{cases}}</b></div><div class="metric">Revenue Received<b>₹{{"{:,.0f}".format(revenue)}}</b></div><div class="metric">Cross-Company Duplicates<b>{{cross_dups}}</b></div></div>
+<div class="card"><h2>Recent Leads</h2><div class="tablewrap"><table><tr><th>Lead ID</th><th>Client</th><th>Mobile</th><th>Country</th><th>Status</th></tr>
+{% for r in recent %}<tr class="{{r['duplicate_type']}}"><td>{{r['lead_id']}}</td><td>{{r['client_name']}}</td><td>{{r['mobile']}}</td><td>{{r['country']}}</td><td>{{r['status']}}</td></tr>{% else %}<tr><td colspan="5">No leads yet.</td></tr>{% endfor %}</table></div></div>
+{% endblock %}

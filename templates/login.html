@@ -1,0 +1,6 @@
+
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SCIC | WWIC Mini CRM</title>
+<style>body{margin:0;background:linear-gradient(135deg,#020d1b,#0b2d4d);color:#fff;font-family:"Times New Roman",serif;min-height:100vh;display:flex;align-items:center;justify-content:center}.box{width:min(480px,92vw);background:#0b2744;border:1px solid #37698f;border-radius:20px;padding:34px;box-shadow:0 30px 80px #0008}h1{color:#e6b73f;font-size:38px;margin:0 0 10px}input{width:100%;padding:13px;background:#071d32;color:#fff;border:1px solid #427398;border-radius:9px;margin:7px 0 14px;font-family:inherit;font-size:17px;box-sizing:border-box}.btn{width:100%;padding:13px;background:#e6b73f;border:0;border-radius:9px;font-family:inherit;font-weight:bold;font-size:18px}.err{background:#6d2831;padding:10px;border-radius:8px;margin-bottom:10px}</style></head><body>
+<div class="box"><h1>SCIC | WWIC</h1><h2>Mini Immigration CRM</h2><p>Simple, fast office version.</p>
+{% with messages=get_flashed_messages(with_categories=true) %}{% for cat,msg in messages %}<div class="err">{{msg}}</div>{% endfor %}{% endwith %}
+<form method="post"><b>Login ID</b><input name="login_id"><b>Password</b><input name="password" type="password"><button class="btn">Secure Sign In</button></form></div></body></html>

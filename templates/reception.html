@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">Reception Portal</h1><div class="card"><form method="post"><div class="grid3">
+<div><label>Visit Date</label><input type="date" name="visit_date"></div><div><label>Client Name</label><input name="client_name" required></div><div><label>Mobile</label><input name="mobile" required></div>
+<div><label>Email</label><input name="email"></div><div><label>City/Place</label><input name="city"></div><div><label>Interested Country</label><input name="country"></div>
+<div><label>Visa Type</label><input name="visa_type"></div><div><label>Coordinating With</label><input name="coordinating_with"></div><div><label>Purpose of Visit</label><input name="purpose"></div>
+<div><label>Status</label><select name="status"><option>New</option><option>Interested</option><option>Follow-up</option><option>Converted</option><option>Not Interested</option></select></div>
+{% if u['role']=='MD' %}<div><label>Company</label><select name="company_code"><option>SCIC</option><option>WWIC</option></select></div>{% endif %}</div>
+<label>Remarks</label><textarea name="remarks"></textarea><br><button class="btn">Save Visitor</button></form></div>
+<div class="card"><h2>Visitor Register</h2><div class="tablewrap"><table><tr><th>ID</th><th>Date</th><th>Client</th><th>Mobile</th><th>City</th><th>Country/Visa</th><th>Coordinating</th><th>Purpose</th><th>Status</th></tr>
+{% for r in rows %}<tr><td>{{r['visitor_id']}}</td><td>{{r['visit_date']}}</td><td>{{r['client_name']}}<br>{{r['email']}}</td><td>{{r['mobile']}}</td><td>{{r['city']}}</td><td>{{r['country']}}<br>{{r['visa_type']}}</td><td>{{r['coordinating_with']}}</td><td>{{r['purpose']}}</td><td>{{r['status']}}</td></tr>{% endfor %}</table></div></div>
+{% endblock %}

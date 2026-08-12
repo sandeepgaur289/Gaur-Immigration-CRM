@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">My Leads</h1><div class="card"><div class="tablewrap"><table><tr><th>Lead</th><th>Client</th><th>Mobile</th><th>Country/Visa</th><th>Source</th><th>Update</th></tr>
+{% for r in rows %}<tr><td>{{r['lead_id']}}</td><td>{{r['client_name']}}<br>{{r['email']}}</td><td>{{r['mobile']}}</td><td>{{r['country']}}<br>{{r['visa_type']}}</td><td>{{r['source']}}</td><td><form method="post"><input type="hidden" name="lead_id" value="{{r['id']}}"><select name="status"><option>{{r['status']}}</option><option>New</option><option>Called</option><option>Interested</option><option>Follow-up</option><option>Not Interested</option><option>Enrolled</option></select><input type="date" name="followup_date" value="{{r['followup_date']}}"><input name="remarks" value="{{r['remarks']}}" placeholder="Remarks"><button class="btn">Save</button></form></td></tr>{% endfor %}</table></div></div>
+{% endblock %}

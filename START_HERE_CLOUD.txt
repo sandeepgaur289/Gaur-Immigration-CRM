@@ -1,0 +1,6 @@
+GAUR CRM v3.0 CLOUD EDITION
+
+This is no longer a LAN-server build.
+Read CLOUD_DEPLOY_RAILWAY.txt first.
+Deploy the folder to Railway, add PostgreSQL, and set DATABASE_URL.
+After deployment, everyone uses the same HTTPS URL from any location.

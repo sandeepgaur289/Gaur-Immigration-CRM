@@ -1,0 +1,145 @@
+{% extends "base.html" %}{% block content %}
+<div class="performance-shell">
+  <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap">
+    <div>
+      <h1 class="title" style="margin-bottom:4px">Employee Performance Dashboard</h1>
+      <div style="color:#e6b73f">Enrollment Based & Revenue Based Performance Analysis</div>
+    </div>
+    <div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn" href="{{url_for('performance_directory',period='week')}}">Weekly</a>
+      <a class="btn" href="{{url_for('performance_directory',period='month')}}">Monthly</a>
+      <a class="btn" href="{{url_for('performance_directory',period='year')}}">Yearly</a>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Total Enrollments</div><div class="kpi-value">{{total_enrollments}}</div><div class="kpi-sub">{{label}}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value">₹{{"{:,.0f}".format(total_revenue)}}</div><div class="kpi-sub">Selected period</div></div>
+    <div class="kpi-card"><div class="kpi-label">Avg. Enrollments / Emp.</div><div class="kpi-value">{{"%.1f"|format(avg_enrollments)}}</div><div class="kpi-sub">Active team average</div></div>
+    <div class="kpi-card"><div class="kpi-label">Avg. Revenue / Emp.</div><div class="kpi-value">₹{{"{:,.0f}".format(avg_revenue)}}</div><div class="kpi-sub">Active team average</div></div>
+    <div class="kpi-card"><div class="kpi-label">Active Employees</div><div class="kpi-value">{{active_employees}}</div><div class="kpi-sub">Included in ranking</div></div>
+    <div class="kpi-card"><div class="kpi-label">Top Performer</div><div class="kpi-value" style="font-size:22px">{{top_performer['full_name'] if top_performer else '-'}}</div><div class="kpi-sub">{% if top_performer %}{{"%.1f"|format(top_performer['score'])}}% Score{% endif %}</div></div>
+  </div>
+
+  <div class="performance-grid">
+    <div class="chart-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <h2 style="color:#e6b73f;margin:0">Performance Trend (Top 3 Employees)</h2>
+        <span>{{label}}</span>
+      </div>
+      {% if top3 %}
+      <div style="margin:8px 0 14px">
+        {% for r in top3 %}
+          <span style="margin-right:18px">{% if r['rank']==1 %}🥇{% elif r['rank']==2 %}🥈{% else %}🥉{% endif %} {{r['full_name']}}</span>
+        {% endfor %}
+      </div>
+      <svg class="chart-svg" viewBox="0 0 900 420" role="img" aria-label="Monthly top three employee performance trend">
+        <line x1="70" y1="340" x2="860" y2="340" stroke="#315a7b" stroke-width="2"/>
+        <line x1="70" y1="60" x2="70" y2="340" stroke="#315a7b" stroke-width="2"/>
+        {% for y in [0,20,40,60,80,100] %}
+          {% set yy=340-(y*2.8) %}
+          <line x1="70" y1="{{yy}}" x2="860" y2="{{yy}}" stroke="#243f59" stroke-width="1" stroke-dasharray="4 5"/>
+          <text x="35" y="{{yy+5}}" fill="#dce8f2" font-size="15">{{y}}%</text>
+        {% endfor %}
+        {% set x0=95 %}{% set step=63 %}
+        {% for item in trend %}
+          {% set x=x0+(loop.index0*step) %}
+          <text x="{{x}}" y="372" text-anchor="middle" fill="#dce8f2" font-size="15">{{item['month']}}</text>
+          {% if top3|length>0 %}
+          <rect x="{{x-14}}" y="{{340-(item.get('score1',0)*2.8)}}" width="12" height="{{item.get('score1',0)*2.8}}" rx="6" fill="#e6b73f" opacity=".42"/>
+          {% endif %}
+          {% if top3|length>1 %}
+          <rect x="{{x}}" y="{{340-(item.get('score2',0)*2.8)}}" width="12" height="{{item.get('score2',0)*2.8}}" rx="6" fill="#4e8fd4" opacity=".55"/>
+          {% endif %}
+          {% if top3|length>2 %}
+          <rect x="{{x+14}}" y="{{340-(item.get('score3',0)*2.8)}}" width="12" height="{{item.get('score3',0)*2.8}}" rx="6" fill="#d051ac" opacity=".55"/>
+          {% endif %}
+        {% endfor %}
+        {% if top3|length>0 %}
+        <polyline points="{% for item in trend %}{{x0+(loop.index0*step)}},{{340-(item.get('score1',0)*2.8)}} {% endfor %}" fill="none" stroke="#e6b73f" stroke-width="4"/>
+        {% endif %}
+        {% if top3|length>1 %}
+        <polyline points="{% for item in trend %}{{x0+(loop.index0*step)}},{{340-(item.get('score2',0)*2.8)}} {% endfor %}" fill="none" stroke="#4e8fd4" stroke-width="3"/>
+        {% endif %}
+        {% if top3|length>2 %}
+        <polyline points="{% for item in trend %}{{x0+(loop.index0*step)}},{{340-(item.get('score3',0)*2.8)}} {% endfor %}" fill="none" stroke="#d051ac" stroke-width="3"/>
+        {% endif %}
+      </svg>
+      {% else %}
+      <p>No performance data available.</p>
+      {% endif %}
+    </div>
+
+    <div class="chart-panel">
+      <h2 style="color:#e6b73f;margin-top:0">Top Performer Ranking</h2>
+      <div class="rank-grid">
+        {% for r in top3 %}
+        <div class="rank-card {% if r['rank']==1 %}first{% elif r['rank']==2 %}second{% else %}third{% endif %}">
+          <div class="rank-badge">{% if r['rank']==1 %}👑 1st{% elif r['rank']==2 %}🥈 2nd{% else %}🥉 3rd{% endif %}</div>
+          {% if r['photo_path'] %}<img src="{{url_for('employee_photo',employee_id=r['id'])}}" alt="{{r['full_name']}}">{% endif %}
+          <h3 style="margin:8px 0 3px">{{r['full_name']}}</h3>
+          <div>{{r['company_code']}} • {{r['designation']}}</div>
+          <div class="rank-score">{{"%.0f"|format(r['score'])}}%</div>
+          <div class="grid" style="grid-template-columns:1fr 1fr;gap:6px">
+            <div><small>Enrollments</small><br><b>{{r['enrollments']}}</b></div>
+            <div><small>Revenue</small><br><b>₹{{"{:,.0f}".format(r['revenue'])}}</b></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="performance-grid" style="grid-template-columns:.8fr 1.8fr">
+    <div class="donut-grid">
+      <div class="donut-card">
+        <h3 style="color:#e6b73f;margin-top:0">Enrollment Based Performance</h3>
+        <div class="donut"><div class="donut-center">{{total_enrollments}}<br><small>Total</small></div></div>
+        {% for r in top3 %}
+          <div class="legend-row"><span>{{r['full_name']}}</span><b>{{r['enrollments']}}</b></div>
+        {% endfor %}
+      </div>
+      <div class="donut-card">
+        <h3 style="color:#e6b73f;margin-top:0">Revenue Based Performance</h3>
+        <div class="donut"><div class="donut-center">₹{{"{:,.0f}".format(total_revenue/100000)}}L<br><small>Total</small></div></div>
+        {% for r in top3 %}
+          <div class="legend-row"><span>{{r['full_name']}}</span><b>₹{{"{:,.0f}".format(r['revenue']/100000)}}L</b></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <h2 style="color:#e6b73f;margin-top:0">Employee Performance Table</h2>
+      <div class="tablewrap">
+      <table>
+        <tr><th>#</th><th>Employee Name</th><th>Enrollments</th><th>Revenue (₹)</th><th>Enrollment %</th><th>Revenue %</th><th>Performance Score</th><th>Rank</th><th>Report</th></tr>
+        {% set top_enroll=(ranked[0]['enrollments'] if ranked else 0) %}
+        {% set top_revenue=(ranked[0]['revenue'] if ranked else 0) %}
+        {% for r in ranked %}
+        {% set s=summaries.get(r['id'],{}) %}
+        <tr>
+          <td>{{r['rank']}}</td>
+          <td><b>{{r['full_name']}}</b><br><small>{{r['company_code']}} • {{r['designation']}}</small></td>
+          <td>{{r['enrollments']}}</td>
+          <td>₹{{"{:,.0f}".format(r['revenue'])}}</td>
+          <td>{{"%.0f"|format(s.get('enrollment_index',0))}}%</td>
+          <td>{{"%.0f"|format(s.get('revenue_index',0))}}%</td>
+          <td>
+            <b>{{"%.0f"|format(r['score'])}}%</b>
+            <div class="scorebar"><span style="width:{{[r['score'],100]|min}}%"></span></div>
+          </td>
+          <td>{% if r['rank']==1 %}🥇{% elif r['rank']==2 %}🥈{% elif r['rank']==3 %}🥉{% else %}{{r['rank']}}{% endif %}</td>
+          <td><a class="btn" href="{{url_for('employee_performance',employee_id=r['id'],period=period)}}">Open</a></td>
+        </tr>
+        {% endfor %}
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="color:#e6b73f;margin-top:0">Performance Score Formula</h2>
+    <div>(40% Enrollment Weightage) + (40% Revenue Weightage) + (10% Target Achievement) + (10% Manager Rating)</div>
+  </div>
+</div>
+{% endblock %}

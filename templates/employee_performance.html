@@ -1,0 +1,135 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">Employee Performance</h1>
+<div class="card" style="border-color:#e6b73f">
+<b style="color:#e6b73f;font-size:20px">PERFORMANCE MODULE v1.3.1 ACTIVE</b>
+<p>Weekly • Monthly • Yearly • Collection • Target • Conversion • WhatsApp Share</p>
+</div>
+
+<div class="card">
+<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+{% if employee['photo_path'] %}
+<img src="{{url_for('employee_photo',employee_id=employee['id'])}}" style="width:95px;height:95px;object-fit:cover;border-radius:12px;border:1px solid #427398">
+{% endif %}
+<div>
+<h2 style="margin:0;color:#e6b73f">{{employee['full_name']}}</h2>
+<div>{{employee['employee_code']}} • {{employee['company_code']}} • {{employee['designation']}}</div>
+<div>{{employee['department']}} • {{employee['employment_status']}}</div>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+<h2 style="margin:0">{{label}}</h2>
+<div>
+<a class="btn" href="{{url_for('employee_performance',employee_id=employee['id'],period='week')}}">Weekly</a>
+<a class="btn" href="{{url_for('employee_performance',employee_id=employee['id'],period='month')}}">Monthly</a>
+<a class="btn" href="{{url_for('employee_performance',employee_id=employee['id'],period='year')}}">Yearly</a>
+</div>
+</div>
+</div>
+
+<div class="metrics">
+<div class="metric">Leads Assigned<b>{{totals['leads_assigned']}}</b></div>
+<div class="metric">Calls Done<b>{{totals['calls_done']}}</b></div>
+<div class="metric">Follow-ups<b>{{totals['followups_done']}}</b></div>
+<div class="metric">Enrollments<b>{{totals['enrollments']}}</b></div>
+</div>
+<br>
+<div class="metrics">
+<div class="metric">Interested Clients<b>{{totals['interested_clients']}}</b></div>
+<div class="metric">Office Visits<b>{{totals['office_visits']}}</b></div>
+<div class="metric">Conversion<b>{{"%.1f"|format(conversion)}}%</b></div>
+<div class="metric">Manager Rating<b>{{"%.1f"|format(totals['avg_rating'])}}/5</b></div>
+</div>
+<br>
+<div class="metrics">
+<div class="metric">Collection<b>₹{{"{:,.0f}".format(totals['collection_amount'])}}</b></div>
+<div class="metric">Target<b>₹{{"{:,.0f}".format(totals['target_amount'])}}</b></div>
+<div class="metric">Achievement<b>{{"%.1f"|format(achievement)}}%</b></div>
+<div class="metric">Entries<b>{{totals['entries']}}</b></div>
+</div>
+
+<div class="card">
+<h2>Performance Progress</h2>
+<label>Collection Target Achievement</label>
+<div style="height:28px;background:#071d32;border:1px solid #427398;border-radius:8px;overflow:hidden">
+<div style="height:100%;width:{{[achievement,100]|min}}%;background:#e6b73f;color:#061629;text-align:center;font-weight:bold;line-height:28px">
+{{"%.1f"|format(achievement)}}%
+</div>
+</div>
+<br>
+<label>Lead-to-Enrollment Conversion</label>
+<div style="height:28px;background:#071d32;border:1px solid #427398;border-radius:8px;overflow:hidden">
+<div style="height:100%;width:{{[conversion,100]|min}}%;background:#48a978;color:#061629;text-align:center;font-weight:bold;line-height:28px">
+{{"%.1f"|format(conversion)}}%
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2>Add Daily Performance Entry</h2>
+<form method="post">
+<div class="grid3">
+<div><label>Date</label><input type="date" name="performance_date" value="{{end_date}}" required></div>
+<div><label>Attendance</label><select name="attendance_status"><option>Present</option><option>Half Day</option><option>On Leave</option><option>Absent</option></select></div>
+<div><label>Manager Rating (0-5)</label><input type="number" step="0.1" min="0" max="5" name="manager_rating" value="0"></div>
+
+<div><label>Leads Assigned</label><input type="number" min="0" name="leads_assigned" value="0"></div>
+<div><label>Calls Done</label><input type="number" min="0" name="calls_done" value="0"></div>
+<div><label>Follow-ups Done</label><input type="number" min="0" name="followups_done" value="0"></div>
+
+<div><label>Office Visits</label><input type="number" min="0" name="office_visits" value="0"></div>
+<div><label>Interested Clients</label><input type="number" min="0" name="interested_clients" value="0"></div>
+<div><label>Enrollments</label><input type="number" min="0" name="enrollments" value="0"></div>
+
+<div><label>Collection Amount (₹)</label><input type="number" step="0.01" min="0" name="collection_amount" value="0"></div>
+<div><label>Target Amount (₹)</label><input type="number" step="0.01" min="0" name="target_amount" value="0"></div>
+</div>
+<label>Remarks / Manager Feedback</label><textarea name="remarks"></textarea>
+<br><button class="btn">Save Performance</button>
+</form>
+</div>
+
+<div class="card">
+<h2>Share / Print Performance</h2>
+<p>WhatsApp button report text ready karke WhatsApp kholta hai. Aap official staff group select karke send kar sakte hain.</p>
+<a class="btn" target="_blank" href="{{whatsapp_url}}">Share on WhatsApp</a>
+<button class="btn" type="button" id="performancePrintBtn">Print / Save PDF</button>
+<button class="btn" type="button" onclick="copyReport()">Copy Report Text</button>
+<textarea id="shareText" style="margin-top:12px;height:210px">{{share_text}}</textarea>
+</div>
+
+<div class="card">
+<h2>Performance Entry History</h2>
+<div class="tablewrap">
+<table>
+<tr>
+<th>Date</th><th>Attendance</th><th>Leads</th><th>Calls</th><th>Follow-ups</th><th>Visits</th>
+<th>Interested</th><th>Enrollments</th><th>Collection</th><th>Target</th><th>Rating</th><th>Remarks</th>
+</tr>
+{% for r in rows %}
+<tr>
+<td>{{r['performance_date']}}</td><td>{{r['attendance_status']}}</td>
+<td>{{r['leads_assigned']}}</td><td>{{r['calls_done']}}</td><td>{{r['followups_done']}}</td><td>{{r['office_visits']}}</td>
+<td>{{r['interested_clients']}}</td><td>{{r['enrollments']}}</td>
+<td>₹{{"{:,.0f}".format(r['collection_amount'])}}</td><td>₹{{"{:,.0f}".format(r['target_amount'])}}</td>
+<td>{{r['manager_rating']}}/5</td><td>{{r['remarks']}}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+</div>
+
+<a class="btn" href="{{url_for('employees')}}">Back to Employee Directory</a>
+
+<script>
+document.getElementById('performancePrintBtn')?.addEventListener('click',()=>window.print());
+function copyReport(){
+  const area=document.getElementById('shareText');
+  area.select();
+  area.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(area.value).then(()=>alert('Performance report copied.'));
+}
+</script>
+{% endblock %}

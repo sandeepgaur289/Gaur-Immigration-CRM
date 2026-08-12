@@ -1,0 +1,60 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">Edit Employee Information</h1>
+<div class="card">
+<p><b>Employee Code:</b> {{row['employee_code']}}</p>
+{% if row['photo_path'] %}<p><img src="{{url_for('employee_photo',employee_id=row['id'])}}" style="width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid #427398"></p>{% endif %}
+<form method="post" enctype="multipart/form-data">
+<div class="grid3">
+  <div><label>Employee Name *</label><input name="full_name" value="{{row['full_name']}}" required></div>
+  <div><label>Father / Spouse Name</label><input name="father_spouse_name" value="{{row['father_spouse_name']}}"></div>
+  <div><label>Designation</label><input name="designation" value="{{row['designation']}}"></div>
+
+  <div><label>Department</label><input name="department" value="{{row['department']}}"></div>
+  <div><label>Mobile Number</label><input name="mobile" value="{{row['mobile']}}"></div>
+  <div><label>Alternate Mobile</label><input name="alternate_mobile" value="{{row['alternate_mobile']}}"></div>
+
+  <div><label>Email ID</label><input type="email" name="email" value="{{row['email']}}"></div>
+  <div><label>Date of Birth</label><input type="date" name="date_of_birth" value="{{row['date_of_birth']}}"></div>
+  <div><label>Joining Date</label><input type="date" name="joining_date" value="{{row['joining_date']}}"></div>
+
+  <div><label>City</label><input name="city" value="{{row['city']}}"></div>
+  <div><label>State</label><input name="state" value="{{row['state']}}"></div>
+  <div><label>PIN Code</label><input name="pin_code" value="{{row['pin_code']}}"></div>
+
+  <div><label>Emergency Contact Name</label><input name="emergency_contact_name" value="{{row['emergency_contact_name']}}"></div>
+  <div><label>Emergency Contact Number</label><input name="emergency_contact_number" value="{{row['emergency_contact_number']}}"></div>
+  <div><label>Employment Status</label>
+    <select name="employment_status">
+      {% for s in ['Active','On Leave','Resigned','Transferred','Suspended','Terminated'] %}
+      <option {% if row['employment_status']==s %}selected{% endif %}>{{s}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div><label>Aadhaar Last 4 Digits</label><input name="aadhaar_last4" maxlength="4" value="{{row['aadhaar_last4']}}"></div>
+  <div><label>PAN Number</label><input name="pan_number" value="{{row['pan_number']}}"></div>
+  <div><label>Salary / Employee Reference</label><input name="salary_reference" value="{{row['salary_reference']}}"></div>
+
+  <div><label>Bank Name</label><input name="bank_name" value="{{row['bank_name']}}"></div>
+  <div><label>Bank Account Last 4 Digits</label><input name="account_last4" maxlength="4" value="{{row['account_last4']}}"></div>
+  <div><label>IFSC Code</label><input name="ifsc_code" value="{{row['ifsc_code']}}"></div>
+
+  <div><label>Replace Photograph</label><input type="file" name="photograph" accept=".jpg,.jpeg,.png,.webp"></div>
+  {% if u['role']=='MD' %}
+  <div><label>Company</label>
+    <select name="company_code">
+      <option value="SCIC" {% if row['company_code']=='SCIC' %}selected{% endif %}>Smart Choice</option>
+      <option value="WWIC" {% if row['company_code']=='WWIC' %}selected{% endif %}>White Wave</option>
+    </select>
+  </div>
+  {% endif %}
+</div>
+
+<label>Residential Address</label><textarea name="address">{{row['address']}}</textarea>
+<label>Remarks</label><textarea name="remarks">{{row['remarks']}}</textarea>
+<br>
+<button class="btn">Save Changes</button>
+<a class="btn" href="{{url_for('employees')}}">Back</a>
+</form>
+</div>
+{% endblock %}
