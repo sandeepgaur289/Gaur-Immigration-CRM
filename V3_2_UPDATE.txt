@@ -1,0 +1,15 @@
+GAUR CRM v3.2 - Client Workspace Final
+
+Included:
+1. AM My Leads: client name and Open Profile open the dedicated client workspace.
+2. Complete client profile: personal, contact, address, immigration/counselling, status, follow-up and remarks.
+3. Client Enquiry Form upload: JPG/JPEG/PNG/WEBP/PDF, stored in the central database.
+4. Uploaded forms can be viewed by authorized AM, GM and MD.
+5. Activity history records counselor updates.
+6. MD/GM Dashboard: AM-wise Lead Allocation with Total/New/Called/Interested/Follow-up/Enrolled.
+7. Company branding after login: SCIC logo for Smart Choice, WWIC logo for White Wave, GAUR PORTAL for MD.
+8. Existing Excel lead import/allocation and PostgreSQL DATABASE_URL flow retained.
+
+Deploy by replacing/uploading the CONTENTS of this folder to the GitHub repository root and committing.
+Do not upload the outer folder as a subfolder.
+Do not change Railway DATABASE_URL or Postgres.
