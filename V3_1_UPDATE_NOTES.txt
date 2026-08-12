@@ -1,0 +1,19 @@
+GAUR | SCIC | WWIC Immigration CRM v3.1
+LEAD WORKSPACE + AM-WISE DASHBOARD UPDATE
+
+NEW IN THIS UPDATE
+1. Every lead now has a dedicated Client Lead Profile page.
+2. AM/Counselor can open an assigned lead and fill complete client details.
+3. Client enquiry form photo/PDF can be uploaded and viewed by authorized AM, GM and MD users.
+4. Lead activity/status/follow-up history is preserved.
+5. Dashboard now shows AM-wise allocation counts and progress: New, Called, Interested, Follow-up, Enrolled.
+6. Recent Leads, My Leads and Imported Leads now open the particular client profile.
+7. Smart Choice and White Wave company logos appear after login according to credentials/company.
+8. MD continues to see neutral GAUR PORTAL branding.
+9. Existing PostgreSQL database is upgraded automatically using safe ADD COLUMN IF NOT EXISTS migrations.
+10. Excel XML/XLS/XLSX import fix from the previous deployment is retained.
+
+DEPLOYMENT
+Upload/replace this package contents in the existing GitHub repository main branch.
+Railway should automatically redeploy. Do NOT create a new Postgres database and do NOT change DATABASE_URL.
+Existing cloud data is preserved.

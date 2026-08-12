@@ -164,6 +164,16 @@ def init_db():
           filing_status TEXT DEFAULT 'Documents Pending', assigned_employee_id BIGINT, remarks TEXT DEFAULT '',
           created_by TEXT DEFAULT '', created_at TEXT DEFAULT '', updated_at TEXT DEFAULT ''
         );
+        CREATE TABLE IF NOT EXISTS lead_documents(
+          id BIGSERIAL PRIMARY KEY, lead_id BIGINT NOT NULL, document_type TEXT NOT NULL DEFAULT 'Client Form',
+          file_name TEXT NOT NULL, file_data BYTEA, mime_type TEXT DEFAULT '', uploaded_by TEXT DEFAULT '',
+          uploaded_at TEXT DEFAULT '', FOREIGN KEY(lead_id) REFERENCES leads(id) ON DELETE CASCADE
+        );
+        CREATE TABLE IF NOT EXISTS lead_activity(
+          id BIGSERIAL PRIMARY KEY, lead_id BIGINT NOT NULL, status TEXT DEFAULT '', followup_date TEXT DEFAULT '',
+          remarks TEXT DEFAULT '', updated_by TEXT DEFAULT '', updated_at TEXT DEFAULT '',
+          FOREIGN KEY(lead_id) REFERENCES leads(id) ON DELETE CASCADE
+        );
         CREATE INDEX IF NOT EXISTS idx_users_role_company ON users(role,company_code);
         CREATE INDEX IF NOT EXISTS idx_visitors_company ON visitors(company_code,id);
         CREATE INDEX IF NOT EXISTS idx_leads_company_am ON leads(company_code,assigned_am,id);
@@ -176,6 +186,18 @@ def init_db():
         cur.execute("ALTER TABLE employee_documents ADD COLUMN IF NOT EXISTS mime_type TEXT DEFAULT ''")
         cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS assigned_at TEXT DEFAULT ''")
         cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS assigned_by TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS date_of_birth TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS education TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS occupation TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS address TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS state TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS pin_code TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS alternate_mobile TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS passport_no TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS travel_history TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS english_test TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS budget TEXT DEFAULT ''")
+        cur.execute("ALTER TABLE leads ADD COLUMN IF NOT EXISTS preferred_call_time TEXT DEFAULT ''")
     else:
         cur.executescript("""
         CREATE TABLE IF NOT EXISTS companies(id INTEGER PRIMARY KEY AUTOINCREMENT,code TEXT UNIQUE NOT NULL,name TEXT NOT NULL);
@@ -188,6 +210,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS employee_performance(id INTEGER PRIMARY KEY AUTOINCREMENT,employee_id INTEGER NOT NULL,performance_date TEXT NOT NULL,leads_assigned INTEGER DEFAULT 0,calls_done INTEGER DEFAULT 0,followups_done INTEGER DEFAULT 0,office_visits INTEGER DEFAULT 0,interested_clients INTEGER DEFAULT 0,enrollments INTEGER DEFAULT 0,collection_amount REAL DEFAULT 0,target_amount REAL DEFAULT 0,attendance_status TEXT DEFAULT 'Present',manager_rating REAL DEFAULT 0,remarks TEXT DEFAULT '',created_by TEXT DEFAULT '',created_at TEXT DEFAULT '',FOREIGN KEY(employee_id) REFERENCES employee_master(id));
         CREATE TABLE IF NOT EXISTS allocation_history(id INTEGER PRIMARY KEY AUTOINCREMENT,company_code TEXT NOT NULL,am_user_id INTEGER NOT NULL,quantity INTEGER DEFAULT 0,allocated_by TEXT DEFAULT '',allocated_at TEXT DEFAULT '');
         CREATE TABLE IF NOT EXISTS client_cases(id INTEGER PRIMARY KEY AUTOINCREMENT,case_id TEXT UNIQUE NOT NULL,company_code TEXT NOT NULL,client_name TEXT NOT NULL,mobile TEXT DEFAULT '',country TEXT DEFAULT '',visa_type TEXT DEFAULT '',enrollment_date TEXT DEFAULT '',booking_amount REAL DEFAULT 0,second_payment REAL DEFAULT 0,total_received REAL DEFAULT 0,payment_status TEXT DEFAULT 'Pending',filing_status TEXT DEFAULT 'Documents Pending',assigned_employee_id INTEGER,remarks TEXT DEFAULT '',created_by TEXT DEFAULT '',created_at TEXT DEFAULT '',updated_at TEXT DEFAULT '');
+        CREATE TABLE IF NOT EXISTS lead_documents(id INTEGER PRIMARY KEY AUTOINCREMENT,lead_id INTEGER NOT NULL,document_type TEXT NOT NULL DEFAULT 'Client Form',file_name TEXT NOT NULL,file_data BLOB,mime_type TEXT DEFAULT '',uploaded_by TEXT DEFAULT '',uploaded_at TEXT DEFAULT '',FOREIGN KEY(lead_id) REFERENCES leads(id) ON DELETE CASCADE);
+        CREATE TABLE IF NOT EXISTS lead_activity(id INTEGER PRIMARY KEY AUTOINCREMENT,lead_id INTEGER NOT NULL,status TEXT DEFAULT '',followup_date TEXT DEFAULT '',remarks TEXT DEFAULT '',updated_by TEXT DEFAULT '',updated_at TEXT DEFAULT '',FOREIGN KEY(lead_id) REFERENCES leads(id) ON DELETE CASCADE);
         """)
         cols=[r[1] for r in cur.execute("PRAGMA table_info(employee_master)").fetchall()]
         for col,ddl in [("photo_path","TEXT DEFAULT ''"),("photo_data","BLOB"),("photo_mime","TEXT DEFAULT ''")]:
@@ -198,6 +222,8 @@ def init_db():
         lead_cols=[r[1] for r in cur.execute("PRAGMA table_info(leads)").fetchall()]
         if "assigned_at" not in lead_cols: cur.execute("ALTER TABLE leads ADD COLUMN assigned_at TEXT DEFAULT ''")
         if "assigned_by" not in lead_cols: cur.execute("ALTER TABLE leads ADD COLUMN assigned_by TEXT DEFAULT ''")
+        for col,ddl in [("date_of_birth","TEXT DEFAULT ''"),("education","TEXT DEFAULT ''"),("occupation","TEXT DEFAULT ''"),("address","TEXT DEFAULT ''"),("state","TEXT DEFAULT ''"),("pin_code","TEXT DEFAULT ''"),("alternate_mobile","TEXT DEFAULT ''"),("passport_no","TEXT DEFAULT ''"),("travel_history","TEXT DEFAULT ''"),("english_test","TEXT DEFAULT ''"),("budget","TEXT DEFAULT ''"),("preferred_call_time","TEXT DEFAULT ''")]:
+            if col not in lead_cols: cur.execute(f"ALTER TABLE leads ADD COLUMN {col} {ddl}")
 
     for code,name in [("SCIC","Smart Choice Immigration Consultants"),("WWIC","White Wave Immigration Consultants")]:
         if IS_POSTGRES:
@@ -331,9 +357,24 @@ def dashboard():
     case_params=[] if u["role"]=="MD" else [u["company_code"]]
     cases=con.execute("SELECT COUNT(*) c FROM client_cases"+case_where,case_params).fetchone()["c"]
     revenue=con.execute("SELECT COALESCE(SUM(total_received),0) s FROM client_cases"+case_where,case_params).fetchone()["s"]
+    allocation_summary=[]
+    if u["role"] in ("MD","GM"):
+        aq="""SELECT usr.id,usr.login_id,usr.full_name,usr.company_code,usr.active,
+                     COUNT(l.id) allocated_count,
+                     SUM(CASE WHEN l.status='New' THEN 1 ELSE 0 END) new_count,
+                     SUM(CASE WHEN l.status='Called' THEN 1 ELSE 0 END) called_count,
+                     SUM(CASE WHEN l.status='Interested' THEN 1 ELSE 0 END) interested_count,
+                     SUM(CASE WHEN l.status='Follow-up' THEN 1 ELSE 0 END) followup_count,
+                     SUM(CASE WHEN l.status='Enrolled' THEN 1 ELSE 0 END) enrolled_count
+              FROM users usr LEFT JOIN leads l ON l.assigned_am=usr.id
+              WHERE usr.role='AM'"""
+        ap=[]
+        if u["role"]=="GM": aq+=" AND usr.company_code=?"; ap.append(u["company_code"])
+        aq+=" GROUP BY usr.id,usr.login_id,usr.full_name,usr.company_code,usr.active ORDER BY usr.company_code,allocated_count DESC,usr.full_name"
+        allocation_summary=con.execute(aq,ap).fetchall()
     con.close()
     return render_template("dashboard.html",u=u,total_leads=total_leads,allocated=allocated,interested=interested,
-                           unallocated=unallocated,cross_dups=cross_dups,visitors=visitors,recent=recent,cases=cases,revenue=revenue)
+                           unallocated=unallocated,cross_dups=cross_dups,visitors=visitors,recent=recent,cases=cases,revenue=revenue,allocation_summary=allocation_summary)
 
 @app.route("/reception", methods=["GET","POST"])
 @require_roles("MD","GM","RECEPTION")
@@ -1093,6 +1134,57 @@ def allocate():
             flash(f"{len(ids)} leads allocated to {am['full_name']}","success")
     con.close()
     return redirect(url_for("leads"))
+
+
+def can_access_lead(u, lead):
+    if not u or not lead: return False
+    if u["role"]=="MD": return True
+    if u["company_code"]!=lead["company_code"]: return False
+    if u["role"] in ("GM","RECEPTION"): return True
+    if u["role"]=="AM" and lead["assigned_am"]==u["id"]: return True
+    return False
+
+@app.route("/lead/<int:lead_db_id>", methods=["GET","POST"])
+@require_roles("MD","GM","AM")
+def lead_profile(lead_db_id):
+    u=current_user(); con=db()
+    lead=con.execute("SELECT l.*,usr.full_name am_name,usr.login_id am_login FROM leads l LEFT JOIN users usr ON usr.id=l.assigned_am WHERE l.id=?",(lead_db_id,)).fetchone()
+    if not can_access_lead(u,lead):
+        con.close(); flash("Lead not found or access denied","error"); return redirect(url_for("dashboard"))
+    if request.method=="POST":
+        now=datetime.datetime.now().isoformat(timespec="seconds")
+        vals=(request.form.get("client_name",""),request.form.get("mobile",""),request.form.get("alternate_mobile",""),request.form.get("email",""),
+              request.form.get("date_of_birth",""),request.form.get("education",""),request.form.get("occupation",""),request.form.get("address",""),
+              request.form.get("city",""),request.form.get("state",""),request.form.get("pin_code",""),request.form.get("passport_no",""),
+              request.form.get("country",""),request.form.get("visa_type",""),request.form.get("travel_history",""),request.form.get("english_test",""),
+              request.form.get("budget",""),request.form.get("preferred_call_time",""),request.form.get("status","New"),request.form.get("followup_date",""),
+              request.form.get("remarks",""),lead_db_id)
+        con.execute("""UPDATE leads SET client_name=?,mobile=?,alternate_mobile=?,email=?,date_of_birth=?,education=?,occupation=?,address=?,city=?,state=?,pin_code=?,passport_no=?,country=?,visa_type=?,travel_history=?,english_test=?,budget=?,preferred_call_time=?,status=?,followup_date=?,remarks=? WHERE id=?""",vals)
+        con.execute("INSERT INTO lead_activity(lead_id,status,followup_date,remarks,updated_by,updated_at) VALUES(?,?,?,?,?,?)",
+                    (lead_db_id,request.form.get("status","New"),request.form.get("followup_date",""),request.form.get("remarks",""),u["login_id"],now))
+        f=request.files.get("client_form")
+        if f and f.filename:
+            ext=f.filename.rsplit('.',1)[-1].lower() if '.' in f.filename else ''
+            if ext not in ALLOWED_PHOTO_EXTENSIONS.union({'pdf'}):
+                con.rollback(); con.close(); flash("Client form must be JPG, PNG, WEBP or PDF","error"); return redirect(url_for("lead_profile",lead_db_id=lead_db_id))
+            data=f.read(); mime=f.mimetype or mimetypes.guess_type(f.filename)[0] or "application/octet-stream"
+            con.execute("INSERT INTO lead_documents(lead_id,document_type,file_name,file_data,mime_type,uploaded_by,uploaded_at) VALUES(?,?,?,?,?,?,?)",
+                        (lead_db_id,"Client Enquiry Form",secure_filename(f.filename),data,mime,u["login_id"],now))
+        con.commit(); flash("Client profile updated successfully","success")
+        lead=con.execute("SELECT l.*,usr.full_name am_name,usr.login_id am_login FROM leads l LEFT JOIN users usr ON usr.id=l.assigned_am WHERE l.id=?",(lead_db_id,)).fetchone()
+    docs=con.execute("SELECT id,document_type,file_name,mime_type,uploaded_by,uploaded_at FROM lead_documents WHERE lead_id=? ORDER BY id DESC",(lead_db_id,)).fetchall()
+    activity=con.execute("SELECT * FROM lead_activity WHERE lead_id=? ORDER BY id DESC LIMIT 50",(lead_db_id,)).fetchall()
+    con.close(); return render_template("lead_profile.html",u=u,lead=lead,docs=docs,activity=activity)
+
+@app.route("/lead-document/<int:document_id>")
+@require_roles("MD","GM","AM")
+def lead_document(document_id):
+    u=current_user(); con=db()
+    row=con.execute("SELECT d.*,l.company_code,l.assigned_am FROM lead_documents d JOIN leads l ON l.id=d.lead_id WHERE d.id=?",(document_id,)).fetchone()
+    if not row or (u["role"]!="MD" and (u["company_code"]!=row["company_code"] or (u["role"]=="AM" and row["assigned_am"]!=u["id"]))):
+        con.close(); flash("Document not found or access denied","error"); return redirect(url_for("dashboard"))
+    data=row["file_data"]; mime=row["mime_type"] or "application/octet-stream"; name=row["file_name"]
+    con.close(); return send_file(io.BytesIO(data),mimetype=mime,download_name=name,as_attachment=False)
 
 @app.route("/my-leads", methods=["GET","POST"])
 @require_roles("AM")
