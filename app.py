@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from openpyxl import load_workbook
 import xlrd
+import zipfile
+import xml.etree.ElementTree as ET
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
@@ -378,19 +380,50 @@ def map_headers(headers):
     return result
 
 def read_excel(path):
-    ext=os.path.splitext(path)[1].lower()
-    rows=[]
-    if ext==".xlsx":
-        wb=load_workbook(path,read_only=True,data_only=True)
-        ws=wb.active
-        rows=list(ws.iter_rows(values_only=True))
-    elif ext==".xls":
-        book=xlrd.open_workbook(path)
-        sh=book.sheet_by_index(0)
-        rows=[[sh.cell_value(r,c) for c in range(sh.ncols)] for r in range(sh.nrows)]
-    else:
+    """Read real XLS/XLSX and Excel 2003 XML files, even when extension is misleading."""
+    with open(path, "rb") as fh:
+        head = fh.read(512)
+
+    # Modern .xlsx is a ZIP container. Detect by content, not only filename.
+    if head.startswith(b"PK") or zipfile.is_zipfile(path):
+        wb = load_workbook(path, read_only=True, data_only=True)
+        ws = wb.active
+        return list(ws.iter_rows(values_only=True))
+
+    # Legacy binary .xls uses the OLE Compound File signature.
+    if head.startswith(bytes.fromhex("D0CF11E0A1B11AE1")):
+        book = xlrd.open_workbook(path)
+        sh = book.sheet_by_index(0)
+        return [[sh.cell_value(r, c) for c in range(sh.ncols)] for r in range(sh.nrows)]
+
+    # Some banking/CRM exports are Excel 2003 XML but are saved with .xls extension.
+    stripped = head.lstrip(b"\xef\xbb\xbf\x00\t\r\n ")
+    if stripped.startswith(b"<?xml") or stripped.startswith(b"<Workbook"):
+        try:
+            root = ET.parse(path).getroot()
+            rows = []
+            for row in root.findall('.//{*}Row'):
+                values = []
+                col = 1
+                for cell in row.findall('{*}Cell'):
+                    idx = cell.attrib.get('{urn:schemas-microsoft-com:office:spreadsheet}Index')
+                    if idx:
+                        target = int(idx)
+                        while col < target:
+                            values.append(None); col += 1
+                    data = cell.find('{*}Data')
+                    values.append(data.text if data is not None and data.text is not None else '')
+                    col += 1
+                rows.append(values)
+            if rows:
+                return rows
+        except ET.ParseError as e:
+            raise ValueError(f"Excel XML file could not be read: {e}")
+
+    ext = os.path.splitext(path)[1].lower()
+    if ext not in (".xls", ".xlsx"):
         raise ValueError("Only .xls and .xlsx are supported")
-    return rows
+    raise ValueError("Unsupported or damaged Excel file. Please open it in Excel and Save As .xlsx, then upload again.")
 
 @app.route("/leads", methods=["GET","POST"])
 @require_roles("MD","GM")

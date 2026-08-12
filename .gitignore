@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+mini_crm.db
+mini_crm.db-*
+uploads/
+server_output.log
