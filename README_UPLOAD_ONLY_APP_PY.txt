@@ -1,23 +1,25 @@
-GAUR CRM v3.5 - MD COMPANY ANALYTICS DASHBOARD
+GAUR CRM v3.6 - MONTHLY PERFORMANCE + TOP PERFORMERS
 
-NEW IN MD PORTAL
-- Smart Choice and White Wave shown separately.
-- Each company shows Total, Allocated, Unallocated, Positive Data, Hot, Interested, Enrolled and Revenue.
-- Separate live pie chart for Smart Choice and White Wave.
-- Positive Data = Interest Ranking 50% or above.
-- Pie chart: Red = Hot 71-100%, Green = Interested 50-70%, Blue = Cold/Not Contacted 0-49%.
-- Positive Rate and Average Interest shown company-wise.
-- AM-wise table now shows Positive Data count, Positive %, Hot count and Interested count.
-- Existing v3.4 ranking, filters, client profile and cloud PostgreSQL data remain unchanged.
+NEW:
+- Full dashboard month selector.
+- MD/GM: Performer of the Month + Top 3 highlighted.
+- Performance Analysis: Month + Company + Designation/Role filters.
+- Telecaller, Counselor, Senior Counselor, Filing etc. are ranked from Employee Master performance data.
+- 12-month best-performer snapshot.
+- Every AM portal: My Rank, Score, Allocated Leads, Positive Leads, Performance Level and Best AM.
+- Company and AM analytics are month scoped.
+- Existing PostgreSQL data, client profiles, lead ranking and filters remain safe.
 
-DEPLOYMENT
-1. Extract this ZIP.
-2. GitHub -> Gaur-Immigration-CRM -> Add file -> Upload files.
+For Telecaller/Counselor reports, enter their Designation in Employee Information and maintain monthly/daily Performance entries.
+
+DEPLOY:
+1. Extract ZIP.
+2. GitHub -> Add file -> Upload files.
 3. Upload ONLY app.py to repository root.
 4. Commit directly to main.
-5. Commit message: CRM v3.5 MD Company Analytics
-6. Wait for Railway Active / Deployment successful.
-7. Ctrl+F5 the CRM.
-8. Bottom-right should show: CRM v3.5 • MD COMPANY ANALYTICS ACTIVE
+5. Commit: CRM v3.6 Monthly Performance Champions
+6. Wait for Railway Deployment successful.
+7. Ctrl+F5.
+8. Verify bottom-right: CRM v3.6 • MONTHLY PERFORMANCE ACTIVE
 
-DO NOT change DATABASE_URL or Postgres.
+Do NOT change DATABASE_URL or Postgres.
