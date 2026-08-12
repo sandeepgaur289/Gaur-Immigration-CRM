@@ -1,24 +1,25 @@
-GAUR CRM v3.3 ROOT-ONLY UI FIX
+GAUR CRM v3.4 - LEAD RANKING + FILTERS
 
-WHY THIS PATCH EXISTS
-The latest Railway deployment was successful, but GitHub browser upload had not replaced the
-templates/static folders. Therefore Railway kept showing the old My Leads layout.
+NEW FEATURES
+- Every client has Interest Ranking from 0 to 100%.
+- RED / HOT: 71-100%
+- GREEN / INTERESTED: 50-70%
+- BLUE / COLD / NOT CONTACTED / NOT INTERESTED: 0-49%
+- Counselor sets ranking inside Client Lead Profile.
+- Quick presets: 100, 85, 70, 60, 50, 25, 0.
+- AM My Leads is highlighted by color and can be filtered by ranking, status, search and sorting.
+- GM/MD Lead Upload & Allocation page has filters for company, AM, ranking, status, search and sorting.
+- Dashboard shows Hot / Interested / Cold counts and average interest percentage.
+- Existing client profile, enquiry form upload, PostgreSQL cloud database and all old data are preserved.
 
-THIS PATCH FIXES THAT PERMANENTLY:
-- Corrected templates are embedded inside app.py itself.
-- Only app.py needs to be replaced in the GitHub repository root.
-- No templates folder replacement is required.
-- Smart Choice and White Wave logos are embedded directly in app.py.
-- My Leads shows a clear OPEN CLIENT PROFILE button.
-- Client profile workspace is available even if lead_profile.html is missing from GitHub.
-- MD/GM dashboard uses the AM-wise allocation table.
-- Existing PostgreSQL data and DATABASE_URL are untouched.
+DEPLOY
+1. Extract ZIP.
+2. GitHub -> Gaur-Immigration-CRM -> Add file -> Upload files.
+3. Upload ONLY app.py to repository root.
+4. Commit directly to main.
+5. Commit message: CRM v3.4 Lead Ranking Filters
+6. Railway auto-deploys.
+7. After Active/Deployment successful, Ctrl+F5 CRM.
+8. Bottom right should show: CRM v3.4 • LEAD RANKING ACTIVE
 
-UPLOAD:
-1. GitHub repository -> Add file -> Upload files.
-2. Upload ONLY app.py from this patch folder.
-3. Commit directly to main.
-4. Commit message: CRM v3.3 Root UI Fix
-5. Wait for Railway deployment to show Active / Deployment successful.
-6. Refresh CRM using Ctrl+F5.
-7. Bottom-right must show: CRM v3.3 • ROOT UI FIX ACTIVE
+DO NOT change DATABASE_URL or Postgres.
