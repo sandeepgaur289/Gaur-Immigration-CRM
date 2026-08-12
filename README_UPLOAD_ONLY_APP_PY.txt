@@ -1,29 +1,22 @@
-GAUR CRM v3.8 - MODERN MONTH PICKER
+GAUR CRM v3.9 - PREMIUM COMPANY LOGO BRANDING
 
-FIX:
-The old-looking popup in the MD Dashboard was not a normal date picker. It was HTML input type="month".
-v3.7 only replaced input type="date", so the browser's old month picker was still appearing.
-
-v3.8 specifically replaces ALL input type="month" controls with a custom CRM-styled month selector:
-- Dark navy premium popup
-- Gold selected month
-- Blue current-month indicator
-- Previous/Next year navigation
-- 12 modern month buttons
-- Current Month shortcut
-- Clear button
-- Displays "August, 2026" style
-- Works on MD Dashboard and Performance Analysis month filters
-- Existing modern day/date calendar remains intact
+NEW:
+- Smart Choice and White Wave PNG logos are now used prominently across the CRM.
+- MD Dashboard company cards show each company's logo beside the company name.
+- Positive Data Pie cards also show the corresponding logo.
+- GM and AM sidebars show a framed premium company logo panel.
+- Client Profile / My Leads / Leads pages include a subtle company watermark.
+- MD sidebar remains GAUR PORTAL, so company identity is shown only in the company sections.
+- Existing monthly dashboard, modern month picker, rankings, filters, pie charts, client profiles and PostgreSQL data remain unchanged.
 
 DEPLOY:
 1. Extract ZIP.
 2. GitHub -> Gaur-Immigration-CRM -> Add file -> Upload files.
 3. Upload ONLY app.py to repository root.
 4. Commit directly to main.
-5. Commit message: CRM v3.8 Modern Month Picker Fix
+5. Commit message: CRM v3.9 Premium Logo Branding
 6. Wait for Railway Active / Deployment successful.
 7. Ctrl+F5.
-8. Verify bottom-right: CRM v3.8 • MODERN MONTH PICKER ACTIVE
+8. Verify bottom-right: CRM v3.9 • PREMIUM LOGO BRANDING ACTIVE
 
 Do NOT change DATABASE_URL or Postgres.
