@@ -452,29 +452,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
         cur.execute(q.format(pk=("BIGSERIAL PRIMARY KEY" if IS_POSTGRES else "INTEGER PRIMARY KEY AUTOINCREMENT"),blob=("BYTEA" if IS_POSTGRES else "BLOB")))
     cur.execute("CREATE INDEX IF NOT EXISTS idx_finance_txn_date ON finance_transactions(txn_date,company_code)")
     cur.execute("CREATE INDEX IF NOT EXISTS idx_finance_txn_head ON finance_transactions(head,direction)")
-    # v3.36 Bank Manager / approved payment sharing
-    for col,ddl in [
-        ("upi_id","TEXT DEFAULT ''"),("city","TEXT DEFAULT ''"),("rm_name","TEXT DEFAULT ''"),
-        ("rm_mobile","TEXT DEFAULT ''"),("account_nickname","TEXT DEFAULT ''"),("share_enabled","INTEGER DEFAULT 1")
-    ]:
-        try: cur.execute(f"ALTER TABLE finance_banks ADD COLUMN {col} {ddl}")
-        except Exception: pass
-    if IS_POSTGRES:
-        cur.execute("""CREATE TABLE IF NOT EXISTS bank_share_logs(
-          id BIGSERIAL PRIMARY KEY,bank_id BIGINT,company_code TEXT DEFAULT '',shared_by_id BIGINT,
-          shared_by_name TEXT DEFAULT '',recipient_mobile TEXT DEFAULT '',share_type TEXT DEFAULT 'WHATSAPP',
-          shared_at TEXT DEFAULT ''
-        )""")
-    else:
-        cur.execute("""CREATE TABLE IF NOT EXISTS bank_share_logs(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,bank_id INTEGER,company_code TEXT DEFAULT '',shared_by_id INTEGER,
-          shared_by_name TEXT DEFAULT '',recipient_mobile TEXT DEFAULT '',share_type TEXT DEFAULT 'WHATSAPP',
-          shared_at TEXT DEFAULT ''
-        )""")
-    try: cur.execute("CREATE INDEX IF NOT EXISTS idx_bank_share_logs ON bank_share_logs(bank_id,shared_at)")
-    except Exception: pass
-
-    # v3.24 AI-style bank reconciliation
+    # v3.36.1: Bank Manager schema upgrade is lazy; do not block Railway startup.\n\n    # v3.24 AI-style bank reconciliation
     if IS_POSTGRES:
         cur.execute("""CREATE TABLE IF NOT EXISTS bank_recon_runs(
           id BIGSERIAL PRIMARY KEY,company_code TEXT NOT NULL,bank_id BIGINT,file_name TEXT DEFAULT '',
@@ -563,7 +541,7 @@ def require_roles(*roles):
 def healthz():
     # Railway liveness endpoint: if Flask/Waitress can answer HTTP, the service is alive.
     # Do NOT make liveness depend on PostgreSQL; temporary DB latency should not kill deployment.
-    return jsonify({"status":"ok","service":"the-gaur-crm","version":"3.33"}),200
+    return jsonify({"status":"ok","service":"the-gaur-crm","version":"3.36.1"}),200
 
 @app.route("/readyz")
 def readyz():
@@ -1380,6 +1358,48 @@ FINANCE_HEADS=["Client Payment / Service Fee","Embassy Fee","VFS / Biometric Fee
 def _finance_companies(u):
     return ["SCIC","WWIC"] if u["role"]=="MD" else [u["company_code"]]
 
+def ensure_bank_manager_schema():
+    """Lazy finance migration so Railway can bind /healthz before PostgreSQL DDL."""
+    con=db();cur=con.cursor()
+    try:
+        if IS_POSTGRES:
+            try: cur.execute("SET lock_timeout TO '3000ms'")
+            except Exception: pass
+        for col,ddl in [
+            ("upi_id","TEXT DEFAULT ''"),("city","TEXT DEFAULT ''"),("rm_name","TEXT DEFAULT ''"),
+            ("rm_mobile","TEXT DEFAULT ''"),("account_nickname","TEXT DEFAULT ''"),("share_enabled","INTEGER DEFAULT 1")
+        ]:
+            try:
+                if IS_POSTGRES: cur.execute(f"ALTER TABLE finance_banks ADD COLUMN IF NOT EXISTS {col} {ddl}")
+                else: cur.execute(f"ALTER TABLE finance_banks ADD COLUMN {col} {ddl}")
+                con.commit()
+            except Exception:
+                try: con.rollback()
+                except Exception: pass
+        try:
+            if IS_POSTGRES:
+                cur.execute("""CREATE TABLE IF NOT EXISTS bank_share_logs(
+                  id BIGSERIAL PRIMARY KEY,bank_id BIGINT,company_code TEXT DEFAULT '',shared_by_id BIGINT,
+                  shared_by_name TEXT DEFAULT '',recipient_mobile TEXT DEFAULT '',share_type TEXT DEFAULT 'WHATSAPP',
+                  shared_at TEXT DEFAULT '')""")
+            else:
+                cur.execute("""CREATE TABLE IF NOT EXISTS bank_share_logs(
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,bank_id INTEGER,company_code TEXT DEFAULT '',shared_by_id INTEGER,
+                  shared_by_name TEXT DEFAULT '',recipient_mobile TEXT DEFAULT '',share_type TEXT DEFAULT 'WHATSAPP',
+                  shared_at TEXT DEFAULT '')""")
+            con.commit()
+        except Exception:
+            try: con.rollback()
+            except Exception: pass
+        try:
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_bank_share_logs ON bank_share_logs(bank_id,shared_at)")
+            con.commit()
+        except Exception:
+            try: con.rollback()
+            except Exception: pass
+    finally:
+        con.close()
+
 BANK_LOGO_DOMAINS={
     "hdfc":"hdfcbank.com","icici":"icicibank.com","axis":"axisbank.com","state bank":"sbi.co.in",
     "sbi":"sbi.co.in","punjab national":"pnbindia.in","pnb":"pnbindia.in","kotak":"kotak.com",
@@ -1657,6 +1677,7 @@ def finance_center():
 @app.route("/finance/banks",methods=["GET","POST"])
 @require_roles("MD","GM")
 def finance_banks():
+    ensure_bank_manager_schema()
     u=current_user();con=db();companies=_finance_companies(u)
     if request.method=="POST":
         if u["role"]!="MD":
@@ -1673,6 +1694,7 @@ def finance_banks():
 @app.route("/payment-accounts")
 @require_roles("MD","GM","AM","HR","RECEPTION","FILING","COUNSELOR","SENIOR_COUNSELOR","TELECALLER","ACCOUNTS","BRANCH_MANAGER","TEAM_LEADER")
 def payment_accounts():
+    ensure_bank_manager_schema()
     u=current_user();con=db()
     companies=_finance_companies(u)
     rows=con.execute("SELECT * FROM finance_banks WHERE active=1 AND COALESCE(share_enabled,1)=1 AND company_code IN ("+",".join(["?"]*len(companies))+") ORDER BY company_code,bank_name",companies).fetchall()
@@ -1685,6 +1707,7 @@ def payment_accounts():
 @app.route("/payment-accounts/share/<int:bank_id>",methods=["POST"])
 @require_roles("MD","GM","AM","HR","RECEPTION","FILING","COUNSELOR","SENIOR_COUNSELOR","TELECALLER","ACCOUNTS","BRANCH_MANAGER","TEAM_LEADER")
 def payment_account_share(bank_id):
+    ensure_bank_manager_schema()
     u=current_user();con=db();companies=_finance_companies(u)
     b=con.execute("SELECT * FROM finance_banks WHERE id=? AND active=1 AND COALESCE(share_enabled,1)=1",(bank_id,)).fetchone()
     if not b or b["company_code"] not in companies:
@@ -1704,6 +1727,7 @@ def payment_account_share(bank_id):
 @app.route("/finance/banks/shares")
 @require_roles("MD","GM")
 def bank_share_history():
+    ensure_bank_manager_schema()
     u=current_user();con=db();companies=_finance_companies(u)
     rows=con.execute("""SELECT l.*,b.bank_name,b.account_name,b.account_last4 FROM bank_share_logs l
                        LEFT JOIN finance_banks b ON b.id=l.bank_id
@@ -3144,12 +3168,8 @@ def inject_user():
 # v3.21: when served by Gunicorn (`app:app`), __main__ does not run.
 # Attempt schema initialization at import time, but never crash the HTTP process.
 if __name__!="__main__":
-    try:
-        init_db()
-    except Exception:
-        import traceback
-        print("\nGAUR CRM IMPORT-TIME DB INITIALIZATION WARNING:\n",flush=True)
-        traceback.print_exc()
+    # Railway: bind HTTP immediately; never wait for PostgreSQL DDL during Gunicorn import.
+    pass
 
 if __name__=="__main__":
     import traceback
@@ -3163,6 +3183,6 @@ if __name__=="__main__":
         # so /healthz remains reachable and deployment diagnostics can be opened.
         print("\nGAUR CRM DATABASE INITIALIZATION WARNING:\n",flush=True)
         traceback.print_exc()
-    print(f"GAUR CRM v3.36 ready | DB={'PostgreSQL' if IS_POSTGRES else 'SQLite'} | port={port}",flush=True)
+    print(f"GAUR CRM v3.36.1 ready | DB={'PostgreSQL' if IS_POSTGRES else 'SQLite'} | port={port}",flush=True)
     from waitress import serve
     serve(app,host="0.0.0.0",port=port,threads=8)
