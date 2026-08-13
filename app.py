@@ -165,7 +165,7 @@ _GAUR_V337_TEMPLATES['cases.html'] = r"""{% extends "base.html" %}{% block conte
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('.competition-popup{position:fixed;right:22px;top:84px;width:min(420px,calc(100vw - 30px));z-index:999999;background:linear-gradient(145deg,#091f37,#152e4a);border:2px solid #e6b73f;border-radius:20px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);transform:translateX(130%);opacity:0;transition:.45s ease}\n.competition-popup.show{transform:translateX(0);opacity:1}.competition-popup.wwic{border-color:#4da6ff}.comp-pop-title{font-size:26px;color:#e6b73f;font-weight:900}.comp-fire{font-size:40px;animation:compPulse .75s infinite alternate}@keyframes compPulse{from{transform:scale(1)}to{transform:scale(1.15)}}\n','.competition-popup{position:fixed;inset:0;z-index:9999999;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 50% 42%,rgba(36,74,119,.55),rgba(0,7,18,.92) 58%,rgba(0,0,0,.98));opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease;overflow:hidden}\n.competition-popup.show{opacity:1;visibility:visible;pointer-events:auto}.competition-popup:before{content:"";position:absolute;inset:-30%;background:conic-gradient(from 0deg,transparent,rgba(255,214,64,.10),transparent,rgba(76,169,255,.12),transparent);animation:celebrateSpin 9s linear infinite}.celebrate-stage{position:relative;width:min(940px,96vw);min-height:min(690px,92vh);border:2px solid #f5c84b;border-radius:34px;background:linear-gradient(155deg,#071426 0%,#102f51 45%,#071426 100%);box-shadow:0 0 0 7px rgba(245,200,75,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(245,200,75,.22) inset;padding:26px 30px 24px;text-align:center;overflow:hidden;transform:scale(.72) translateY(35px);transition:transform .48s cubic-bezier(.2,.9,.25,1.18)}\n.competition-popup.show .celebrate-stage{transform:scale(1) translateY(0)}.competition-popup.wwic .celebrate-stage{border-color:#55aaff;box-shadow:0 0 0 7px rgba(85,170,255,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(85,170,255,.22) inset}.celebrate-glow{position:absolute;left:50%;top:43%;width:520px;height:520px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,210,64,.30),rgba(255,210,64,.04) 52%,transparent 72%);filter:blur(2px);animation:celebrateGlow 1s ease-in-out infinite alternate}.competition-popup.wwic .celebrate-glow{background:radial-gradient(circle,rgba(85,170,255,.32),rgba(85,170,255,.05) 52%,transparent 72%)}.celebrate-crown{position:relative;z-index:2;font-size:72px;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));animation:crownBounce .75s ease-in-out infinite alternate}.comp-pop-title{position:relative;z-index:2;margin:6px 0 0;font-family:Arial Black,Arial,sans-serif;font-size:clamp(34px,6vw,76px);line-height:.98;color:#ffd85e;text-shadow:0 3px 0 #8c3517,0 7px 18px rgba(0,0,0,.7);letter-spacing:1px}.competition-popup.wwic .comp-pop-title{color:#d9efff;text-shadow:0 3px 0 #145792,0 7px 18px rgba(0,0,0,.7)}.celebrate-subtitle{position:relative;z-index:2;display:inline-block;margin:10px auto 17px;padding:8px 28px;border-radius:999px;background:linear-gradient(180deg,#1b66c7,#0d3f87);border:2px solid rgba(255,255,255,.34);font-family:Arial Black,Arial,sans-serif;font-size:clamp(21px,3.4vw,39px);letter-spacing:1px;box-shadow:0 8px 20px rgba(0,0,0,.35)}.celebrate-person{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;margin:2px auto 14px}.celebrate-avatar-wrap{width:170px;height:170px;border-radius:50%;padding:5px;background:linear-gradient(145deg,#fff7b0,#d99e14);box-shadow:0 0 0 8px rgba(255,210,75,.10),0 0 40px rgba(255,210,75,.38);animation:avatarPop .72s cubic-bezier(.2,.9,.3,1.3)}.competition-popup.wwic .celebrate-avatar-wrap{background:linear-gradient(145deg,#e5f6ff,#4096e8);box-shadow:0 0 0 8px rgba(85,170,255,.10),0 0 40px rgba(85,170,255,.38)}.celebrate-avatar{width:100%;height:100%;object-fit:cover;border-radius:50%;background:#09192a}.celebrate-avatar-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#102b49;font-size:70px}.celebrate-person-info{text-align:left;min-width:260px}.celebrate-name{font-family:Arial Black,Arial,sans-serif;font-size:clamp(29px,4vw,48px);color:#fff}.celebrate-role{font-size:20px;color:#ffd85e;font-weight:800;letter-spacing:.6px}.competition-popup.wwic .celebrate-role{color:#7fc4ff}.celebrate-company{margin-top:6px;font-size:16px;opacity:.86}.celebrate-details{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(760px,100%);margin:10px auto}.celebrate-detail{padding:11px 12px;background:rgba(0,0,0,.27);border:1px solid rgba(255,255,255,.16);border-radius:13px}.celebrate-detail small{display:block;opacity:.67;margin-bottom:3px}.celebrate-detail b{display:block;font-size:19px;color:#ffe27b;word-break:break-word}.competition-popup.wwic .celebrate-detail b{color:#9fd1ff}.celebrate-save{position:relative;z-index:2;display:inline-flex;align-items:center;gap:8px;margin-top:7px;padding:10px 21px;border-radius:999px;background:#138b42;border:2px solid #5bea8b;font-size:20px;font-weight:900;box-shadow:0 8px 20px rgba(0,0,0,.3)}.celebrate-close{position:absolute;right:16px;top:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.35);color:#fff;font-size:24px;cursor:pointer}.celebrate-countdown{position:relative;z-index:2;margin-top:8px;font-size:13px;opacity:.7}.confetti-piece{position:absolute;z-index:4;top:-12vh;width:10px;height:20px;border-radius:2px;animation:confettiFall linear forwards}.firework{position:absolute;z-index:1;width:8px;height:8px;border-radius:50%;box-shadow:0 -70px #ffd75e,49px -49px #ff5964,70px 0 #5bc0ff,49px 49px #66e49a,0 70px #ff8ce8,-49px 49px #ffb14e,-70px 0 #78a7ff,-49px -49px #d7ff61;animation:fireworkBurst 1.45s ease-out infinite}.fw1{left:13%;top:20%}.fw2{right:13%;top:18%;animation-delay:.4s}.fw3{left:20%;bottom:21%;animation-delay:.8s}.fw4{right:19%;bottom:20%;animation-delay:1.1s}.celebrate-side{position:absolute;z-index:2;font-size:54px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));animation:sideFloat 1s ease-in-out infinite alternate}.side-left{left:4%;top:48%}.side-right{right:4%;top:48%;animation-delay:.35s}@keyframes celebrateSpin{to{transform:rotate(360deg)}}@keyframes celebrateGlow{from{transform:translate(-50%,-50%) scale(.88);opacity:.55}to{transform:translate(-50%,-50%) scale(1.08);opacity:1}}@keyframes crownBounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-9px) rotate(3deg)}}@keyframes avatarPop{0%{transform:scale(.2) rotate(-16deg)}75%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1)}}@keyframes confettiFall{0%{transform:translate3d(0,-10vh,0) rotate(0);opacity:1}100%{transform:translate3d(var(--drift),115vh,0) rotate(900deg);opacity:.1}}@keyframes fireworkBurst{0%{transform:scale(.08);opacity:0}18%{opacity:1}70%{transform:scale(1);opacity:.9}100%{transform:scale(1.2);opacity:0}}@keyframes sideFloat{from{transform:translateY(-7px) rotate(-6deg)}to{transform:translateY(7px) rotate(6deg)}}@media(max-width:700px){.celebrate-stage{padding:18px 14px;min-height:auto}.celebrate-crown{font-size:54px}.celebrate-avatar-wrap{width:125px;height:125px}.celebrate-person-info{text-align:center;min-width:0}.celebrate-details{grid-template-columns:1fr}.celebrate-side{display:none}.firework{transform:scale(.7)}}\n',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('<div id="competitionPopup" class="competition-popup no-print"><div class="comp-fire">🔥🏆</div><div id="competitionPopupTitle" class="comp-pop-title">NEW ENROLLMENT!</div><div id="competitionPopupText"></div><small id="competitionPopupTime"></small></div>','<div id="competitionPopup" class="competition-popup no-print" aria-live="assertive" aria-label="Enrollment celebration">\n  <div class="celebrate-glow"></div><div class="firework fw1"></div><div class="firework fw2"></div><div class="firework fw3"></div><div class="firework fw4"></div>\n  <div class="celebrate-stage">\n    <button type="button" class="celebrate-close" id="competitionPopupClose" title="Close">×</button>\n    <div class="celebrate-side side-left">🏆🎲</div><div class="celebrate-side side-right">🎯🏆</div>\n    <div class="celebrate-crown">👑</div>\n    <div id="competitionPopupTitle" class="comp-pop-title">CONGRATULATIONS!</div>\n    <div class="celebrate-subtitle">🎉 ENROLLMENT DONE! 🎉</div>\n    <div class="celebrate-person">\n      <div class="celebrate-avatar-wrap"><img id="competitionEmployeePhoto" class="celebrate-avatar" alt="Assistant Manager"><div id="competitionEmployeeFallback" class="celebrate-avatar-fallback" style="display:none">👤</div></div>\n      <div class="celebrate-person-info"><div id="competitionEmployeeName" class="celebrate-name">TEAM MEMBER</div><div id="competitionEmployeeRole" class="celebrate-role">ASSISTANT MANAGER</div><div id="competitionCompanyName" class="celebrate-company"></div></div>\n    </div>\n    <div class="celebrate-details">\n      <div class="celebrate-detail"><small>Client</small><b id="competitionClientName">—</b></div>\n      <div class="celebrate-detail"><small>Enrollment ID</small><b id="competitionCaseId">—</b></div>\n      <div class="celebrate-detail"><small>Amount Received</small><b id="competitionRevenue">₹0</b></div>\n    </div>\n    <div class="celebrate-save">✓ SUCCESSFULLY SAVED!</div>\n    <div id="competitionPopupText" style="position:relative;z-index:2;margin-top:9px;font-weight:bold"></div>\n    <div id="competitionPopupTime" class="celebrate-countdown"></div>\n  </div>\n</div>',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace("<script>\n(function(){let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true;const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');if(!bar||!pop)return;\nfunction money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}function show(e){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');document.getElementById('competitionPopupTitle').textContent=(e.company_code==='SCIC'?'SMART CHOICE':'WHITE WAVE')+' SCORES! 🎉';document.getElementById('competitionPopupText').textContent=e.message||'New enrollment';document.getElementById('competitionPopupTime').textContent=e.created_at||'';requestAnimationFrame(()=>pop.classList.add('show'));setTimeout(()=>pop.classList.remove('show'),9000)}\nasync function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};document.getElementById('scicLiveScore').textContent=(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0);document.getElementById('wwicLiveScore').textContent=(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0);const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e),i*1200));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\nrun();setInterval(run,5000)})();\n</script>","<script>\n(function(){\n  let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true,hideTimer=null;\n  const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');\n  if(!bar||!pop)return;\n  const photo=document.getElementById('competitionEmployeePhoto'),fallback=document.getElementById('competitionEmployeeFallback');\n  const closeBtn=document.getElementById('competitionPopupClose');if(closeBtn)closeBtn.addEventListener('click',()=>hide());\n  function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')} function text(id,val){const x=document.getElementById(id);if(x)x.textContent=val??''}\n  function hide(){pop.classList.remove('show');document.querySelectorAll('.confetti-piece').forEach(x=>x.remove());if(hideTimer)clearTimeout(hideTimer)}\n  function confetti(){const colors=['#ffd64d','#ff4d67','#4da6ff','#48d58b','#f78cff','#ffffff'];for(let i=0;i<95;i++){const c=document.createElement('i');c.className='confetti-piece';c.style.left=(Math.random()*100)+'vw';c.style.background=colors[i%colors.length];c.style.setProperty('--drift',((Math.random()-.5)*280)+'px');c.style.animationDuration=(2.7+Math.random()*3)+'s';c.style.animationDelay=(Math.random()*.7)+'s';c.style.transform='rotate('+(Math.random()*360)+'deg)';pop.appendChild(c);setTimeout(()=>c.remove(),7000)}}\n  function victorySound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const ctx=new A(),now=ctx.currentTime;[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,now+i*.13);g.gain.exponentialRampToValueAtTime(.12,now+i*.13+.02);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.38);o.connect(g);g.connect(ctx.destination);o.start(now+i*.13);o.stop(now+i*.13+.42)});setTimeout(()=>ctx.close(),1600)}catch(e){}}\n  function show(e,soundOn){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');const brand=e.company_code==='SCIC'?'SMART CHOICE IMMIGRATION CONSULTANTS':'WHITE WAVE';text('competitionPopupTitle','CONGRATULATIONS!');text('competitionEmployeeName',(e.employee_name||'TEAM MEMBER').toUpperCase());text('competitionEmployeeRole',(e.employee_role||'ASSISTANT MANAGER').toUpperCase());text('competitionCompanyName',brand+' • +1 ENROLLMENT');text('competitionClientName',e.client_name||'New Client');text('competitionCaseId',e.case_id||'—');text('competitionRevenue',money(e.revenue||0));text('competitionPopupText',e.message||brand+' SCORES!');text('competitionPopupTime',(e.created_at||'')+' • Celebration closes automatically');if(photo){photo.onerror=()=>{photo.style.display='none';fallback.style.display='flex'};if(e.photo_url){fallback.style.display='none';photo.style.display='block';photo.src=e.photo_url+'?v='+encodeURIComponent(e.id||Date.now())}else{photo.style.display='none';fallback.style.display='flex'}}requestAnimationFrame(()=>pop.classList.add('show'));confetti();if(soundOn)victorySound();if(hideTimer)clearTimeout(hideTimer);hideTimer=setTimeout(hide,9000)}\n  async function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};text('scicLiveScore',(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0));text('wwicLiveScore',(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0));const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e,!!d.sound_enabled),i*9800));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\n  run();setInterval(run,3000);\n})();\n</script>",1)
-_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.41 • Structured Payment Ledger')
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.42 • Enrollment Performance + MD Cash Book')
 # === END GAUR CRM v3.9 PREMIUM LOGO BRANDING ===
 if os.environ.get("CLOUD_MODE", "").lower() in ("1","true","yes") or os.environ.get("RAILWAY_ENVIRONMENT"):
     app.config.update(
@@ -401,7 +401,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
         if "batch_code" not in import_cols: cur.execute("ALTER TABLE imports ADD COLUMN batch_code TEXT DEFAULT ''")
 
 
-    # v3.41 structured enrollment/payment ledger
+    # v3.42 structured enrollment/payment ledger
     payment_case_cols=[
         ("package_amount","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
         ("package_amount_datetime","TEXT DEFAULT ''"),
@@ -860,60 +860,44 @@ def employee_month_rankings(con,start_date,end_date,company_code=None,designatio
 
 
 def am_business_month_rankings(con,start_date,end_date,company_code=None):
-    """
-    Monthly AM leaderboard based on actual business output.
-    Enrollments/revenue come from client_cases linked through users.employee_id.
-    Lead allocation/positive/hot figures come from active (non-archived) leads.
-    """
-    q="""SELECT u.id,u.full_name,u.company_code,u.designation,u.photo_mime,u.active,u.employee_id,
-         COUNT(l.id) allocated,
-         SUM(CASE WHEN COALESCE(l.interest_score,0)>=50 THEN 1 ELSE 0 END) positive,
-         SUM(CASE WHEN COALESCE(l.interest_score,0)>=71 THEN 1 ELSE 0 END) hot
-         FROM users u
-         LEFT JOIN leads l ON l.assigned_am=u.id
-           AND COALESCE(l.deleted_at,'')=''
-           AND COALESCE(NULLIF(l.assigned_at,''),l.imported_at,'') BETWEEN ? AND ?
-         WHERE u.role='AM'"""
-    params=[start_date,end_date+"T23:59:59"]
+    """v3.42: ranking is based ONLY on actual enrollment count."""
+    q="""SELECT u.id,u.full_name,u.company_code,u.designation,u.photo_mime,u.active,u.employee_id
+         FROM users u WHERE u.role='AM'"""
+    params=[]
     if company_code:
         q+=" AND u.company_code=?"; params.append(company_code)
-    q+=" GROUP BY u.id,u.full_name,u.company_code,u.designation,u.photo_mime,u.active,u.employee_id ORDER BY u.company_code,u.full_name"
+    q+=" ORDER BY u.company_code,u.full_name"
     ams=con.execute(q,params).fetchall()
 
-    raw=[]
+    rows=[]
     for r in ams:
-        enrollments=0; revenue=0.0
+        enrollments=0
         if r["employee_id"]:
-            c=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
+            c=con.execute("""SELECT COUNT(*) enrollments
                              FROM client_cases
                              WHERE assigned_employee_id=? AND enrollment_date BETWEEN ? AND ?""",
                           (r["employee_id"],start_date,end_date)).fetchone()
             enrollments=int(c["enrollments"] or 0)
-            revenue=float(c["revenue"] or 0)
-        allocated=int(r["allocated"] or 0)
-        positive=int(r["positive"] or 0)
-        hot=int(r["hot"] or 0)
-        conversion=(enrollments/allocated*100) if allocated else 0
-        raw.append({"id":r["id"],"full_name":r["full_name"],"company_code":r["company_code"],
-                    "designation":r["designation"] or "Assistant Manager","photo_mime":r["photo_mime"],
-                    "active":int(r["active"] or 0),"allocated":allocated,"positive":positive,"hot":hot,
-                    "enrollments":enrollments,"revenue":revenue,"conversion":round(conversion,1)})
+        rows.append({
+            "id":r["id"],"full_name":r["full_name"],"company_code":r["company_code"],
+            "designation":r["designation"] or "Assistant Manager","photo_mime":r["photo_mime"],
+            "active":int(r["active"] or 0),"employee_id":r["employee_id"],
+            "allocated":0,"positive":0,"hot":0,"revenue":0.0,"conversion":0.0,
+            "enrollments":enrollments
+        })
 
-    max_enroll=max([x["enrollments"] for x in raw],default=0)
-    max_revenue=max([x["revenue"] for x in raw],default=0)
-    max_positive=max([x["positive"] for x in raw],default=0)
-    for x in raw:
-        enrollment_index=(x["enrollments"]/max_enroll*100) if max_enroll else 0
-        revenue_index=(x["revenue"]/max_revenue*100) if max_revenue else 0
-        positive_index=(x["positive"]/max_positive*100) if max_positive else 0
-        # Business output leads the score; positive data is a supporting indicator.
-        score=min(100,(enrollment_index*0.45)+(revenue_index*0.45)+(positive_index*0.10))
-        x["score"]=round(score,1)
+    max_enroll=max([x["enrollments"] for x in rows],default=0)
+    for x in rows:
+        x["score"]=round((x["enrollments"]/max_enroll*100) if max_enroll else 0,1)
 
-    raw.sort(key=lambda x:(x["score"],x["enrollments"],x["revenue"],x["positive"]),reverse=True)
-    for i,x in enumerate(raw,1):
-        x["rank"]=i
-    return raw
+    rows.sort(key=lambda x:(-x["enrollments"],x["full_name"].lower()))
+    dense_rank=0; previous=None
+    for idx,x in enumerate(rows,1):
+        if previous is None or x["enrollments"]!=previous:
+            dense_rank=idx
+            previous=x["enrollments"]
+        x["rank"]=dense_rank
+    return rows
 
 def am_month_rankings(con,start_date,end_date,company_code=None):
     q="""SELECT u.id,u.full_name,u.company_code,
@@ -1158,7 +1142,7 @@ def dashboard():
     if u["role"]!="MD":
         case_where+=" AND company_code=?"; case_params.append(u["company_code"])
     cases=con.execute("SELECT COUNT(*) c FROM client_cases"+case_where,case_params).fetchone()["c"]
-    revenue=con.execute("SELECT COALESCE(SUM(COALESCE(total_received,0)),0) s FROM client_cases"+case_where,case_params).fetchone()["s"]
+    revenue=con.execute("SELECT COALESCE(SUM(COALESCE(total_received,0)),0) s FROM client_cases"+case_where,case_params).fetchone()["s"] if u["role"]=="MD" else 0
     company_stats=[]
     if u["role"]=="MD":
         for code in ("SCIC","WWIC"):
@@ -1477,11 +1461,22 @@ def competition_live_api():
                 e["employee_role"]=er["designation"] or er["department"] or "Assistant Manager"
                 e["photo_url"]=url_for("competition_employee_photo",employee_id=case["assigned_employee_id"])
         events.append(e)
-    latest_id=con.execute("SELECT COALESCE(MAX(id),0) m FROM competition_events").fetchone()["m"];con.close()
+    latest_id=con.execute("SELECT COALESCE(MAX(id),0) m FROM competition_events").fetchone()["m"]
+    show_payment=(u["role"]=="MD")
+    if not show_payment:
+        for code_key in scores:
+            scores[code_key]["revenue"]=0
+        for e in events:
+            e["revenue"]=0
+            e["payment_visible"]=False
+    else:
+        for e in events:
+            e["payment_visible"]=True
+    con.close()
     return jsonify({"enabled":bool(settings["enabled"]),"popup_enabled":bool(settings["popup_enabled"]),
                     "sound_enabled":bool(settings["sound_enabled"]),"title":settings["title"],"start_date":settings["start_date"],
                     "end_date":settings["end_date"],"scic_target":settings["scic_target"],"wwic_target":settings["wwic_target"],
-                    "scores":scores,"events":events,"latest_id":latest_id})
+                    "scores":scores,"events":events,"latest_id":latest_id,"show_payment":show_payment})
 
 @app.route("/competition/employee-photo/<int:employee_id>")
 def competition_employee_photo(employee_id):
@@ -1862,7 +1857,7 @@ def _build_reconciliation(con,run_id,company):
     con.commit()
 
 @app.route("/finance/reconciliation",methods=["GET","POST"])
-@require_roles("MD","GM")
+@require_roles("MD")
 def finance_reconciliation():
     u=current_user();con=db();companies=_finance_companies(u)
     banks=con.execute("SELECT * FROM finance_banks WHERE active=1 AND company_code IN ("+",".join(["?"]*len(companies))+") ORDER BY company_code,bank_name",companies).fetchall()
@@ -1917,7 +1912,7 @@ def finance_reconciliation():
     return render_template("finance_reconciliation.html",u=u,companies=companies,banks=banks,run=run,matches=matches,attention=attention,k=k)
 
 @app.route("/finance/reconciliation/confirm",methods=["POST"])
-@require_roles("MD","GM")
+@require_roles("MD")
 def finance_reconciliation_confirm():
     u=current_user();mid=request.form.get("match_id","")
     if not mid.isdigit():return redirect(url_for("finance_reconciliation"))
@@ -1929,7 +1924,7 @@ def finance_reconciliation_confirm():
     return redirect(url_for("finance_reconciliation",run_id=run_id))
 
 @app.route("/finance/reconciliation/export.xlsx")
-@require_roles("MD","GM")
+@require_roles("MD")
 def finance_reconciliation_export():
     u=current_user();rid=request.args.get("run_id","")
     if not rid.isdigit():return redirect(url_for("finance_reconciliation"))
@@ -1947,8 +1942,43 @@ def finance_reconciliation_export():
     bio=io.BytesIO();wb.save(bio);bio.seek(0)
     return send_file(bio,mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",download_name=f"THE_GAUR_Bank_Reconciliation_{run['id']}.xlsx",as_attachment=True)
 
+
+@app.route("/finance/cash-book")
+@require_roles("MD")
+def finance_cash_book():
+    u=current_user(); con=db()
+    day=(request.args.get("date") or datetime.date.today().isoformat()).strip()
+    month=(request.args.get("month") or day[:7]).strip()
+    company=(request.args.get("company") or "").strip()
+    if company not in ("SCIC","WWIC"): company=""
+
+    dw=["t.status='POSTED'","t.txn_date=?"]; dp=[day]
+    if company:
+        dw.append("t.company_code=?"); dp.append(company)
+    daily=con.execute("""SELECT t.*,b.bank_name,b.account_name,b.account_last4
+                         FROM finance_transactions t
+                         LEFT JOIN finance_banks b ON b.id=t.account_id
+                         WHERE """+" AND ".join(dw)+" ORDER BY t.id",dp).fetchall()
+
+    mw=["t.status='POSTED'","t.txn_date LIKE ?"]; mp=[month+"%"]
+    if company:
+        mw.append("t.company_code=?"); mp.append(company)
+    monthly=con.execute("""SELECT t.*,b.bank_name,b.account_name,b.account_last4
+                           FROM finance_transactions t
+                           LEFT JOIN finance_banks b ON b.id=t.account_id
+                           WHERE """+" AND ".join(mw)+" ORDER BY t.txn_date,t.id",mp).fetchall()
+
+    daily_in=sum(float(r["amount"] or 0) for r in daily if r["direction"]=="IN")
+    daily_out=sum(float(r["amount"] or 0) for r in daily if r["direction"] in ("OUT","REFUND"))
+    monthly_in=sum(float(r["amount"] or 0) for r in monthly if r["direction"]=="IN")
+    monthly_out=sum(float(r["amount"] or 0) for r in monthly if r["direction"] in ("OUT","REFUND"))
+    con.close()
+    return render_template("finance_cash_book.html",u=u,daily=daily,monthly=monthly,day=day,month=month,company=company,
+                           daily_in=daily_in,daily_out=daily_out,daily_net=daily_in-daily_out,
+                           monthly_in=monthly_in,monthly_out=monthly_out,monthly_net=monthly_in-monthly_out)
+
 @app.route("/finance",methods=["GET","POST"])
-@require_roles("MD","GM")
+@require_roles("MD")
 def finance_center():
     u=current_user();con=db();companies=_finance_companies(u)
     if request.method=="POST":
@@ -1989,7 +2019,7 @@ def finance_center():
     return render_template("finance.html",u=u,rows=rows,banks=banks,companies=companies,heads=FINANCE_HEADS,k=k,today=datetime.date.today().isoformat(),f={"date_from":df,"date_to":dt,"company":company,"head":head})
 
 @app.route("/finance/banks",methods=["GET","POST"])
-@require_roles("MD","GM")
+@require_roles("MD")
 def finance_banks():
     ensure_bank_manager_schema()
     u=current_user();con=db();companies=_finance_companies(u)
@@ -2006,7 +2036,7 @@ def finance_banks():
 
 
 @app.route("/payment-accounts")
-@require_roles("MD","GM","AM","HR","RECEPTION","FILING","COUNSELOR","SENIOR_COUNSELOR","TELECALLER","ACCOUNTS","BRANCH_MANAGER","TEAM_LEADER")
+@require_roles("MD")
 def payment_accounts():
     ensure_bank_manager_schema()
     u=current_user();con=db()
@@ -2019,7 +2049,7 @@ def payment_accounts():
     return render_template("payment_accounts.html",u=u,banks=banks)
 
 @app.route("/payment-accounts/share/<int:bank_id>",methods=["POST"])
-@require_roles("MD","GM","AM","HR","RECEPTION","FILING","COUNSELOR","SENIOR_COUNSELOR","TELECALLER","ACCOUNTS","BRANCH_MANAGER","TEAM_LEADER")
+@require_roles("MD")
 def payment_account_share(bank_id):
     ensure_bank_manager_schema()
     u=current_user();con=db();companies=_finance_companies(u)
@@ -2039,7 +2069,7 @@ def payment_account_share(bank_id):
     return jsonify({"ok":True,"whatsapp_url":wa,"message":msg})
 
 @app.route("/finance/banks/shares")
-@require_roles("MD","GM")
+@require_roles("MD")
 def bank_share_history():
     ensure_bank_manager_schema()
     u=current_user();con=db();companies=_finance_companies(u)
@@ -2049,7 +2079,7 @@ def bank_share_history():
     con.close();return render_template("bank_share_history.html",u=u,rows=rows)
 
 @app.route("/finance/bill/<int:txn_id>")
-@require_roles("MD","GM")
+@require_roles("MD")
 def finance_bill(txn_id):
     u=current_user();con=db();r=con.execute("SELECT * FROM finance_transactions WHERE id=?",(txn_id,)).fetchone()
     if not r or r["company_code"] not in _finance_companies(u) or not r["bill_bytes"]:
@@ -2058,7 +2088,7 @@ def finance_bill(txn_id):
     return send_file(io.BytesIO(data),mimetype=mime,download_name=name,as_attachment=False)
 
 @app.route("/finance/receipt/<int:txn_id>")
-@require_roles("MD","GM","AM","COUNSELOR")
+@require_roles("MD")
 def finance_receipt(txn_id):
     u=current_user();con=db();r=con.execute("""SELECT t.*,b.bank_name,b.account_last4 FROM finance_transactions t LEFT JOIN finance_banks b ON b.id=t.account_id WHERE t.id=?""",(txn_id,)).fetchone()
     if not r or r["direction"]!="IN":con.close();return "Receipt not found",404
@@ -2069,7 +2099,7 @@ def finance_receipt(txn_id):
     con.close();return render_template("finance_receipt.html",u=u,r=r,company_name=company_name,company_address=address,gstin=gstin)
 
 @app.route("/finance/whatsapp/<int:txn_id>")
-@require_roles("MD","GM","AM","COUNSELOR")
+@require_roles("MD")
 def finance_whatsapp(txn_id):
     u=current_user();con=db();r=con.execute("SELECT * FROM finance_transactions WHERE id=?",(txn_id,)).fetchone();con.close()
     if not r or r["direction"]!="IN":return "Receipt not found",404
@@ -2079,7 +2109,7 @@ def finance_whatsapp(txn_id):
     return redirect("https://wa.me/?text="+urllib.parse.quote(text))
 
 @app.route("/finance/export.xlsx")
-@require_roles("MD","GM")
+@require_roles("MD")
 def finance_export():
     u=current_user();con=db();companies=_finance_companies(u);df=request.args.get("date_from","");dt=request.args.get("date_to","");company=request.args.get("company","")
     wh=["t.company_code IN ("+",".join(["?"]*len(companies))+")"];pa=list(companies)
@@ -3000,15 +3030,12 @@ def performance_directory():
         rating=r["avg_rating"] or 0
         leads=r["leads_assigned"] or 0
 
+        # Enrollment-only performance rule.
         enrollment_index=(enrollments/max_enrollments*100) if max_enrollments else 0
-        revenue_index=(revenue/max_revenue*100) if max_revenue else 0
-        target_achievement=(revenue/target*100) if target else 0
-        conversion=(enrollments/leads*100) if leads else 0
-
-        score=(min(enrollment_index,100)*0.40 +
-               min(revenue_index,100)*0.40 +
-               min(target_achievement,100)*0.10 +
-               min(rating*20,100)*0.10)
+        revenue_index=0
+        target_achievement=0
+        conversion=0
+        score=min(enrollment_index,100)
 
         r.update({
             "enrollment_index":enrollment_index,
@@ -3033,7 +3060,7 @@ def performance_directory():
             "rating":rating
         })
 
-    ranked.sort(key=lambda x:(x["score"],x["revenue"],x["enrollments"]), reverse=True)
+    ranked.sort(key=lambda x:(-x["enrollments"],x["full_name"].lower()))
     for idx,r in enumerate(ranked,1):
         r["rank"]=idx
     top3=ranked[:3]
@@ -3363,13 +3390,17 @@ def cases():
             while con.execute("SELECT id FROM client_cases WHERE case_id=?",(case_id,)).fetchone():
                 seq+=1; case_id=f"{company}-CASE-{datetime.date.today().strftime('%y%m%d')}-{seq:04d}"
             now=datetime.datetime.now().isoformat(timespec="seconds")
-            pkg=float(request.form.get("package_amount","0") or 0)
-            avp=float(request.form.get("after_visa_payment","0") or 0)
-            first=float(request.form.get("booking_amount","0") or 0)
-            first_status=request.form.get("first_payment_status","Received")
-            second=float(request.form.get("second_payment","0") or 0)
-            second_status=request.form.get("second_payment_status","Pending")
-            other=float(request.form.get("other_payment_received","0") or 0)
+            if u["role"]=="MD":
+                pkg=float(request.form.get("package_amount","0") or 0)
+                avp=float(request.form.get("after_visa_payment","0") or 0)
+                first=float(request.form.get("booking_amount","0") or 0)
+                first_status=request.form.get("first_payment_status","Received")
+                second=float(request.form.get("second_payment","0") or 0)
+                second_status=request.form.get("second_payment_status","Pending")
+                other=float(request.form.get("other_payment_received","0") or 0)
+            else:
+                pkg=avp=first=second=other=0.0
+                first_status="Pending"; second_status="Pending"
             pkg_dt=request.form.get("package_amount_datetime","") or (now if pkg else "")
             avp_dt=request.form.get("after_visa_payment_datetime","") or (now if avp else "")
             first_dt=request.form.get("first_payment_datetime","") or (now if first else "")
@@ -3549,6 +3580,154 @@ def my_leads():
     con.close()
     filters={"q":search_text,"rank":rank_filter,"status":status_filter,"sort":sort_filter}
     return render_template("my_leads.html",u=u,rows=rows,filters=filters)
+
+
+# ===== v3.42 UI PRIVACY + CASH BOOK =====
+
+_GAUR_V337_TEMPLATES['finance_cash_book.html'] = r"""{% extends "base.html" %}{% block content %}
+<h1 class="title">Daily Cash Book & Monthly Accounts</h1>
+<p style="opacity:.78">MD CONFIDENTIAL • Daily Payment Inflow & Outflow • Monthly Account Register</p>
+<div class="card no-print">
+<form method="get" class="grid3">
+<div><label>Date</label><input type="date" name="date" value="{{day}}"></div>
+<div><label>Month</label><input type="month" name="month" value="{{month}}"></div>
+<div><label>Company</label><select name="company"><option value="">Both Companies</option><option value="SCIC" {% if company=='SCIC' %}selected{% endif %}>Smart Choice</option><option value="WWIC" {% if company=='WWIC' %}selected{% endif %}>White Wave</option></select></div>
+<div><button class="btn">View Cash Book</button></div>
+</form>
+</div>
+
+<div class="card" style="border-color:#e6b73f">
+<h2 style="text-align:center;color:#e6b73f">{{day}} • Payment Inflow And Outflow</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Sr.</th><th>By</th><th>Inflow Particular</th><th>Cash / Bank</th><th>Amount</th><th>To</th><th>Outflow Particular</th><th>Cash / Bank</th><th>Amount</th></tr></thead>
+<tbody>
+{% set ins=daily|selectattr('direction','equalto','IN')|list %}
+{% set outs=daily|rejectattr('direction','equalto','IN')|list %}
+{% set n=[ins|length,outs|length]|max %}
+{% for i in range(n) %}
+<tr>
+<td>{{i+1}}</td>
+{% if i < ins|length %}{% set a=ins[i] %}<td>{{a.created_by_name}}</td><td>{{a.party_name}} / {{a.head}}</td><td>{{a.payment_mode}}{% if a.bank_name %} • {{a.bank_name}}{% endif %}</td><td><b style="color:#48d58b">₹{{"{:,.0f}".format(a.amount or 0)}}</b></td>{% else %}<td></td><td></td><td></td><td></td>{% endif %}
+{% if i < outs|length %}{% set a=outs[i] %}<td>{{a.created_by_name}}</td><td>{{a.party_name}} / {{a.head}}</td><td>{{a.payment_mode}}{% if a.bank_name %} • {{a.bank_name}}{% endif %}</td><td><b style="color:#ff7b86">₹{{"{:,.0f}".format(a.amount or 0)}}</b></td>{% else %}<td></td><td></td><td></td><td></td>{% endif %}
+</tr>{% endfor %}
+{% if n==0 %}<tr><td colspan="9">No entry for this date.</td></tr>{% endif %}
+</tbody>
+<tfoot>
+<tr><th colspan="4">Total Inflow</th><th>₹{{"{:,.0f}".format(daily_in)}}</th><th colspan="3">Total Outflow</th><th>₹{{"{:,.0f}".format(daily_out)}}</th></tr>
+<tr><th colspan="8">Balance / Net Cash Flow</th><th>₹{{"{:,.0f}".format(daily_net)}}</th></tr>
+</tfoot></table></div>
+</div>
+
+<div class="metrics">
+<div class="metric">Total Monthly Receipt<b>₹{{"{:,.0f}".format(monthly_in)}}</b><small>{{month}}</small></div>
+<div class="metric">Total Monthly Expenses<b>₹{{"{:,.0f}".format(monthly_out)}}</b><small>{{month}}</small></div>
+<div class="metric">Net Profit / Cash Flow<b>₹{{"{:,.0f}".format(monthly_net)}}</b><small>{{month}}</small></div>
+<div class="metric">Monthly Entries<b>{{monthly|length}}</b><small>Transactions</small></div>
+</div>
+
+<div class="card">
+<h2 style="color:#e6b73f">Monthly Transaction Register</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Date</th><th>Voucher</th><th>Company</th><th>Type</th><th>Particular</th><th>Mode / Bank</th><th>Reference</th><th>Amount</th><th>Entered By</th><th>Date & Time Entered</th></tr></thead>
+<tbody>{% for a in monthly %}<tr><td>{{a.txn_date}}</td><td>{{a.voucher_no}}</td><td>{{a.company_code}}</td><td>{{a.direction}}</td><td>{{a.party_name}} / {{a.head}}</td><td>{{a.payment_mode}}{% if a.bank_name %} • {{a.bank_name}}{% endif %}</td><td>{{a.reference_no or '-'}}</td><td>₹{{"{:,.0f}".format(a.amount or 0)}}</td><td>{{a.created_by_name}}</td><td>{{a.created_at}}</td></tr>{% else %}<tr><td colspan="10">No monthly entries.</td></tr>{% endfor %}</tbody>
+</table></div></div>
+<div class="no-print"><button class="toolbtn" onclick="window.print()">Print / Save PDF</button> <a class="toolbtn" href="{{url_for('finance_export',date_from=month+'-01',date_to=month+'-31',company=company)}}">Export Excel</a></div>
+{% endblock %}"""
+
+# GM gets a safe enrollment-only screen. MD keeps complete structured payment ledger.
+_GAUR_V337_TEMPLATES['cases.html'] = r"""{% extends "base.html" %}{% block content %}
+<h1 class="title">{% if u.role=='MD' %}Enrollment • Payment • Filing{% else %}Enrollment & Filing{% endif %}</h1>
+<div class="card">
+<h2 style="color:#e6b73f;margin-top:0">Create Client Case</h2>
+<form method="post">
+<div class="grid3">
+{% if u.role=='MD' %}<div><label>Company</label><select name="company_code" required><option value="SCIC">Smart Choice</option><option value="WWIC">White Wave</option></select></div>{% endif %}
+<div><label>Client Name *</label><input name="client_name" required></div>
+<div><label>Mobile</label><input name="mobile"></div>
+<div><label>Country</label><input name="country"></div>
+<div><label>Visa Type</label><input name="visa_type"></div>
+<div><label>Enrollment Date</label><input type="date" name="enrollment_date"></div>
+<div><label>Assigned Employee</label><select name="assigned_employee_id"><option value="">Unassigned</option>{% for e in staff %}<option value="{{e.id}}">{{e.full_name}} • {{e.company_code}}</option>{% endfor %}</select></div>
+</div>
+
+{% if u.role=='MD' %}
+<h2 style="color:#e6b73f;margin-top:22px">Payment Details • MD Confidential</h2>
+<div class="grid3">
+<div><label>1. Package Amount</label><input type="number" step="0.01" min="0" name="package_amount" value="0"><label>Date & Time</label><input type="datetime-local" name="package_amount_datetime"></div>
+<div><label>2. After Visa Payment</label><input type="number" step="0.01" min="0" name="after_visa_payment" value="0"><label>Date & Time</label><input type="datetime-local" name="after_visa_payment_datetime"></div>
+<div><label>3. First Payment</label><input type="number" step="0.01" min="0" name="booking_amount" value="0"><label>Date & Time</label><input type="datetime-local" name="first_payment_datetime"></div>
+<div><label>4. First Payment Status</label><select name="first_payment_status"><option>Received</option><option>Partially Received</option><option>Pending</option><option>Cancelled</option></select></div>
+<div><label>5. 2nd Payment</label><input type="number" step="0.01" min="0" name="second_payment" value="0"><label>Date & Time</label><input type="datetime-local" name="second_payment_datetime"></div>
+<div><label>6. 2nd Payment Status</label><select name="second_payment_status"><option>Pending</option><option>Received</option><option>Partially Received</option><option>Cancelled</option></select></div>
+<div><label>7. Other Payment Received</label><input type="number" step="0.01" min="0" name="other_payment_received" value="0"><label>Date & Time</label><input type="datetime-local" name="other_payment_datetime"></div>
+</div>
+{% endif %}
+
+<div class="grid3"><div><label>Filing Status</label><select name="filing_status"><option>Documents Pending</option><option>Documents Complete</option><option>Filed</option><option>Visa Granted</option><option>Visa Refused</option></select></div>
+<div><label>Remarks</label><textarea name="remarks"></textarea></div></div>
+<div style="margin-top:16px"><button class="btn">{% if u.role=='MD' %}Create Client Case{% else %}Create Enrollment{% endif %}</button></div>
+</form></div>
+
+{% if u.role=='MD' %}
+<div class="card"><h2 style="color:#e6b73f">MD Payment & Enrollment Register</h2>
+<div class="tablewrap"><table><thead><tr><th>Case / Client</th><th>Package</th><th>After Visa</th><th>First Payment</th><th>1st Status</th><th>1st Date/Time</th><th>2nd Payment</th><th>2nd Status</th><th>2nd Date/Time</th><th>Other Received</th><th>Other Date/Time</th><th>Actual Collection</th><th>Update</th></tr></thead>
+<tbody>{% for r in rows %}<tr><td><b>{{r.case_id}}</b><br>{{r.client_name}}<br><small>{{r.employee_name or '-'}}</small></td>
+<td>₹{{"{:,.0f}".format(r.package_amount or 0)}}<br><small>{{r.package_amount_datetime or '-'}}</small></td>
+<td>₹{{"{:,.0f}".format(r.after_visa_payment or 0)}}<br><small>{{r.after_visa_payment_datetime or '-'}}</small></td>
+<form method="post" action="{{url_for('update_case',case_id=r.id)}}">
+<td><input type="number" step="0.01" name="booking_amount" value="{{r.booking_amount or 0}}"></td>
+<td><select name="first_payment_status">{% for s in ['Received','Partially Received','Pending','Cancelled'] %}<option {% if (r.first_payment_status or 'Received')==s %}selected{% endif %}>{{s}}</option>{% endfor %}</select></td>
+<td><input type="datetime-local" name="first_payment_datetime" value="{{(r.first_payment_datetime or '')[:16]}}"></td>
+<td><input type="number" step="0.01" name="second_payment" value="{{r.second_payment or 0}}"></td>
+<td><select name="second_payment_status">{% for s in ['Pending','Received','Partially Received','Cancelled'] %}<option {% if (r.second_payment_status or r.payment_status or 'Pending')==s %}selected{% endif %}>{{s}}</option>{% endfor %}</select></td>
+<td><input type="datetime-local" name="second_payment_datetime" value="{{(r.second_payment_datetime or '')[:16]}}"></td>
+<td><input type="number" step="0.01" name="other_payment_received" value="{{r.other_payment_received or 0}}"></td>
+<td><input type="datetime-local" name="other_payment_datetime" value="{{(r.other_payment_datetime or '')[:16]}}"></td>
+<td><b style="color:#48d58b">₹{{"{:,.0f}".format(r.total_received or 0)}}</b></td>
+<td>
+<input type="hidden" name="package_amount" value="{{r.package_amount or 0}}"><input type="hidden" name="package_amount_datetime" value="{{(r.package_amount_datetime or '')[:16]}}">
+<input type="hidden" name="after_visa_payment" value="{{r.after_visa_payment or 0}}"><input type="hidden" name="after_visa_payment_datetime" value="{{(r.after_visa_payment_datetime or '')[:16]}}">
+<input type="hidden" name="filing_status" value="{{r.filing_status or 'Documents Pending'}}"><input type="hidden" name="remarks" value="{{r.remarks or ''}}">
+<button class="toolbtn">Save</button></td></form></tr>{% else %}<tr><td colspan="13">No records.</td></tr>{% endfor %}</tbody></table></div></div>
+{% else %}
+<div class="card"><h2 style="color:#e6b73f">Enrollment Records</h2>
+<div class="tablewrap"><table><thead><tr><th>Case ID</th><th>Client</th><th>Country</th><th>Visa Type</th><th>Enrollment Date</th><th>Assigned Employee</th><th>Filing Status</th><th>Remarks</th></tr></thead>
+<tbody>{% for r in rows %}<tr><td>{{r.case_id}}</td><td>{{r.client_name}}</td><td>{{r.country}}</td><td>{{r.visa_type}}</td><td>{{r.enrollment_date}}</td><td>{{r.employee_name or '-'}}</td><td>{{r.filing_status}}</td><td>{{r.remarks}}</td></tr>{% else %}<tr><td colspan="8">No enrollments.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endif %}
+{% endblock %}"""
+
+# Dashboard: revenue card exists only for MD.
+_GAUR_V337_TEMPLATES['dashboard.html']=_GAUR_V337_TEMPLATES['dashboard.html'].replace(
+    '<div class="metric">Revenue Received<b>₹{{"%.0f"|format(revenue or 0)}}</b></div>',
+    '{% if u.role=="MD" %}<div class="metric">Revenue Received<b>₹{{"%.0f"|format(revenue or 0)}}</b></div>{% endif %}'
+)
+
+# Replace visible score wording to make the rule clear.
+for _k in ('dashboard.html','performance_directory.html','employee_performance.html'):
+    if _k in _GAUR_V337_TEMPLATES:
+        _GAUR_V337_TEMPLATES[_k]=_GAUR_V337_TEMPLATES[_k].replace('Business Score','Enrollment Score').replace('Performance Score','Enrollment Score')
+        _GAUR_V337_TEMPLATES[_k]=_GAUR_V337_TEMPLATES[_k].replace('AM PERFORMER OF THE MONTH','AM ENROLLMENT PERFORMER OF THE MONTH')
+
+# Navigation: payment/finance options are MD confidential.
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
+    '<a class="nav-main-link" href="{{ url_for(\'payment_accounts\') }}"><span class="nav-icon">🏦</span><span>Company Payment Accounts</span></a>',
+    '{% if u.role=="MD" %}<a class="nav-main-link" href="{{ url_for(\'payment_accounts\') }}"><span class="nav-icon">🏦</span><span>Company Payment Accounts</span></a><a class="nav-main-link" href="{{url_for(\'finance_cash_book\')}}"><span class="nav-icon">📒</span><span>Daily Cash Book</span></a>{% endif %}'
+)
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
+    '<a class="nav-main-link" href="{{ url_for(\'cases\') }}"><span class="nav-num">6</span><span>Enrolment Payment Report</span></a>',
+    '<a class="nav-main-link" href="{{ url_for(\'cases\') }}"><span class="nav-num">6</span><span>{% if u.role=="MD" %}Enrolment Payment Report{% else %}Enrolment Report{% endif %}</span></a>'
+)
+
+# Competition top bar and popup: payment visible only when API says MD.
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
+    "text('scicLiveScore',(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0));text('wwicLiveScore',(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0));",
+    "text('scicLiveScore',(s.SCIC?.enrollments||0)+(d.show_payment?' • '+money(s.SCIC?.revenue||0):''));text('wwicLiveScore',(s.WWIC?.enrollments||0)+(d.show_payment?' • '+money(s.WWIC?.revenue||0):''));"
+)
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
+    "text('competitionRevenue',money(e.revenue||0));",
+    "text('competitionRevenue',e.payment_visible===false?'ENROLLMENT':money(e.revenue||0));"
+)
+
 
 @app.context_processor
 def inject_user():
