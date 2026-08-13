@@ -88,10 +88,84 @@ _GAUR_V337_TEMPLATES = {'base.html': '\n<!doctype html>\n<html>\n<head>\n<meta c
 app.jinja_loader = ChoiceLoader([DictLoader(_GAUR_V337_TEMPLATES), app.jinja_loader])
 
 # === GAUR CRM v3.38 ENROLLMENT CELEBRATION BLAST ===
+
+_GAUR_V337_TEMPLATES['cases.html'] = r"""{% extends "base.html" %}{% block content %}
+<h1 class="title">Enrollment & Payment Report</h1>
+<p style="opacity:.78">Structured payment ledger • Package, After Visa, First Payment, Second Payment and Other Payment with date/time audit.</p>
+
+<div class="card">
+<h2 style="color:#e6b73f;margin-top:0">Create New Enrollment</h2>
+<form method="post">
+<div class="grid3">
+{% if u['role']=='MD' %}<div><label>Company</label><select name="company_code" required><option value="SCIC">Smart Choice</option><option value="WWIC">White Wave</option></select></div>{% endif %}
+<div><label>Client Name</label><input name="client_name" required></div>
+<div><label>Mobile</label><input name="mobile"></div>
+<div><label>Country</label><input name="country"></div>
+<div><label>Visa Type</label><input name="visa_type"></div>
+<div><label>Enrollment Date</label><input type="date" name="enrollment_date"></div>
+<div><label>Assigned Employee</label><select name="assigned_employee_id"><option value="">Select</option>{% for e in staff %}<option value="{{e.id}}">{{e.full_name}} • {{e.company_code}}</option>{% endfor %}</select></div>
+</div>
+
+<h2 style="color:#e6b73f;margin:22px 0 8px">Enrollment & Payment Details</h2>
+<div class="grid3">
+<div><label>1. Package Amount</label><input type="number" step="0.01" min="0" name="package_amount" value="0"><label>Package Entry Date & Time</label><input type="datetime-local" name="package_amount_datetime"></div>
+<div><label>2. After Visa Payment</label><input type="number" step="0.01" min="0" name="after_visa_payment" value="0"><label>After Visa Entry Date & Time</label><input type="datetime-local" name="after_visa_payment_datetime"></div>
+<div><label>3. First Payment</label><input type="number" step="0.01" min="0" name="booking_amount" value="0"><label>First Payment Date & Time</label><input type="datetime-local" name="first_payment_datetime"></div>
+<div><label>4. First Payment Status</label><select name="first_payment_status"><option>Received</option><option>Partially Received</option><option>Pending</option><option>Cancelled</option></select></div>
+<div><label>5. 2nd Payment</label><input type="number" step="0.01" min="0" name="second_payment" value="0"><label>2nd Payment Date & Time</label><input type="datetime-local" name="second_payment_datetime"></div>
+<div><label>6. 2nd Payment Status</label><select name="second_payment_status"><option>Pending</option><option>Received</option><option>Partially Received</option><option>Cancelled</option></select></div>
+<div><label>7. Other Payment Received</label><input type="number" step="0.01" min="0" name="other_payment_received" value="0"><label>Other Payment Date & Time</label><input type="datetime-local" name="other_payment_datetime"></div>
+<div><label>Filing Status</label><select name="filing_status"><option>Documents Pending</option><option>Documents Complete</option><option>Filed</option><option>Visa Granted</option><option>Visa Refused</option></select></div>
+<div><label>Remarks</label><textarea name="remarks"></textarea></div>
+</div>
+<div style="margin-top:16px"><button class="btn">Save Enrollment & Payment Details</button></div>
+</form>
+</div>
+
+<div class="card">
+<h2 style="color:#e6b73f;margin-top:0">Enrollment & Payment Records</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Case / Client</th><th>Package</th><th>After Visa</th><th>First Payment</th><th>1st Status</th><th>1st Date/Time</th><th>2nd Payment</th><th>2nd Status</th><th>2nd Date/Time</th><th>Other Received</th><th>Other Date/Time</th><th>Actual Collection</th><th>Update</th></tr></thead>
+<tbody>
+{% for r in rows %}
+<tr>
+<td><b>{{r.case_id}}</b><br>{{r.client_name}}<br><small>{{r.employee_name or '-'}}</small></td>
+<td>₹{{"{:,.0f}".format(r.package_amount or 0)}}<br><small>{{r.package_amount_datetime or '-'}}</small></td>
+<td>₹{{"{:,.0f}".format(r.after_visa_payment or 0)}}<br><small>{{r.after_visa_payment_datetime or '-'}}</small></td>
+<form method="post" action="{{url_for('update_case',case_id=r.id)}}">
+<td><input type="number" step="0.01" min="0" name="booking_amount" value="{{r.booking_amount or 0}}"></td>
+<td><select name="first_payment_status">{% for s in ['Received','Partially Received','Pending','Cancelled'] %}<option {% if (r.first_payment_status or 'Received')==s %}selected{% endif %}>{{s}}</option>{% endfor %}</select></td>
+<td><input type="datetime-local" name="first_payment_datetime" value="{{(r.first_payment_datetime or '')[:16]}}"></td>
+<td><input type="number" step="0.01" min="0" name="second_payment" value="{{r.second_payment or 0}}"></td>
+<td><select name="second_payment_status">{% for s in ['Pending','Received','Partially Received','Cancelled'] %}<option {% if (r.second_payment_status or r.payment_status or 'Pending')==s %}selected{% endif %}>{{s}}</option>{% endfor %}</select></td>
+<td><input type="datetime-local" name="second_payment_datetime" value="{{(r.second_payment_datetime or '')[:16]}}"></td>
+<td><input type="number" step="0.01" min="0" name="other_payment_received" value="{{r.other_payment_received or 0}}"></td>
+<td><input type="datetime-local" name="other_payment_datetime" value="{{(r.other_payment_datetime or '')[:16]}}"></td>
+<td><b style="color:#48d58b">₹{{"{:,.0f}".format(r.total_received or 0)}}</b></td>
+<td>
+<input type="hidden" name="package_amount" value="{{r.package_amount or 0}}">
+<input type="hidden" name="package_amount_datetime" value="{{(r.package_amount_datetime or '')[:16]}}">
+<input type="hidden" name="after_visa_payment" value="{{r.after_visa_payment or 0}}">
+<input type="hidden" name="after_visa_payment_datetime" value="{{(r.after_visa_payment_datetime or '')[:16]}}">
+<input type="hidden" name="filing_status" value="{{r.filing_status or 'Documents Pending'}}">
+<input type="hidden" name="remarks" value="{{r.remarks or ''}}">
+<button class="toolbtn">Save</button>
+</td>
+</form>
+</tr>
+{% else %}<tr><td colspan="13">No enrollment records yet.</td></tr>{% endfor %}
+</tbody></table></div>
+</div>
+
+<div class="card" style="border-color:#e6b73f">
+<b>Calculation Rule:</b> Package Amount and After Visa Payment are agreement/due values only. Revenue/Collection includes only First Payment and 2nd Payment whose status is Received/Partially Received, plus Other Payment Received.
+</div>
+{% endblock %}"""
+
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('.competition-popup{position:fixed;right:22px;top:84px;width:min(420px,calc(100vw - 30px));z-index:999999;background:linear-gradient(145deg,#091f37,#152e4a);border:2px solid #e6b73f;border-radius:20px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);transform:translateX(130%);opacity:0;transition:.45s ease}\n.competition-popup.show{transform:translateX(0);opacity:1}.competition-popup.wwic{border-color:#4da6ff}.comp-pop-title{font-size:26px;color:#e6b73f;font-weight:900}.comp-fire{font-size:40px;animation:compPulse .75s infinite alternate}@keyframes compPulse{from{transform:scale(1)}to{transform:scale(1.15)}}\n','.competition-popup{position:fixed;inset:0;z-index:9999999;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 50% 42%,rgba(36,74,119,.55),rgba(0,7,18,.92) 58%,rgba(0,0,0,.98));opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease;overflow:hidden}\n.competition-popup.show{opacity:1;visibility:visible;pointer-events:auto}.competition-popup:before{content:"";position:absolute;inset:-30%;background:conic-gradient(from 0deg,transparent,rgba(255,214,64,.10),transparent,rgba(76,169,255,.12),transparent);animation:celebrateSpin 9s linear infinite}.celebrate-stage{position:relative;width:min(940px,96vw);min-height:min(690px,92vh);border:2px solid #f5c84b;border-radius:34px;background:linear-gradient(155deg,#071426 0%,#102f51 45%,#071426 100%);box-shadow:0 0 0 7px rgba(245,200,75,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(245,200,75,.22) inset;padding:26px 30px 24px;text-align:center;overflow:hidden;transform:scale(.72) translateY(35px);transition:transform .48s cubic-bezier(.2,.9,.25,1.18)}\n.competition-popup.show .celebrate-stage{transform:scale(1) translateY(0)}.competition-popup.wwic .celebrate-stage{border-color:#55aaff;box-shadow:0 0 0 7px rgba(85,170,255,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(85,170,255,.22) inset}.celebrate-glow{position:absolute;left:50%;top:43%;width:520px;height:520px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,210,64,.30),rgba(255,210,64,.04) 52%,transparent 72%);filter:blur(2px);animation:celebrateGlow 1s ease-in-out infinite alternate}.competition-popup.wwic .celebrate-glow{background:radial-gradient(circle,rgba(85,170,255,.32),rgba(85,170,255,.05) 52%,transparent 72%)}.celebrate-crown{position:relative;z-index:2;font-size:72px;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));animation:crownBounce .75s ease-in-out infinite alternate}.comp-pop-title{position:relative;z-index:2;margin:6px 0 0;font-family:Arial Black,Arial,sans-serif;font-size:clamp(34px,6vw,76px);line-height:.98;color:#ffd85e;text-shadow:0 3px 0 #8c3517,0 7px 18px rgba(0,0,0,.7);letter-spacing:1px}.competition-popup.wwic .comp-pop-title{color:#d9efff;text-shadow:0 3px 0 #145792,0 7px 18px rgba(0,0,0,.7)}.celebrate-subtitle{position:relative;z-index:2;display:inline-block;margin:10px auto 17px;padding:8px 28px;border-radius:999px;background:linear-gradient(180deg,#1b66c7,#0d3f87);border:2px solid rgba(255,255,255,.34);font-family:Arial Black,Arial,sans-serif;font-size:clamp(21px,3.4vw,39px);letter-spacing:1px;box-shadow:0 8px 20px rgba(0,0,0,.35)}.celebrate-person{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;margin:2px auto 14px}.celebrate-avatar-wrap{width:170px;height:170px;border-radius:50%;padding:5px;background:linear-gradient(145deg,#fff7b0,#d99e14);box-shadow:0 0 0 8px rgba(255,210,75,.10),0 0 40px rgba(255,210,75,.38);animation:avatarPop .72s cubic-bezier(.2,.9,.3,1.3)}.competition-popup.wwic .celebrate-avatar-wrap{background:linear-gradient(145deg,#e5f6ff,#4096e8);box-shadow:0 0 0 8px rgba(85,170,255,.10),0 0 40px rgba(85,170,255,.38)}.celebrate-avatar{width:100%;height:100%;object-fit:cover;border-radius:50%;background:#09192a}.celebrate-avatar-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#102b49;font-size:70px}.celebrate-person-info{text-align:left;min-width:260px}.celebrate-name{font-family:Arial Black,Arial,sans-serif;font-size:clamp(29px,4vw,48px);color:#fff}.celebrate-role{font-size:20px;color:#ffd85e;font-weight:800;letter-spacing:.6px}.competition-popup.wwic .celebrate-role{color:#7fc4ff}.celebrate-company{margin-top:6px;font-size:16px;opacity:.86}.celebrate-details{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(760px,100%);margin:10px auto}.celebrate-detail{padding:11px 12px;background:rgba(0,0,0,.27);border:1px solid rgba(255,255,255,.16);border-radius:13px}.celebrate-detail small{display:block;opacity:.67;margin-bottom:3px}.celebrate-detail b{display:block;font-size:19px;color:#ffe27b;word-break:break-word}.competition-popup.wwic .celebrate-detail b{color:#9fd1ff}.celebrate-save{position:relative;z-index:2;display:inline-flex;align-items:center;gap:8px;margin-top:7px;padding:10px 21px;border-radius:999px;background:#138b42;border:2px solid #5bea8b;font-size:20px;font-weight:900;box-shadow:0 8px 20px rgba(0,0,0,.3)}.celebrate-close{position:absolute;right:16px;top:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.35);color:#fff;font-size:24px;cursor:pointer}.celebrate-countdown{position:relative;z-index:2;margin-top:8px;font-size:13px;opacity:.7}.confetti-piece{position:absolute;z-index:4;top:-12vh;width:10px;height:20px;border-radius:2px;animation:confettiFall linear forwards}.firework{position:absolute;z-index:1;width:8px;height:8px;border-radius:50%;box-shadow:0 -70px #ffd75e,49px -49px #ff5964,70px 0 #5bc0ff,49px 49px #66e49a,0 70px #ff8ce8,-49px 49px #ffb14e,-70px 0 #78a7ff,-49px -49px #d7ff61;animation:fireworkBurst 1.45s ease-out infinite}.fw1{left:13%;top:20%}.fw2{right:13%;top:18%;animation-delay:.4s}.fw3{left:20%;bottom:21%;animation-delay:.8s}.fw4{right:19%;bottom:20%;animation-delay:1.1s}.celebrate-side{position:absolute;z-index:2;font-size:54px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));animation:sideFloat 1s ease-in-out infinite alternate}.side-left{left:4%;top:48%}.side-right{right:4%;top:48%;animation-delay:.35s}@keyframes celebrateSpin{to{transform:rotate(360deg)}}@keyframes celebrateGlow{from{transform:translate(-50%,-50%) scale(.88);opacity:.55}to{transform:translate(-50%,-50%) scale(1.08);opacity:1}}@keyframes crownBounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-9px) rotate(3deg)}}@keyframes avatarPop{0%{transform:scale(.2) rotate(-16deg)}75%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1)}}@keyframes confettiFall{0%{transform:translate3d(0,-10vh,0) rotate(0);opacity:1}100%{transform:translate3d(var(--drift),115vh,0) rotate(900deg);opacity:.1}}@keyframes fireworkBurst{0%{transform:scale(.08);opacity:0}18%{opacity:1}70%{transform:scale(1);opacity:.9}100%{transform:scale(1.2);opacity:0}}@keyframes sideFloat{from{transform:translateY(-7px) rotate(-6deg)}to{transform:translateY(7px) rotate(6deg)}}@media(max-width:700px){.celebrate-stage{padding:18px 14px;min-height:auto}.celebrate-crown{font-size:54px}.celebrate-avatar-wrap{width:125px;height:125px}.celebrate-person-info{text-align:center;min-width:0}.celebrate-details{grid-template-columns:1fr}.celebrate-side{display:none}.firework{transform:scale(.7)}}\n',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('<div id="competitionPopup" class="competition-popup no-print"><div class="comp-fire">🔥🏆</div><div id="competitionPopupTitle" class="comp-pop-title">NEW ENROLLMENT!</div><div id="competitionPopupText"></div><small id="competitionPopupTime"></small></div>','<div id="competitionPopup" class="competition-popup no-print" aria-live="assertive" aria-label="Enrollment celebration">\n  <div class="celebrate-glow"></div><div class="firework fw1"></div><div class="firework fw2"></div><div class="firework fw3"></div><div class="firework fw4"></div>\n  <div class="celebrate-stage">\n    <button type="button" class="celebrate-close" id="competitionPopupClose" title="Close">×</button>\n    <div class="celebrate-side side-left">🏆🎲</div><div class="celebrate-side side-right">🎯🏆</div>\n    <div class="celebrate-crown">👑</div>\n    <div id="competitionPopupTitle" class="comp-pop-title">CONGRATULATIONS!</div>\n    <div class="celebrate-subtitle">🎉 ENROLLMENT DONE! 🎉</div>\n    <div class="celebrate-person">\n      <div class="celebrate-avatar-wrap"><img id="competitionEmployeePhoto" class="celebrate-avatar" alt="Assistant Manager"><div id="competitionEmployeeFallback" class="celebrate-avatar-fallback" style="display:none">👤</div></div>\n      <div class="celebrate-person-info"><div id="competitionEmployeeName" class="celebrate-name">TEAM MEMBER</div><div id="competitionEmployeeRole" class="celebrate-role">ASSISTANT MANAGER</div><div id="competitionCompanyName" class="celebrate-company"></div></div>\n    </div>\n    <div class="celebrate-details">\n      <div class="celebrate-detail"><small>Client</small><b id="competitionClientName">—</b></div>\n      <div class="celebrate-detail"><small>Enrollment ID</small><b id="competitionCaseId">—</b></div>\n      <div class="celebrate-detail"><small>Amount Received</small><b id="competitionRevenue">₹0</b></div>\n    </div>\n    <div class="celebrate-save">✓ SUCCESSFULLY SAVED!</div>\n    <div id="competitionPopupText" style="position:relative;z-index:2;margin-top:9px;font-weight:bold"></div>\n    <div id="competitionPopupTime" class="celebrate-countdown"></div>\n  </div>\n</div>',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace("<script>\n(function(){let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true;const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');if(!bar||!pop)return;\nfunction money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}function show(e){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');document.getElementById('competitionPopupTitle').textContent=(e.company_code==='SCIC'?'SMART CHOICE':'WHITE WAVE')+' SCORES! 🎉';document.getElementById('competitionPopupText').textContent=e.message||'New enrollment';document.getElementById('competitionPopupTime').textContent=e.created_at||'';requestAnimationFrame(()=>pop.classList.add('show'));setTimeout(()=>pop.classList.remove('show'),9000)}\nasync function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};document.getElementById('scicLiveScore').textContent=(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0);document.getElementById('wwicLiveScore').textContent=(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0);const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e),i*1200));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\nrun();setInterval(run,5000)})();\n</script>","<script>\n(function(){\n  let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true,hideTimer=null;\n  const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');\n  if(!bar||!pop)return;\n  const photo=document.getElementById('competitionEmployeePhoto'),fallback=document.getElementById('competitionEmployeeFallback');\n  const closeBtn=document.getElementById('competitionPopupClose');if(closeBtn)closeBtn.addEventListener('click',()=>hide());\n  function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')} function text(id,val){const x=document.getElementById(id);if(x)x.textContent=val??''}\n  function hide(){pop.classList.remove('show');document.querySelectorAll('.confetti-piece').forEach(x=>x.remove());if(hideTimer)clearTimeout(hideTimer)}\n  function confetti(){const colors=['#ffd64d','#ff4d67','#4da6ff','#48d58b','#f78cff','#ffffff'];for(let i=0;i<95;i++){const c=document.createElement('i');c.className='confetti-piece';c.style.left=(Math.random()*100)+'vw';c.style.background=colors[i%colors.length];c.style.setProperty('--drift',((Math.random()-.5)*280)+'px');c.style.animationDuration=(2.7+Math.random()*3)+'s';c.style.animationDelay=(Math.random()*.7)+'s';c.style.transform='rotate('+(Math.random()*360)+'deg)';pop.appendChild(c);setTimeout(()=>c.remove(),7000)}}\n  function victorySound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const ctx=new A(),now=ctx.currentTime;[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,now+i*.13);g.gain.exponentialRampToValueAtTime(.12,now+i*.13+.02);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.38);o.connect(g);g.connect(ctx.destination);o.start(now+i*.13);o.stop(now+i*.13+.42)});setTimeout(()=>ctx.close(),1600)}catch(e){}}\n  function show(e,soundOn){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');const brand=e.company_code==='SCIC'?'SMART CHOICE IMMIGRATION CONSULTANTS':'WHITE WAVE';text('competitionPopupTitle','CONGRATULATIONS!');text('competitionEmployeeName',(e.employee_name||'TEAM MEMBER').toUpperCase());text('competitionEmployeeRole',(e.employee_role||'ASSISTANT MANAGER').toUpperCase());text('competitionCompanyName',brand+' • +1 ENROLLMENT');text('competitionClientName',e.client_name||'New Client');text('competitionCaseId',e.case_id||'—');text('competitionRevenue',money(e.revenue||0));text('competitionPopupText',e.message||brand+' SCORES!');text('competitionPopupTime',(e.created_at||'')+' • Celebration closes automatically');if(photo){photo.onerror=()=>{photo.style.display='none';fallback.style.display='flex'};if(e.photo_url){fallback.style.display='none';photo.style.display='block';photo.src=e.photo_url+'?v='+encodeURIComponent(e.id||Date.now())}else{photo.style.display='none';fallback.style.display='flex'}}requestAnimationFrame(()=>pop.classList.add('show'));confetti();if(soundOn)victorySound();if(hideTimer)clearTimeout(hideTimer);hideTimer=setTimeout(hide,9000)}\n  async function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};text('scicLiveScore',(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0));text('wwicLiveScore',(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0));const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e,!!d.sound_enabled),i*9800));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\n  run();setInterval(run,3000);\n})();\n</script>",1)
-_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.39 • Voice + Birthday Celebration')
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.41 • Structured Payment Ledger')
 # === END GAUR CRM v3.9 PREMIUM LOGO BRANDING ===
 if os.environ.get("CLOUD_MODE", "").lower() in ("1","true","yes") or os.environ.get("RAILWAY_ENVIRONMENT"):
     app.config.update(
@@ -237,7 +311,12 @@ def init_db():
         CREATE TABLE IF NOT EXISTS client_cases(
           id BIGSERIAL PRIMARY KEY, case_id TEXT UNIQUE NOT NULL, company_code TEXT NOT NULL,
           client_name TEXT NOT NULL, mobile TEXT DEFAULT '', country TEXT DEFAULT '', visa_type TEXT DEFAULT '',
-          enrollment_date TEXT DEFAULT '', booking_amount REAL DEFAULT 0, second_payment REAL DEFAULT 0,
+          enrollment_date TEXT DEFAULT '',
+          package_amount REAL DEFAULT 0, package_amount_datetime TEXT DEFAULT '',
+          after_visa_payment REAL DEFAULT 0, after_visa_payment_datetime TEXT DEFAULT '',
+          booking_amount REAL DEFAULT 0, first_payment_status TEXT DEFAULT 'Received', first_payment_datetime TEXT DEFAULT '',
+          second_payment REAL DEFAULT 0, second_payment_status TEXT DEFAULT 'Pending', second_payment_datetime TEXT DEFAULT '',
+          other_payment_received REAL DEFAULT 0, other_payment_datetime TEXT DEFAULT '',
           total_received REAL DEFAULT 0, payment_status TEXT DEFAULT 'Pending',
           filing_status TEXT DEFAULT 'Documents Pending', assigned_employee_id BIGINT, remarks TEXT DEFAULT '',
           created_by TEXT DEFAULT '', created_at TEXT DEFAULT '', updated_at TEXT DEFAULT ''
@@ -299,7 +378,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
         CREATE TABLE IF NOT EXISTS employee_documents(id INTEGER PRIMARY KEY AUTOINCREMENT,employee_id INTEGER NOT NULL,document_type TEXT NOT NULL,document_name TEXT DEFAULT '',file_name TEXT NOT NULL,stored_path TEXT NOT NULL,file_data BLOB,mime_type TEXT DEFAULT '',uploaded_by TEXT DEFAULT '',uploaded_at TEXT DEFAULT '',FOREIGN KEY(employee_id) REFERENCES employee_master(id));
         CREATE TABLE IF NOT EXISTS employee_performance(id INTEGER PRIMARY KEY AUTOINCREMENT,employee_id INTEGER NOT NULL,performance_date TEXT NOT NULL,leads_assigned INTEGER DEFAULT 0,calls_done INTEGER DEFAULT 0,followups_done INTEGER DEFAULT 0,office_visits INTEGER DEFAULT 0,interested_clients INTEGER DEFAULT 0,enrollments INTEGER DEFAULT 0,collection_amount REAL DEFAULT 0,target_amount REAL DEFAULT 0,attendance_status TEXT DEFAULT 'Present',manager_rating REAL DEFAULT 0,remarks TEXT DEFAULT '',created_by TEXT DEFAULT '',created_at TEXT DEFAULT '',FOREIGN KEY(employee_id) REFERENCES employee_master(id));
         CREATE TABLE IF NOT EXISTS allocation_history(id INTEGER PRIMARY KEY AUTOINCREMENT,company_code TEXT NOT NULL,am_user_id INTEGER NOT NULL,quantity INTEGER DEFAULT 0,allocated_by TEXT DEFAULT '',allocated_at TEXT DEFAULT '');
-        CREATE TABLE IF NOT EXISTS client_cases(id INTEGER PRIMARY KEY AUTOINCREMENT,case_id TEXT UNIQUE NOT NULL,company_code TEXT NOT NULL,client_name TEXT NOT NULL,mobile TEXT DEFAULT '',country TEXT DEFAULT '',visa_type TEXT DEFAULT '',enrollment_date TEXT DEFAULT '',booking_amount REAL DEFAULT 0,second_payment REAL DEFAULT 0,total_received REAL DEFAULT 0,payment_status TEXT DEFAULT 'Pending',filing_status TEXT DEFAULT 'Documents Pending',assigned_employee_id INTEGER,remarks TEXT DEFAULT '',created_by TEXT DEFAULT '',created_at TEXT DEFAULT '',updated_at TEXT DEFAULT '');
+        CREATE TABLE IF NOT EXISTS client_cases(id INTEGER PRIMARY KEY AUTOINCREMENT,case_id TEXT UNIQUE NOT NULL,company_code TEXT NOT NULL,client_name TEXT NOT NULL,mobile TEXT DEFAULT '',country TEXT DEFAULT '',visa_type TEXT DEFAULT '',enrollment_date TEXT DEFAULT '',package_amount REAL DEFAULT 0,package_amount_datetime TEXT DEFAULT '',after_visa_payment REAL DEFAULT 0,after_visa_payment_datetime TEXT DEFAULT '',booking_amount REAL DEFAULT 0,first_payment_status TEXT DEFAULT 'Received',first_payment_datetime TEXT DEFAULT '',second_payment REAL DEFAULT 0,second_payment_status TEXT DEFAULT 'Pending',second_payment_datetime TEXT DEFAULT '',other_payment_received REAL DEFAULT 0,other_payment_datetime TEXT DEFAULT '',total_received REAL DEFAULT 0,payment_status TEXT DEFAULT 'Pending',filing_status TEXT DEFAULT 'Documents Pending',assigned_employee_id INTEGER,remarks TEXT DEFAULT '',created_by TEXT DEFAULT '',created_at TEXT DEFAULT '',updated_at TEXT DEFAULT '');
         CREATE TABLE IF NOT EXISTS lead_documents(id INTEGER PRIMARY KEY AUTOINCREMENT,lead_id INTEGER NOT NULL,document_type TEXT NOT NULL DEFAULT 'Client Form',file_name TEXT NOT NULL,file_data BLOB,mime_type TEXT DEFAULT '',uploaded_by TEXT DEFAULT '',uploaded_at TEXT DEFAULT '',FOREIGN KEY(lead_id) REFERENCES leads(id) ON DELETE CASCADE);
         CREATE TABLE IF NOT EXISTS lead_activity(id INTEGER PRIMARY KEY AUTOINCREMENT,lead_id INTEGER NOT NULL,status TEXT DEFAULT '',followup_date TEXT DEFAULT '',remarks TEXT DEFAULT '',updated_by TEXT DEFAULT '',updated_at TEXT DEFAULT '',FOREIGN KEY(lead_id) REFERENCES leads(id) ON DELETE CASCADE);
         """)
@@ -320,6 +399,47 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
             if col not in lead_cols: cur.execute(f"ALTER TABLE leads ADD COLUMN {col} {ddl}")
         import_cols=[r[1] for r in cur.execute("PRAGMA table_info(imports)").fetchall()]
         if "batch_code" not in import_cols: cur.execute("ALTER TABLE imports ADD COLUMN batch_code TEXT DEFAULT ''")
+
+
+    # v3.41 structured enrollment/payment ledger
+    payment_case_cols=[
+        ("package_amount","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
+        ("package_amount_datetime","TEXT DEFAULT ''"),
+        ("after_visa_payment","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
+        ("after_visa_payment_datetime","TEXT DEFAULT ''"),
+        ("first_payment_status","TEXT DEFAULT 'Received'"),
+        ("first_payment_datetime","TEXT DEFAULT ''"),
+        ("second_payment_status","TEXT DEFAULT 'Pending'"),
+        ("second_payment_datetime","TEXT DEFAULT ''"),
+        ("other_payment_received","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
+        ("other_payment_datetime","TEXT DEFAULT ''")
+    ]
+    if IS_POSTGRES:
+        for col,ctype in payment_case_cols:
+            cur.execute(f"ALTER TABLE client_cases ADD COLUMN IF NOT EXISTS {col} {ctype}")
+    else:
+        case_cols=[r["name"] for r in cur.execute("PRAGMA table_info(client_cases)").fetchall()]
+        for col,ctype in payment_case_cols:
+            if col not in case_cols:
+                cur.execute(f"ALTER TABLE client_cases ADD COLUMN {col} {ctype}")
+
+    # Backward compatibility: old booking_amount is now First Payment.
+    # Old payment_status represented the old second-payment state.
+    cur.execute("""UPDATE client_cases SET first_payment_status='Received'
+                   WHERE COALESCE(booking_amount,0)>0
+                     AND COALESCE(TRIM(first_payment_status),'') IN ('','Pending')""")
+    cur.execute("""UPDATE client_cases SET second_payment_status=COALESCE(NULLIF(TRIM(payment_status),''),'Pending')
+                   WHERE COALESCE(TRIM(second_payment_status),'') IN ('','Pending')
+                     AND COALESCE(TRIM(payment_status),'')<>''""")
+    # Historical records may not have individual timestamps; preserve the best available audit time.
+    cur.execute("""UPDATE client_cases SET first_payment_datetime=COALESCE(NULLIF(first_payment_datetime,''),NULLIF(created_at,''),NULLIF(enrollment_date,''))
+                   WHERE COALESCE(booking_amount,0)>0 AND COALESCE(first_payment_datetime,'')=''""")
+    cur.execute("""UPDATE client_cases SET second_payment_datetime=COALESCE(NULLIF(second_payment_datetime,''),NULLIF(updated_at,''),NULLIF(enrollment_date,''))
+                   WHERE COALESCE(second_payment,0)>0 AND COALESCE(second_payment_datetime,'')=''""")
+    cur.execute("""UPDATE client_cases SET package_amount_datetime=COALESCE(NULLIF(package_amount_datetime,''),NULLIF(created_at,''),NULLIF(enrollment_date,''))
+                   WHERE COALESCE(package_amount,0)>0 AND COALESCE(package_amount_datetime,'')=''""")
+    cur.execute("""UPDATE client_cases SET after_visa_payment_datetime=COALESCE(NULLIF(after_visa_payment_datetime,''),NULLIF(created_at,''),NULLIF(enrollment_date,''))
+                   WHERE COALESCE(after_visa_payment,0)>0 AND COALESCE(after_visa_payment_datetime,'')=''""")
 
     # v3.15 professional identity fields for existing databases
     if IS_POSTGRES:
@@ -715,7 +835,7 @@ def employee_month_rankings(con,start_date,end_date,company_code=None,designatio
                      FROM employee_performance
                      WHERE employee_id=? AND performance_date BETWEEN ? AND ?""",
                      (e["id"],start_date,end_date)).fetchone()
-        cases=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(total_received),0) revenue
+        cases=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
                              FROM client_cases WHERE assigned_employee_id=? AND enrollment_date BETWEEN ? AND ?""",
                           (e["id"],start_date,end_date)).fetchone()
         raw.append({"employee":e,"leads_assigned":perf["leads_assigned"] or 0,
@@ -764,7 +884,7 @@ def am_business_month_rankings(con,start_date,end_date,company_code=None):
     for r in ams:
         enrollments=0; revenue=0.0
         if r["employee_id"]:
-            c=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(total_received),0) revenue
+            c=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
                              FROM client_cases
                              WHERE assigned_employee_id=? AND enrollment_date BETWEEN ? AND ?""",
                           (r["employee_id"],start_date,end_date)).fetchone()
@@ -1038,7 +1158,7 @@ def dashboard():
     if u["role"]!="MD":
         case_where+=" AND company_code=?"; case_params.append(u["company_code"])
     cases=con.execute("SELECT COUNT(*) c FROM client_cases"+case_where,case_params).fetchone()["c"]
-    revenue=con.execute("SELECT COALESCE(SUM(total_received),0) s FROM client_cases"+case_where,case_params).fetchone()["s"]
+    revenue=con.execute("SELECT COALESCE(SUM(COALESCE(total_received,0)),0) s FROM client_cases"+case_where,case_params).fetchone()["s"]
     company_stats=[]
     if u["role"]=="MD":
         for code in ("SCIC","WWIC"):
@@ -1051,7 +1171,7 @@ def dashboard():
             positive_c=hot_c+warm_c
             enrolled_c=con.execute("SELECT COUNT(*) c FROM leads WHERE company_code=? AND COALESCE(deleted_at,'')='' AND COALESCE(NULLIF(assigned_at,''),imported_at,'') BETWEEN ? AND ? AND status='Enrolled'",(code,month_start,month_end_ts)).fetchone()["c"]
             avg_c=round(float(con.execute("SELECT COALESCE(AVG(COALESCE(interest_score,0)),0) a FROM leads WHERE company_code=? AND COALESCE(deleted_at,'')='' AND COALESCE(NULLIF(assigned_at,''),imported_at,'') BETWEEN ? AND ?",(code,month_start,month_end_ts)).fetchone()["a"] or 0))
-            rev_c=con.execute("SELECT COALESCE(SUM(total_received),0) s FROM client_cases WHERE company_code=? AND enrollment_date BETWEEN ? AND ?",(code,month_start,month_end)).fetchone()["s"]
+            rev_c=con.execute("SELECT COALESCE(SUM(COALESCE(total_received,0)),0) s FROM client_cases WHERE company_code=? AND enrollment_date BETWEEN ? AND ?",(code,month_start,month_end)).fetchone()["s"]
             denom=max(total_c,1)
             hot_pct=round((hot_c/denom)*100,2)
             positive_pct=round((positive_c/denom)*100,2)
@@ -1526,7 +1646,7 @@ def get_competition_settings(con):
 def competition_score(con,settings):
     scores={}
     for code in ("SCIC","WWIC"):
-        r=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(total_received),0) revenue
+        r=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
                          FROM client_cases WHERE company_code=? AND enrollment_date BETWEEN ? AND ?""",
                       (code,settings["start_date"],settings["end_date"])).fetchone()
         scores[code]={"enrollments":int(r["enrollments"] or 0),"revenue":float(r["revenue"] or 0)}
@@ -2856,7 +2976,7 @@ def performance_directory():
         d=dict(s)
         # Enrollment and revenue ranking are automatically taken from Client Cases.
         # Calls/follow-ups/rating continue to come from daily performance entries.
-        case_stats=con.execute("""SELECT COUNT(*) enrollments, COALESCE(SUM(total_received),0) revenue
+        case_stats=con.execute("""SELECT COUNT(*) enrollments, COALESCE(SUM(COALESCE(total_received,0)),0) revenue
                                   FROM client_cases
                                   WHERE assigned_employee_id=? AND enrollment_date BETWEEN ? AND ?""",
                                (e["id"],start_date,end_date)).fetchone()
@@ -2942,7 +3062,7 @@ def performance_directory():
                 WHERE employee_id=? AND performance_date BETWEEN ? AND ?""",
                 (emp["id"],month_start.isoformat(),month_end.isoformat())).fetchone()
             md=dict(s)
-            case_stats=con.execute("""SELECT COUNT(*) enrollments, COALESCE(SUM(total_received),0) revenue
+            case_stats=con.execute("""SELECT COUNT(*) enrollments, COALESCE(SUM(COALESCE(total_received,0)),0) revenue
                                       FROM client_cases WHERE assigned_employee_id=? AND enrollment_date BETWEEN ? AND ?""",
                                    (emp["id"],month_start.isoformat(),month_end.isoformat())).fetchone()
             md["enrollments"]=case_stats["enrollments"]
@@ -3043,7 +3163,7 @@ def employee_performance(employee_id):
         FROM employee_performance
         WHERE employee_id=? AND performance_date BETWEEN ? AND ?""",
         (employee_id,start_date,end_date)).fetchone())
-    case_stats=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(total_received),0) revenue
+    case_stats=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
                               FROM client_cases WHERE assigned_employee_id=? AND enrollment_date BETWEEN ? AND ?""",
                            (employee_id,start_date,end_date)).fetchone()
     totals["enrollments"]=case_stats["enrollments"]
@@ -3213,6 +3333,21 @@ def handover_am():
     con.commit(); con.close(); flash(f"Handover complete: {count} leads transferred. Old Assistant Manager portal deactivated.","success")
     return redirect(url_for("ams"))
 
+def payment_status_counts(status):
+    """Only statuses confirming money received contribute to collection/revenue."""
+    s=(status or "").strip().lower()
+    return s in {
+        "received","paid","completed","complete","success","successful","cleared",
+        "partially received","partial","part payment received"
+    }
+
+def effective_case_received(first_payment, first_payment_status, second_payment, second_payment_status, other_payment_received):
+    """Package / After-Visa amounts are contractual values, not collection."""
+    first=float(first_payment or 0) if payment_status_counts(first_payment_status) else 0.0
+    second=float(second_payment or 0) if payment_status_counts(second_payment_status) else 0.0
+    other=float(other_payment_received or 0)
+    return first+second+other
+
 @app.route("/cases", methods=["GET","POST"])
 @require_roles("MD","GM")
 def cases():
@@ -3227,10 +3362,35 @@ def cases():
             case_id=f"{company}-CASE-{datetime.date.today().strftime('%y%m%d')}-{seq:04d}"
             while con.execute("SELECT id FROM client_cases WHERE case_id=?",(case_id,)).fetchone():
                 seq+=1; case_id=f"{company}-CASE-{datetime.date.today().strftime('%y%m%d')}-{seq:04d}"
-            b=float(request.form.get("booking_amount","0") or 0); s2=float(request.form.get("second_payment","0") or 0)
-            total=b+s2; now=datetime.datetime.now().isoformat(timespec="seconds")
-            con.execute("""INSERT INTO client_cases(case_id,company_code,client_name,mobile,country,visa_type,enrollment_date,booking_amount,second_payment,total_received,payment_status,filing_status,assigned_employee_id,remarks,created_by,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                        (case_id,company,cname,request.form.get("mobile",""),request.form.get("country",""),request.form.get("visa_type",""),request.form.get("enrollment_date",datetime.date.today().isoformat()),b,s2,total,request.form.get("payment_status","Pending"),request.form.get("filing_status","Documents Pending"),request.form.get("assigned_employee_id") or None,request.form.get("remarks",""),u["login_id"],now,now))
+            now=datetime.datetime.now().isoformat(timespec="seconds")
+            pkg=float(request.form.get("package_amount","0") or 0)
+            avp=float(request.form.get("after_visa_payment","0") or 0)
+            first=float(request.form.get("booking_amount","0") or 0)
+            first_status=request.form.get("first_payment_status","Received")
+            second=float(request.form.get("second_payment","0") or 0)
+            second_status=request.form.get("second_payment_status","Pending")
+            other=float(request.form.get("other_payment_received","0") or 0)
+            pkg_dt=request.form.get("package_amount_datetime","") or (now if pkg else "")
+            avp_dt=request.form.get("after_visa_payment_datetime","") or (now if avp else "")
+            first_dt=request.form.get("first_payment_datetime","") or (now if first else "")
+            second_dt=request.form.get("second_payment_datetime","") or (now if second else "")
+            other_dt=request.form.get("other_payment_datetime","") or (now if other else "")
+            total=effective_case_received(first,first_status,second,second_status,other)
+            # Keep legacy payment_status synchronized with 2nd payment status for compatibility.
+            payment_status=second_status
+            con.execute("""INSERT INTO client_cases(
+                case_id,company_code,client_name,mobile,country,visa_type,enrollment_date,
+                package_amount,package_amount_datetime,after_visa_payment,after_visa_payment_datetime,
+                booking_amount,first_payment_status,first_payment_datetime,
+                second_payment,second_payment_status,second_payment_datetime,
+                other_payment_received,other_payment_datetime,total_received,payment_status,
+                filing_status,assigned_employee_id,remarks,created_by,created_at,updated_at
+            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (case_id,company,cname,request.form.get("mobile",""),request.form.get("country",""),request.form.get("visa_type",""),
+             request.form.get("enrollment_date",datetime.date.today().isoformat()),
+             pkg,pkg_dt,avp,avp_dt,first,first_status,first_dt,second,second_status,second_dt,other,other_dt,total,payment_status,
+             request.form.get("filing_status","Documents Pending"),request.form.get("assigned_employee_id") or None,
+             request.form.get("remarks",""),u["login_id"],now,now))
             con.commit()
             try:
                 ensure_competition_schema()
@@ -3255,9 +3415,36 @@ def update_case(case_id):
     u=current_user(); con=db(); row=con.execute("SELECT * FROM client_cases WHERE id=?",(case_id,)).fetchone()
     if not row or (u["role"]=="GM" and row["company_code"]!=u["company_code"]):
         con.close(); flash("Case not found or access denied","error"); return redirect(url_for("cases"))
-    b=float(request.form.get("booking_amount",row["booking_amount"]) or 0); s2=float(request.form.get("second_payment",row["second_payment"]) or 0)
-    con.execute("""UPDATE client_cases SET booking_amount=?,second_payment=?,total_received=?,payment_status=?,filing_status=?,remarks=?,updated_at=? WHERE id=?""",
-                (b,s2,b+s2,request.form.get("payment_status",row["payment_status"]),request.form.get("filing_status",row["filing_status"]),request.form.get("remarks",row["remarks"]),datetime.datetime.now().isoformat(timespec="seconds"),case_id))
+    now=datetime.datetime.now().isoformat(timespec="seconds")
+    pkg=float(request.form.get("package_amount",row["package_amount"] or 0) or 0)
+    avp=float(request.form.get("after_visa_payment",row["after_visa_payment"] or 0) or 0)
+    first=float(request.form.get("booking_amount",row["booking_amount"] or 0) or 0)
+    first_status=request.form.get("first_payment_status",row["first_payment_status"] or "Received")
+    second=float(request.form.get("second_payment",row["second_payment"] or 0) or 0)
+    second_status=request.form.get("second_payment_status",row["second_payment_status"] or row["payment_status"] or "Pending")
+    other=float(request.form.get("other_payment_received",row["other_payment_received"] or 0) or 0)
+
+    def keep_or_stamp(form_key, old_value, amount):
+        entered=request.form.get(form_key,"").strip()
+        if entered: return entered
+        if old_value: return old_value
+        return now if float(amount or 0)>0 else ""
+
+    pkg_dt=keep_or_stamp("package_amount_datetime",row["package_amount_datetime"],pkg)
+    avp_dt=keep_or_stamp("after_visa_payment_datetime",row["after_visa_payment_datetime"],avp)
+    first_dt=keep_or_stamp("first_payment_datetime",row["first_payment_datetime"],first)
+    second_dt=keep_or_stamp("second_payment_datetime",row["second_payment_datetime"],second)
+    other_dt=keep_or_stamp("other_payment_datetime",row["other_payment_datetime"],other)
+    total=effective_case_received(first,first_status,second,second_status,other)
+    con.execute("""UPDATE client_cases SET
+        package_amount=?,package_amount_datetime=?,after_visa_payment=?,after_visa_payment_datetime=?,
+        booking_amount=?,first_payment_status=?,first_payment_datetime=?,
+        second_payment=?,second_payment_status=?,second_payment_datetime=?,
+        other_payment_received=?,other_payment_datetime=?,total_received=?,payment_status=?,
+        filing_status=?,remarks=?,updated_at=? WHERE id=?""",
+        (pkg,pkg_dt,avp,avp_dt,first,first_status,first_dt,second,second_status,second_dt,
+         other,other_dt,total,second_status,request.form.get("filing_status",row["filing_status"]),
+         request.form.get("remarks",row["remarks"]),now,case_id))
     con.commit(); con.close(); flash("Case updated","success"); return redirect(url_for("cases"))
 
 @app.route("/allocate", methods=["POST"])
