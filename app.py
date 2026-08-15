@@ -31,7 +31,7 @@ app.config["MAX_CONTENT_LENGTH"] = int(os.environ.get("MAX_UPLOAD_MB", "20")) * 
 
 
 
-# === v3.50 Mobile PWA ===
+# === v3.51 Mobile PWA ===
 @app.route("/manifest.webmanifest")
 def pwa_manifest():
     manifest={
@@ -210,7 +210,7 @@ _GAUR_V337_TEMPLATES['cases.html'] = r"""{% extends "base.html" %}{% block conte
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('.competition-popup{position:fixed;right:22px;top:84px;width:min(420px,calc(100vw - 30px));z-index:999999;background:linear-gradient(145deg,#091f37,#152e4a);border:2px solid #e6b73f;border-radius:20px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);transform:translateX(130%);opacity:0;transition:.45s ease}\n.competition-popup.show{transform:translateX(0);opacity:1}.competition-popup.wwic{border-color:#4da6ff}.comp-pop-title{font-size:26px;color:#e6b73f;font-weight:900}.comp-fire{font-size:40px;animation:compPulse .75s infinite alternate}@keyframes compPulse{from{transform:scale(1)}to{transform:scale(1.15)}}\n','.competition-popup{position:fixed;inset:0;z-index:9999999;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 50% 42%,rgba(36,74,119,.55),rgba(0,7,18,.92) 58%,rgba(0,0,0,.98));opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease;overflow:hidden}\n.competition-popup.show{opacity:1;visibility:visible;pointer-events:auto}.competition-popup:before{content:"";position:absolute;inset:-30%;background:conic-gradient(from 0deg,transparent,rgba(255,214,64,.10),transparent,rgba(76,169,255,.12),transparent);animation:celebrateSpin 9s linear infinite}.celebrate-stage{position:relative;width:min(940px,96vw);min-height:min(690px,92vh);border:2px solid #f5c84b;border-radius:34px;background:linear-gradient(155deg,#071426 0%,#102f51 45%,#071426 100%);box-shadow:0 0 0 7px rgba(245,200,75,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(245,200,75,.22) inset;padding:26px 30px 24px;text-align:center;overflow:hidden;transform:scale(.72) translateY(35px);transition:transform .48s cubic-bezier(.2,.9,.25,1.18)}\n.competition-popup.show .celebrate-stage{transform:scale(1) translateY(0)}.competition-popup.wwic .celebrate-stage{border-color:#55aaff;box-shadow:0 0 0 7px rgba(85,170,255,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(85,170,255,.22) inset}.celebrate-glow{position:absolute;left:50%;top:43%;width:520px;height:520px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,210,64,.30),rgba(255,210,64,.04) 52%,transparent 72%);filter:blur(2px);animation:celebrateGlow 1s ease-in-out infinite alternate}.competition-popup.wwic .celebrate-glow{background:radial-gradient(circle,rgba(85,170,255,.32),rgba(85,170,255,.05) 52%,transparent 72%)}.celebrate-crown{position:relative;z-index:2;font-size:72px;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));animation:crownBounce .75s ease-in-out infinite alternate}.comp-pop-title{position:relative;z-index:2;margin:6px 0 0;font-family:Arial Black,Arial,sans-serif;font-size:clamp(34px,6vw,76px);line-height:.98;color:#ffd85e;text-shadow:0 3px 0 #8c3517,0 7px 18px rgba(0,0,0,.7);letter-spacing:1px}.competition-popup.wwic .comp-pop-title{color:#d9efff;text-shadow:0 3px 0 #145792,0 7px 18px rgba(0,0,0,.7)}.celebrate-subtitle{position:relative;z-index:2;display:inline-block;margin:10px auto 17px;padding:8px 28px;border-radius:999px;background:linear-gradient(180deg,#1b66c7,#0d3f87);border:2px solid rgba(255,255,255,.34);font-family:Arial Black,Arial,sans-serif;font-size:clamp(21px,3.4vw,39px);letter-spacing:1px;box-shadow:0 8px 20px rgba(0,0,0,.35)}.celebrate-person{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;margin:2px auto 14px}.celebrate-avatar-wrap{width:170px;height:170px;border-radius:50%;padding:5px;background:linear-gradient(145deg,#fff7b0,#d99e14);box-shadow:0 0 0 8px rgba(255,210,75,.10),0 0 40px rgba(255,210,75,.38);animation:avatarPop .72s cubic-bezier(.2,.9,.3,1.3)}.competition-popup.wwic .celebrate-avatar-wrap{background:linear-gradient(145deg,#e5f6ff,#4096e8);box-shadow:0 0 0 8px rgba(85,170,255,.10),0 0 40px rgba(85,170,255,.38)}.celebrate-avatar{width:100%;height:100%;object-fit:cover;border-radius:50%;background:#09192a}.celebrate-avatar-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#102b49;font-size:70px}.celebrate-person-info{text-align:left;min-width:260px}.celebrate-name{font-family:Arial Black,Arial,sans-serif;font-size:clamp(29px,4vw,48px);color:#fff}.celebrate-role{font-size:20px;color:#ffd85e;font-weight:800;letter-spacing:.6px}.competition-popup.wwic .celebrate-role{color:#7fc4ff}.celebrate-company{margin-top:6px;font-size:16px;opacity:.86}.celebrate-details{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(760px,100%);margin:10px auto}.celebrate-detail{padding:11px 12px;background:rgba(0,0,0,.27);border:1px solid rgba(255,255,255,.16);border-radius:13px}.celebrate-detail small{display:block;opacity:.67;margin-bottom:3px}.celebrate-detail b{display:block;font-size:19px;color:#ffe27b;word-break:break-word}.competition-popup.wwic .celebrate-detail b{color:#9fd1ff}.celebrate-save{position:relative;z-index:2;display:inline-flex;align-items:center;gap:8px;margin-top:7px;padding:10px 21px;border-radius:999px;background:#138b42;border:2px solid #5bea8b;font-size:20px;font-weight:900;box-shadow:0 8px 20px rgba(0,0,0,.3)}.celebrate-close{position:absolute;right:16px;top:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.35);color:#fff;font-size:24px;cursor:pointer}.celebrate-countdown{position:relative;z-index:2;margin-top:8px;font-size:13px;opacity:.7}.confetti-piece{position:absolute;z-index:4;top:-12vh;width:10px;height:20px;border-radius:2px;animation:confettiFall linear forwards}.firework{position:absolute;z-index:1;width:8px;height:8px;border-radius:50%;box-shadow:0 -70px #ffd75e,49px -49px #ff5964,70px 0 #5bc0ff,49px 49px #66e49a,0 70px #ff8ce8,-49px 49px #ffb14e,-70px 0 #78a7ff,-49px -49px #d7ff61;animation:fireworkBurst 1.45s ease-out infinite}.fw1{left:13%;top:20%}.fw2{right:13%;top:18%;animation-delay:.4s}.fw3{left:20%;bottom:21%;animation-delay:.8s}.fw4{right:19%;bottom:20%;animation-delay:1.1s}.celebrate-side{position:absolute;z-index:2;font-size:54px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));animation:sideFloat 1s ease-in-out infinite alternate}.side-left{left:4%;top:48%}.side-right{right:4%;top:48%;animation-delay:.35s}@keyframes celebrateSpin{to{transform:rotate(360deg)}}@keyframes celebrateGlow{from{transform:translate(-50%,-50%) scale(.88);opacity:.55}to{transform:translate(-50%,-50%) scale(1.08);opacity:1}}@keyframes crownBounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-9px) rotate(3deg)}}@keyframes avatarPop{0%{transform:scale(.2) rotate(-16deg)}75%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1)}}@keyframes confettiFall{0%{transform:translate3d(0,-10vh,0) rotate(0);opacity:1}100%{transform:translate3d(var(--drift),115vh,0) rotate(900deg);opacity:.1}}@keyframes fireworkBurst{0%{transform:scale(.08);opacity:0}18%{opacity:1}70%{transform:scale(1);opacity:.9}100%{transform:scale(1.2);opacity:0}}@keyframes sideFloat{from{transform:translateY(-7px) rotate(-6deg)}to{transform:translateY(7px) rotate(6deg)}}@media(max-width:700px){.celebrate-stage{padding:18px 14px;min-height:auto}.celebrate-crown{font-size:54px}.celebrate-avatar-wrap{width:125px;height:125px}.celebrate-person-info{text-align:center;min-width:0}.celebrate-details{grid-template-columns:1fr}.celebrate-side{display:none}.firework{transform:scale(.7)}}\n',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('<div id="competitionPopup" class="competition-popup no-print"><div class="comp-fire">🔥🏆</div><div id="competitionPopupTitle" class="comp-pop-title">NEW ENROLLMENT!</div><div id="competitionPopupText"></div><small id="competitionPopupTime"></small></div>','<div id="competitionPopup" class="competition-popup no-print" aria-live="assertive" aria-label="Enrollment celebration">\n  <div class="celebrate-glow"></div><div class="firework fw1"></div><div class="firework fw2"></div><div class="firework fw3"></div><div class="firework fw4"></div>\n  <div class="celebrate-stage">\n    <button type="button" class="celebrate-close" id="competitionPopupClose" title="Close">×</button>\n    <div class="celebrate-side side-left">🏆🎲</div><div class="celebrate-side side-right">🎯🏆</div>\n    <div class="celebrate-crown">👑</div>\n    <div id="competitionPopupTitle" class="comp-pop-title">CONGRATULATIONS!</div>\n    <div class="celebrate-subtitle">🎉 ENROLLMENT DONE! 🎉</div>\n    <div class="celebrate-person">\n      <div class="celebrate-avatar-wrap"><img id="competitionEmployeePhoto" class="celebrate-avatar" alt="Assistant Manager"><div id="competitionEmployeeFallback" class="celebrate-avatar-fallback" style="display:none">👤</div></div>\n      <div class="celebrate-person-info"><div id="competitionEmployeeName" class="celebrate-name">TEAM MEMBER</div><div id="competitionEmployeeRole" class="celebrate-role">ASSISTANT MANAGER</div><div id="competitionCompanyName" class="celebrate-company"></div></div>\n    </div>\n    <div class="celebrate-details">\n      <div class="celebrate-detail"><small>Client</small><b id="competitionClientName">—</b></div>\n      <div class="celebrate-detail"><small>Enrollment ID</small><b id="competitionCaseId">—</b></div>\n      <div class="celebrate-detail"><small>Amount Received</small><b id="competitionRevenue">₹0</b></div>\n    </div>\n    <div class="celebrate-save">✓ SUCCESSFULLY SAVED!</div>\n    <div id="competitionPopupText" style="position:relative;z-index:2;margin-top:9px;font-weight:bold"></div>\n    <div id="competitionPopupTime" class="celebrate-countdown"></div>\n  </div>\n</div>',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace("<script>\n(function(){let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true;const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');if(!bar||!pop)return;\nfunction money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}function show(e){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');document.getElementById('competitionPopupTitle').textContent=(e.company_code==='SCIC'?'SMART CHOICE':'WHITE WAVE')+' SCORES! 🎉';document.getElementById('competitionPopupText').textContent=e.message||'New enrollment';document.getElementById('competitionPopupTime').textContent=e.created_at||'';requestAnimationFrame(()=>pop.classList.add('show'));setTimeout(()=>pop.classList.remove('show'),9000)}\nasync function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};document.getElementById('scicLiveScore').textContent=(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0);document.getElementById('wwicLiveScore').textContent=(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0);const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e),i*1200));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\nrun();setInterval(run,5000)})();\n</script>","<script>\n(function(){\n  let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true,hideTimer=null;\n  const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');\n  if(!bar||!pop)return;\n  const photo=document.getElementById('competitionEmployeePhoto'),fallback=document.getElementById('competitionEmployeeFallback');\n  const closeBtn=document.getElementById('competitionPopupClose');if(closeBtn)closeBtn.addEventListener('click',()=>hide());\n  function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')} function text(id,val){const x=document.getElementById(id);if(x)x.textContent=val??''}\n  function hide(){pop.classList.remove('show');document.querySelectorAll('.confetti-piece').forEach(x=>x.remove());if(hideTimer)clearTimeout(hideTimer)}\n  function confetti(){const colors=['#ffd64d','#ff4d67','#4da6ff','#48d58b','#f78cff','#ffffff'];for(let i=0;i<95;i++){const c=document.createElement('i');c.className='confetti-piece';c.style.left=(Math.random()*100)+'vw';c.style.background=colors[i%colors.length];c.style.setProperty('--drift',((Math.random()-.5)*280)+'px');c.style.animationDuration=(2.7+Math.random()*3)+'s';c.style.animationDelay=(Math.random()*.7)+'s';c.style.transform='rotate('+(Math.random()*360)+'deg)';pop.appendChild(c);setTimeout(()=>c.remove(),7000)}}\n  function victorySound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const ctx=new A(),now=ctx.currentTime;[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,now+i*.13);g.gain.exponentialRampToValueAtTime(.12,now+i*.13+.02);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.38);o.connect(g);g.connect(ctx.destination);o.start(now+i*.13);o.stop(now+i*.13+.42)});setTimeout(()=>ctx.close(),1600)}catch(e){}}\n  function show(e,soundOn){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');const brand=e.company_code==='SCIC'?'SMART CHOICE IMMIGRATION CONSULTANTS':'WHITE WAVE';text('competitionPopupTitle','CONGRATULATIONS!');text('competitionEmployeeName',(e.employee_name||'TEAM MEMBER').toUpperCase());text('competitionEmployeeRole',(e.employee_role||'ASSISTANT MANAGER').toUpperCase());text('competitionCompanyName',brand+' • +1 ENROLLMENT');text('competitionClientName',e.client_name||'New Client');text('competitionCaseId',e.case_id||'—');text('competitionRevenue',money(e.revenue||0));text('competitionPopupText',e.message||brand+' SCORES!');text('competitionPopupTime',(e.created_at||'')+' • Celebration closes automatically');if(photo){photo.onerror=()=>{photo.style.display='none';fallback.style.display='flex'};if(e.photo_url){fallback.style.display='none';photo.style.display='block';photo.src=e.photo_url+'?v='+encodeURIComponent(e.id||Date.now())}else{photo.style.display='none';fallback.style.display='flex'}}requestAnimationFrame(()=>pop.classList.add('show'));confetti();if(soundOn)victorySound();if(hideTimer)clearTimeout(hideTimer);hideTimer=setTimeout(hide,9000)}\n  async function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};text('scicLiveScore',(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0));text('wwicLiveScore',(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0));const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e,!!d.sound_enabled),i*9800));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\n  run();setInterval(run,3000);\n})();\n</script>",1)
-_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.50 • Live Profile Photo Refresh')
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.51 • Quick Multi Lead Allocation')
 # === END GAUR CRM v3.9 PREMIUM LOGO BRANDING ===
 if os.environ.get("CLOUD_MODE", "").lower() in ("1","true","yes") or os.environ.get("RAILWAY_ENVIRONMENT"):
     app.config.update(
@@ -446,7 +446,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
         if "batch_code" not in import_cols: cur.execute("ALTER TABLE imports ADD COLUMN batch_code TEXT DEFAULT ''")
 
 
-    # v3.50 structured enrollment/payment ledger
+    # v3.51 structured enrollment/payment ledger
     payment_case_cols=[
         ("package_amount","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
         ("package_amount_datetime","TEXT DEFAULT ''"),
@@ -487,7 +487,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
                    WHERE COALESCE(after_visa_payment,0)>0 AND COALESCE(after_visa_payment_datetime,'')=''""")
 
 
-    # v3.50 Excel-style split payments + lead/counselor interlink
+    # v3.51 Excel-style split payments + lead/counselor interlink
     v343_case_cols=[
       ("lead_db_id","BIGINT" if IS_POSTGRES else "INTEGER"),("counselor_name","TEXT DEFAULT ''"),
       ("am_name","TEXT DEFAULT ''"),("interaction_date","TEXT DEFAULT ''"),
@@ -949,7 +949,7 @@ def employee_month_rankings(con,start_date,end_date,company_code=None,designatio
 
 
 def am_business_month_rankings(con,start_date,end_date,company_code=None):
-    """v3.50: ranking is based ONLY on actual enrollment count."""
+    """v3.51: ranking is based ONLY on actual enrollment count."""
     q="""SELECT u.id,u.full_name,u.company_code,u.designation,u.photo_mime,u.active,u.employee_id
          FROM users u WHERE u.role='AM'"""
     params=[]
@@ -2415,6 +2415,8 @@ def lead_control_center():
     company=request.args.get("company","").strip()
     batch=request.args.get("batch","").strip()
     am=request.args.get("am","").strip()
+    area=request.args.get("area","").strip()
+    location=request.args.get("location","").strip()
     work=request.args.get("work","").strip()
     search=request.args.get("q","").strip()
     upload_from=request.args.get("upload_from","").strip()
@@ -2453,6 +2455,11 @@ def lead_control_center():
         clauses.append("l.assigned_am IS NULL")
     elif am.isdigit():
         clauses.append("l.assigned_am=?"); p.append(int(am))
+    # v3.51: Area uses imported Source/Area field; Location uses City/Location field.
+    if area:
+        clauses.append("LOWER(TRIM(COALESCE(l.source,'')))=LOWER(?)"); p.append(area)
+    if location:
+        clauses.append("LOWER(TRIM(COALESCE(l.city,'')))=LOWER(?)"); p.append(location)
     if upload_from: clauses.append("l.imported_at>=?"); p.append(upload_from+"T00:00:00")
     if upload_to: clauses.append("l.imported_at<=?"); p.append(upload_to+"T23:59:59")
     if alloc_from: clauses.append("COALESCE(l.assigned_at,'')>=?"); p.append(alloc_from+"T00:00:00")
@@ -2513,6 +2520,20 @@ def lead_control_center():
         FROM leads l WHERE l.assigned_am=? AND COALESCE(l.deleted_at,'')=''""",(today.isoformat(),a["id"])).fetchone()
         d=dict(a); d.update(dict(z)); d["work_pct"]=round((int(d["worked"] or 0)/int(d["allocated"] or 1))*100) if d["allocated"] else 0; summary.append(d)
 
+    # Fast filter option lists, scoped by company/role.
+    opt_clauses=["COALESCE(deleted_at,'')=''"]; opt_params=[]
+    if u["role"]=="GM":
+        opt_clauses.append("company_code=?"); opt_params.append(u["company_code"])
+    elif company in ("SCIC","WWIC"):
+        opt_clauses.append("company_code=?"); opt_params.append(company)
+    opt_where=" WHERE "+" AND ".join(opt_clauses)
+    area_options=[r["v"] for r in con.execute(
+        "SELECT DISTINCT TRIM(source) v FROM leads"+opt_where+" AND COALESCE(TRIM(source),'')<>'' ORDER BY v",
+        opt_params).fetchall()]
+    location_options=[r["v"] for r in con.execute(
+        "SELECT DISTINCT TRIM(city) v FROM leads"+opt_where+" AND COALESCE(TRIM(city),'')<>'' ORDER BY v",
+        opt_params).fetchall()]
+
     archived=con.execute("SELECT * FROM leads WHERE COALESCE(deleted_at,'')<>'' ORDER BY deleted_at DESC LIMIT 250").fetchall() if u["role"]=="MD" else con.execute("SELECT * FROM leads WHERE COALESCE(deleted_at,'')<>'' AND company_code=? ORDER BY deleted_at DESC LIMIT 250",(u["company_code"],)).fetchall()
     k={"total":len(rows),
        "latest_batch":sum(1 for r in rows if r["data_age"]=="LATEST"),
@@ -2523,7 +2544,8 @@ def lead_control_center():
     con.close()
     return render_template("lead_control.html",u=u,rows=rows,am_rows=am_rows,summary=summary,archived=archived,
                            batches=batches,batch_summary=batch_summary,k=k,
-                           f={"company":company,"batch":batch,"am":am,"work":work,"q":search,
+                           area_options=area_options,location_options=location_options,
+                           f={"company":company,"batch":batch,"am":am,"area":area,"location":location,"work":work,"q":search,
                               "upload_from":upload_from,"upload_to":upload_to,"alloc_from":alloc_from,"alloc_to":alloc_to})
 
 @app.route("/lead-control/bulk",methods=["POST"])
@@ -3727,7 +3749,7 @@ def my_leads():
     return render_template("my_leads.html",u=u,rows=rows,filters=filters)
 
 
-# ===== v3.50 UI PRIVACY + CASH BOOK =====
+# ===== v3.51 UI PRIVACY + CASH BOOK =====
 
 _GAUR_V337_TEMPLATES['finance_cash_book.html'] = r"""{% extends "base.html" %}{% block content %}
 <h1 class="title">Daily Cash Book & Monthly Accounts</h1>
@@ -3981,7 +4003,7 @@ _GAUR_V337_TEMPLATES['my_profile.html']=r'''{% extends "base.html" %}{% block co
 </div></div>{% endblock %}'''
 
 
-# === v3.50 Responsive Mobile UI / PWA metadata ===
+# === v3.51 Responsive Mobile UI / PWA metadata ===
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
     '</head>',
     '''<link rel="manifest" href="/manifest.webmanifest">
@@ -4067,7 +4089,7 @@ _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
 
 
 
-# === v3.50 Login title branding only ===
+# === v3.51 Login title branding only ===
 for _login_key in ('login.html','md_login.html','gaur_login.html'):
     if _login_key in _GAUR_V337_TEMPLATES:
         _GAUR_V337_TEMPLATES[_login_key]=_GAUR_V337_TEMPLATES[_login_key].replace(
@@ -4080,6 +4102,156 @@ for _login_key in ('login.html','md_login.html','gaur_login.html'):
 </style></head>''',
             1
         )
+
+
+
+# === v3.51 Quick Multi Lead Allocation UI ===
+_GAUR_V337_TEMPLATES['lead_control.html']=r"""{% extends "base.html" %}{% block content %}
+<style>
+.alloc-filter{position:sticky;top:0;z-index:40;background:#071a2d;border:1px solid #315a7b;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 8px 28px rgba(0,0,0,.26)}
+.filter-grid{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:8px;align-items:end}
+.quick-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.quick-btn{border:1px solid #426f93;background:#0b2c49;color:white;padding:8px 11px;border-radius:9px;cursor:pointer;font-weight:700}
+.quick-btn:hover{border-color:#e6b73f}.quick-btn.gold{background:#e6b73f;color:#071629;border-color:#e6b73f}.quick-btn.red{border-color:#9b3e4a}
+.alloc-row{cursor:pointer;transition:.12s}.alloc-row:hover td{background:rgba(59,119,166,.12)}
+.alloc-row.selected td{background:rgba(230,183,63,.18)!important;border-top-color:#e6b73f;border-bottom-color:#e6b73f}
+.alloc-row .bigcheck{width:22px;height:22px;cursor:pointer}
+.badge-mini{display:inline-block;padding:3px 7px;border-radius:11px;border:1px solid #315a7b;font-size:12px;white-space:nowrap}
+.badge-unalloc{border-color:#b94150;background:rgba(185,65,80,.18)}
+.sticky-allocate{position:fixed;left:290px;right:18px;bottom:14px;z-index:1000;background:rgba(5,24,42,.97);border:2px solid #e6b73f;border-radius:14px;padding:10px 12px;box-shadow:0 10px 35px rgba(0,0,0,.55);display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.selected-count{font-size:17px;font-weight:900;color:#e6b73f;min-width:135px}.sticky-allocate select{min-width:210px}.sticky-space{height:92px}
+.summary-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}.sum-card{background:#0c2d49;border:1px solid #315a7b;border-radius:10px;padding:10px;text-align:center}.sum-card b{display:block;font-size:23px;color:#e6b73f}
+.details-panel{margin-top:12px}.details-panel summary{cursor:pointer;color:#e6b73f;font-weight:800;padding:10px}
+@media(max-width:1100px){.filter-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.sticky-allocate{left:8px;right:8px;bottom:8px}.filter-grid{grid-template-columns:1fr 1fr}.summary-cards{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.filter-grid{grid-template-columns:1fr}.summary-cards{grid-template-columns:1fr 1fr}.sticky-allocate select,.sticky-allocate .btn{width:100%}}
+</style>
+
+<h1 class="title">Quick Lead Allocation</h1>
+<p style="opacity:.78">Filter → multi-select → choose AM → Allocate. Row par click karke bhi lead select/deselect kar sakte hain.</p>
+
+<div class="summary-cards">
+<div class="sum-card">Filtered Leads<b>{{k.total}}</b></div>
+<div class="sum-card">Unallocated<b>{{k.unallocated}}</b></div>
+<div class="sum-card">Latest Batch<b>{{k.latest_batch}}</b></div>
+<div class="sum-card">Old Data<b>{{k.old_data}}</b></div>
+<div class="sum-card">Not Worked<b>{{k.not_worked}}</b></div>
+<div class="sum-card">Overdue<b>{{k.overdue}}</b></div>
+</div>
+
+<div class="alloc-filter">
+<form method="get" id="filterForm">
+<div class="filter-grid">
+{% if u.role=='MD' %}<div><label>Company</label><select name="company" onchange="this.form.submit()"><option value="">Both Companies</option><option value="SCIC" {% if f.company=='SCIC' %}selected{% endif %}>Smart Choice</option><option value="WWIC" {% if f.company=='WWIC' %}selected{% endif %}>White Wave</option></select></div>{% endif %}
+<div><label>AM</label><select name="am"><option value="">All AM / Allocation</option><option value="unallocated" {% if f.am=='unallocated' %}selected{% endif %}>⚠ Unallocated Only</option>{% for a in am_rows %}<option value="{{a.id}}" {% if f.am==a.id|string %}selected{% endif %}>{{a.full_name}} • {{a.company_code}}</option>{% endfor %}</select></div>
+<div><label>Area</label><select name="area"><option value="">All Areas</option>{% for x in area_options %}<option value="{{x}}" {% if f.area==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></div>
+<div><label>Location / City</label><select name="location"><option value="">All Locations</option>{% for x in location_options %}<option value="{{x}}" {% if f.location==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></div>
+<div><label>Data Batch</label><select name="batch"><option value="">All Batches</option><option value="latest" {% if f.batch=='latest' %}selected{% endif %}>Latest Batch</option><option value="old" {% if f.batch=='old' %}selected{% endif %}>Old Data</option><option value="legacy" {% if f.batch=='legacy' %}selected{% endif %}>Legacy</option>{% for b in batches %}<option value="{{b.batch_code}}" {% if f.batch==b.batch_code %}selected{% endif %}>{{b.batch_code}} • {{b.company_code}}</option>{% endfor %}</select></div>
+<div><label>Work Status</label><select name="work"><option value="">All</option><option value="worked" {% if f.work=='worked' %}selected{% endif %}>Worked</option><option value="not_worked" {% if f.work=='not_worked' %}selected{% endif %}>Not Worked</option><option value="overdue" {% if f.work=='overdue' %}selected{% endif %}>Overdue</option></select></div>
+<div><label>Search Client / Mobile / Lead</label><input name="q" value="{{f.q}}" placeholder="Type name, mobile or Lead ID"></div>
+<div><label>Upload From</label><input type="date" name="upload_from" value="{{f.upload_from}}"></div>
+<div><label>Upload To</label><input type="date" name="upload_to" value="{{f.upload_to}}"></div>
+<div><label>Allocated From</label><input type="date" name="alloc_from" value="{{f.alloc_from}}"></div>
+<div><label>Allocated To</label><input type="date" name="alloc_to" value="{{f.alloc_to}}"></div>
+<div><button class="btn" style="width:100%">Apply Filters</button></div>
+</div>
+<div class="quick-row">
+<a class="toolbtn" href="{{url_for('lead_control_center')}}">Reset All Filters</a>
+<button type="button" class="quick-btn gold" onclick="selectAllFiltered()">✓ Select All Filtered</button>
+<button type="button" class="quick-btn" onclick="selectUnallocated()">Select Unallocated</button>
+<button type="button" class="quick-btn" onclick="selectFirst(10)">First 10</button>
+<button type="button" class="quick-btn" onclick="selectFirst(25)">First 25</button>
+<button type="button" class="quick-btn" onclick="selectFirst(50)">First 50</button>
+<button type="button" class="quick-btn red" onclick="clearSelection()">Clear Selection</button>
+</div>
+</form>
+</div>
+
+<form method="post" action="{{url_for('lead_bulk_action')}}" id="bulkForm">
+<div class="card" style="padding:0">
+<div class="tablewrap"><table id="allocationTable">
+<thead><tr><th style="width:55px">Select</th><th>Lead ID</th><th>Client</th><th>Company</th><th>Area</th><th>Location</th><th>Country / Visa</th><th>Current AM</th><th>Batch</th><th>Work</th></tr></thead>
+<tbody>
+{% for r in rows %}
+<tr class="alloc-row" data-unallocated="{{1 if not r.assigned_am else 0}}" data-company="{{r.company_code}}">
+<td><input class="leadbox bigcheck" type="checkbox" name="lead_ids" value="{{r.id}}" aria-label="Select {{r.client_name}}"></td>
+<td><b>{{r.lead_id}}</b></td>
+<td><b>{{r.client_name or '-'}}</b><br><small>{{r.mobile or '-'}}</small></td>
+<td>{{r.company_code}}</td>
+<td>{{r.source or '-'}}</td>
+<td>{{r.city or '-'}}</td>
+<td>{{r.country or '-'}}<br><small>{{r.visa_type or '-'}}</small></td>
+<td>{% if r.am_name %}<span class="badge-mini">{{r.am_name}}</span>{% else %}<span class="badge-mini badge-unalloc">UNALLOCATED</span>{% endif %}</td>
+<td>{{r.upload_batch or 'Legacy'}}<br><small>{{r.data_age}}</small></td>
+<td><span class="badge-mini">{{r.work_state}}</span></td>
+</tr>
+{% else %}
+<tr><td colspan="10">No leads match the selected filters.</td></tr>
+{% endfor %}
+</tbody></table></div>
+</div>
+
+<div class="sticky-space"></div>
+<div class="sticky-allocate">
+<div class="selected-count"><span id="selectedCount">0</span> Leads Selected</div>
+<select name="am_id" id="allocateAM">
+<option value="">Choose Assistant Manager</option>
+{% for a in am_rows %}<option value="{{a.id}}" data-company="{{a.company_code}}">{{a.full_name}} • {{a.company_code}}</option>{% endfor %}
+</select>
+<input name="reason" placeholder="Allocation note / reason (optional)" style="flex:1;min-width:180px">
+<button class="btn" name="action" value="allocate" onclick="return confirmAllocation()">Allocate Now</button>
+<button class="toolbtn" name="action" value="archive" onclick="return confirmArchive()">Archive Selected</button>
+</div>
+</form>
+
+<details class="card details-panel">
+<summary>AM Allocation Summary ▾</summary>
+<div class="tablewrap"><table><thead><tr><th>AM</th><th>Company</th><th>Allocated</th><th>Worked</th><th>Not Worked</th><th>Hot</th><th>Positive</th><th>Overdue</th></tr></thead><tbody>
+{% for a in summary %}<tr><td><b>{{a.full_name}}</b></td><td>{{a.company_code}}</td><td>{{a.allocated or 0}}</td><td>{{a.worked or 0}}</td><td>{{a.not_worked or 0}}</td><td>{{a.hot or 0}}</td><td>{{a.positive or 0}}</td><td>{{a.overdue or 0}}</td></tr>{% endfor %}
+</tbody></table></div></details>
+
+<details class="card details-panel">
+<summary>Batch Summary ▾</summary>
+<div class="tablewrap"><table><thead><tr><th>Batch</th><th>Company</th><th>Total</th><th>Allocated</th><th>Unallocated</th><th>Worked</th><th>Not Worked</th></tr></thead><tbody>
+{% for b in batch_summary %}<tr><td>{{b.batch_code}}{% if b.is_latest %} • LATEST{% endif %}</td><td>{{b.company_code}}</td><td>{{b.total or 0}}</td><td>{{b.allocated or 0}}</td><td>{{b.unallocated or 0}}</td><td>{{b.worked or 0}}</td><td>{{b.not_worked or 0}}</td></tr>{% endfor %}
+</tbody></table></div></details>
+
+<script>
+const boxes=()=>Array.from(document.querySelectorAll('.leadbox'));
+const rows=()=>Array.from(document.querySelectorAll('.alloc-row'));
+function refreshSelected(){
+ let n=0;
+ rows().forEach(r=>{
+   const cb=r.querySelector('.leadbox');
+   if(cb&&cb.checked){n++;r.classList.add('selected')}else r.classList.remove('selected');
+ });
+ document.getElementById('selectedCount').textContent=n;
+}
+rows().forEach(r=>{
+ r.addEventListener('click',e=>{
+   if(e.target.closest('input,select,button,a,label'))return;
+   const cb=r.querySelector('.leadbox');if(cb){cb.checked=!cb.checked;refreshSelected()}
+ });
+});
+boxes().forEach(x=>x.addEventListener('change',refreshSelected));
+function clearSelection(){boxes().forEach(x=>x.checked=false);refreshSelected()}
+function selectAllFiltered(){boxes().forEach(x=>x.checked=true);refreshSelected()}
+function selectUnallocated(){rows().forEach(r=>{const cb=r.querySelector('.leadbox');cb.checked=r.dataset.unallocated==='1'});refreshSelected()}
+function selectFirst(n){clearSelection();boxes().slice(0,n).forEach(x=>x.checked=true);refreshSelected()}
+function confirmAllocation(){
+ const n=boxes().filter(x=>x.checked).length, am=document.getElementById('allocateAM');
+ if(!n){alert('Please select at least one lead.');return false}
+ if(!am.value){alert('Please choose an Assistant Manager.');return false}
+ return confirm('Allocate '+n+' selected lead(s) to '+am.options[am.selectedIndex].text+'?');
+}
+function confirmArchive(){
+ const n=boxes().filter(x=>x.checked).length;
+ if(!n){alert('Please select at least one lead.');return false}
+ return confirm('Archive '+n+' selected lead(s)?');
+}
+refreshSelected();
+</script>
+{% endblock %}"""
 
 
 @app.context_processor
