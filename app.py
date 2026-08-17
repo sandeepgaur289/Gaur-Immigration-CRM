@@ -31,7 +31,7 @@ app.config["MAX_CONTENT_LENGTH"] = int(os.environ.get("MAX_UPLOAD_MB", "20")) * 
 
 
 
-# === v3.53 Mobile PWA ===
+# === v3.54 Mobile PWA ===
 @app.route("/manifest.webmanifest")
 def pwa_manifest():
     manifest={
@@ -210,7 +210,7 @@ _GAUR_V337_TEMPLATES['cases.html'] = r"""{% extends "base.html" %}{% block conte
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('.competition-popup{position:fixed;right:22px;top:84px;width:min(420px,calc(100vw - 30px));z-index:999999;background:linear-gradient(145deg,#091f37,#152e4a);border:2px solid #e6b73f;border-radius:20px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);transform:translateX(130%);opacity:0;transition:.45s ease}\n.competition-popup.show{transform:translateX(0);opacity:1}.competition-popup.wwic{border-color:#4da6ff}.comp-pop-title{font-size:26px;color:#e6b73f;font-weight:900}.comp-fire{font-size:40px;animation:compPulse .75s infinite alternate}@keyframes compPulse{from{transform:scale(1)}to{transform:scale(1.15)}}\n','.competition-popup{position:fixed;inset:0;z-index:9999999;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 50% 42%,rgba(36,74,119,.55),rgba(0,7,18,.92) 58%,rgba(0,0,0,.98));opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease;overflow:hidden}\n.competition-popup.show{opacity:1;visibility:visible;pointer-events:auto}.competition-popup:before{content:"";position:absolute;inset:-30%;background:conic-gradient(from 0deg,transparent,rgba(255,214,64,.10),transparent,rgba(76,169,255,.12),transparent);animation:celebrateSpin 9s linear infinite}.celebrate-stage{position:relative;width:min(940px,96vw);min-height:min(690px,92vh);border:2px solid #f5c84b;border-radius:34px;background:linear-gradient(155deg,#071426 0%,#102f51 45%,#071426 100%);box-shadow:0 0 0 7px rgba(245,200,75,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(245,200,75,.22) inset;padding:26px 30px 24px;text-align:center;overflow:hidden;transform:scale(.72) translateY(35px);transition:transform .48s cubic-bezier(.2,.9,.25,1.18)}\n.competition-popup.show .celebrate-stage{transform:scale(1) translateY(0)}.competition-popup.wwic .celebrate-stage{border-color:#55aaff;box-shadow:0 0 0 7px rgba(85,170,255,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(85,170,255,.22) inset}.celebrate-glow{position:absolute;left:50%;top:43%;width:520px;height:520px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,210,64,.30),rgba(255,210,64,.04) 52%,transparent 72%);filter:blur(2px);animation:celebrateGlow 1s ease-in-out infinite alternate}.competition-popup.wwic .celebrate-glow{background:radial-gradient(circle,rgba(85,170,255,.32),rgba(85,170,255,.05) 52%,transparent 72%)}.celebrate-crown{position:relative;z-index:2;font-size:72px;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));animation:crownBounce .75s ease-in-out infinite alternate}.comp-pop-title{position:relative;z-index:2;margin:6px 0 0;font-family:Arial Black,Arial,sans-serif;font-size:clamp(34px,6vw,76px);line-height:.98;color:#ffd85e;text-shadow:0 3px 0 #8c3517,0 7px 18px rgba(0,0,0,.7);letter-spacing:1px}.competition-popup.wwic .comp-pop-title{color:#d9efff;text-shadow:0 3px 0 #145792,0 7px 18px rgba(0,0,0,.7)}.celebrate-subtitle{position:relative;z-index:2;display:inline-block;margin:10px auto 17px;padding:8px 28px;border-radius:999px;background:linear-gradient(180deg,#1b66c7,#0d3f87);border:2px solid rgba(255,255,255,.34);font-family:Arial Black,Arial,sans-serif;font-size:clamp(21px,3.4vw,39px);letter-spacing:1px;box-shadow:0 8px 20px rgba(0,0,0,.35)}.celebrate-person{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;margin:2px auto 14px}.celebrate-avatar-wrap{width:170px;height:170px;border-radius:50%;padding:5px;background:linear-gradient(145deg,#fff7b0,#d99e14);box-shadow:0 0 0 8px rgba(255,210,75,.10),0 0 40px rgba(255,210,75,.38);animation:avatarPop .72s cubic-bezier(.2,.9,.3,1.3)}.competition-popup.wwic .celebrate-avatar-wrap{background:linear-gradient(145deg,#e5f6ff,#4096e8);box-shadow:0 0 0 8px rgba(85,170,255,.10),0 0 40px rgba(85,170,255,.38)}.celebrate-avatar{width:100%;height:100%;object-fit:cover;border-radius:50%;background:#09192a}.celebrate-avatar-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#102b49;font-size:70px}.celebrate-person-info{text-align:left;min-width:260px}.celebrate-name{font-family:Arial Black,Arial,sans-serif;font-size:clamp(29px,4vw,48px);color:#fff}.celebrate-role{font-size:20px;color:#ffd85e;font-weight:800;letter-spacing:.6px}.competition-popup.wwic .celebrate-role{color:#7fc4ff}.celebrate-company{margin-top:6px;font-size:16px;opacity:.86}.celebrate-details{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(760px,100%);margin:10px auto}.celebrate-detail{padding:11px 12px;background:rgba(0,0,0,.27);border:1px solid rgba(255,255,255,.16);border-radius:13px}.celebrate-detail small{display:block;opacity:.67;margin-bottom:3px}.celebrate-detail b{display:block;font-size:19px;color:#ffe27b;word-break:break-word}.competition-popup.wwic .celebrate-detail b{color:#9fd1ff}.celebrate-save{position:relative;z-index:2;display:inline-flex;align-items:center;gap:8px;margin-top:7px;padding:10px 21px;border-radius:999px;background:#138b42;border:2px solid #5bea8b;font-size:20px;font-weight:900;box-shadow:0 8px 20px rgba(0,0,0,.3)}.celebrate-close{position:absolute;right:16px;top:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.35);color:#fff;font-size:24px;cursor:pointer}.celebrate-countdown{position:relative;z-index:2;margin-top:8px;font-size:13px;opacity:.7}.confetti-piece{position:absolute;z-index:4;top:-12vh;width:10px;height:20px;border-radius:2px;animation:confettiFall linear forwards}.firework{position:absolute;z-index:1;width:8px;height:8px;border-radius:50%;box-shadow:0 -70px #ffd75e,49px -49px #ff5964,70px 0 #5bc0ff,49px 49px #66e49a,0 70px #ff8ce8,-49px 49px #ffb14e,-70px 0 #78a7ff,-49px -49px #d7ff61;animation:fireworkBurst 1.45s ease-out infinite}.fw1{left:13%;top:20%}.fw2{right:13%;top:18%;animation-delay:.4s}.fw3{left:20%;bottom:21%;animation-delay:.8s}.fw4{right:19%;bottom:20%;animation-delay:1.1s}.celebrate-side{position:absolute;z-index:2;font-size:54px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));animation:sideFloat 1s ease-in-out infinite alternate}.side-left{left:4%;top:48%}.side-right{right:4%;top:48%;animation-delay:.35s}@keyframes celebrateSpin{to{transform:rotate(360deg)}}@keyframes celebrateGlow{from{transform:translate(-50%,-50%) scale(.88);opacity:.55}to{transform:translate(-50%,-50%) scale(1.08);opacity:1}}@keyframes crownBounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-9px) rotate(3deg)}}@keyframes avatarPop{0%{transform:scale(.2) rotate(-16deg)}75%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1)}}@keyframes confettiFall{0%{transform:translate3d(0,-10vh,0) rotate(0);opacity:1}100%{transform:translate3d(var(--drift),115vh,0) rotate(900deg);opacity:.1}}@keyframes fireworkBurst{0%{transform:scale(.08);opacity:0}18%{opacity:1}70%{transform:scale(1);opacity:.9}100%{transform:scale(1.2);opacity:0}}@keyframes sideFloat{from{transform:translateY(-7px) rotate(-6deg)}to{transform:translateY(7px) rotate(6deg)}}@media(max-width:700px){.celebrate-stage{padding:18px 14px;min-height:auto}.celebrate-crown{font-size:54px}.celebrate-avatar-wrap{width:125px;height:125px}.celebrate-person-info{text-align:center;min-width:0}.celebrate-details{grid-template-columns:1fr}.celebrate-side{display:none}.firework{transform:scale(.7)}}\n',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('<div id="competitionPopup" class="competition-popup no-print"><div class="comp-fire">🔥🏆</div><div id="competitionPopupTitle" class="comp-pop-title">NEW ENROLLMENT!</div><div id="competitionPopupText"></div><small id="competitionPopupTime"></small></div>','<div id="competitionPopup" class="competition-popup no-print" aria-live="assertive" aria-label="Enrollment celebration">\n  <div class="celebrate-glow"></div><div class="firework fw1"></div><div class="firework fw2"></div><div class="firework fw3"></div><div class="firework fw4"></div>\n  <div class="celebrate-stage">\n    <button type="button" class="celebrate-close" id="competitionPopupClose" title="Close">×</button>\n    <div class="celebrate-side side-left">🏆🎲</div><div class="celebrate-side side-right">🎯🏆</div>\n    <div class="celebrate-crown">👑</div>\n    <div id="competitionPopupTitle" class="comp-pop-title">CONGRATULATIONS!</div>\n    <div class="celebrate-subtitle">🎉 ENROLLMENT DONE! 🎉</div>\n    <div class="celebrate-person">\n      <div class="celebrate-avatar-wrap"><img id="competitionEmployeePhoto" class="celebrate-avatar" alt="Assistant Manager"><div id="competitionEmployeeFallback" class="celebrate-avatar-fallback" style="display:none">👤</div></div>\n      <div class="celebrate-person-info"><div id="competitionEmployeeName" class="celebrate-name">TEAM MEMBER</div><div id="competitionEmployeeRole" class="celebrate-role">ASSISTANT MANAGER</div><div id="competitionCompanyName" class="celebrate-company"></div></div>\n    </div>\n    <div class="celebrate-details">\n      <div class="celebrate-detail"><small>Client</small><b id="competitionClientName">—</b></div>\n      <div class="celebrate-detail"><small>Enrollment ID</small><b id="competitionCaseId">—</b></div>\n      <div class="celebrate-detail"><small>Amount Received</small><b id="competitionRevenue">₹0</b></div>\n    </div>\n    <div class="celebrate-save">✓ SUCCESSFULLY SAVED!</div>\n    <div id="competitionPopupText" style="position:relative;z-index:2;margin-top:9px;font-weight:bold"></div>\n    <div id="competitionPopupTime" class="celebrate-countdown"></div>\n  </div>\n</div>',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace("<script>\n(function(){let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true;const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');if(!bar||!pop)return;\nfunction money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}function show(e){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');document.getElementById('competitionPopupTitle').textContent=(e.company_code==='SCIC'?'SMART CHOICE':'WHITE WAVE')+' SCORES! 🎉';document.getElementById('competitionPopupText').textContent=e.message||'New enrollment';document.getElementById('competitionPopupTime').textContent=e.created_at||'';requestAnimationFrame(()=>pop.classList.add('show'));setTimeout(()=>pop.classList.remove('show'),9000)}\nasync function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};document.getElementById('scicLiveScore').textContent=(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0);document.getElementById('wwicLiveScore').textContent=(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0);const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e),i*1200));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\nrun();setInterval(run,5000)})();\n</script>","<script>\n(function(){\n  let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true,hideTimer=null;\n  const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');\n  if(!bar||!pop)return;\n  const photo=document.getElementById('competitionEmployeePhoto'),fallback=document.getElementById('competitionEmployeeFallback');\n  const closeBtn=document.getElementById('competitionPopupClose');if(closeBtn)closeBtn.addEventListener('click',()=>hide());\n  function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')} function text(id,val){const x=document.getElementById(id);if(x)x.textContent=val??''}\n  function hide(){pop.classList.remove('show');document.querySelectorAll('.confetti-piece').forEach(x=>x.remove());if(hideTimer)clearTimeout(hideTimer)}\n  function confetti(){const colors=['#ffd64d','#ff4d67','#4da6ff','#48d58b','#f78cff','#ffffff'];for(let i=0;i<95;i++){const c=document.createElement('i');c.className='confetti-piece';c.style.left=(Math.random()*100)+'vw';c.style.background=colors[i%colors.length];c.style.setProperty('--drift',((Math.random()-.5)*280)+'px');c.style.animationDuration=(2.7+Math.random()*3)+'s';c.style.animationDelay=(Math.random()*.7)+'s';c.style.transform='rotate('+(Math.random()*360)+'deg)';pop.appendChild(c);setTimeout(()=>c.remove(),7000)}}\n  function victorySound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const ctx=new A(),now=ctx.currentTime;[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,now+i*.13);g.gain.exponentialRampToValueAtTime(.12,now+i*.13+.02);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.38);o.connect(g);g.connect(ctx.destination);o.start(now+i*.13);o.stop(now+i*.13+.42)});setTimeout(()=>ctx.close(),1600)}catch(e){}}\n  function show(e,soundOn){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');const brand=e.company_code==='SCIC'?'SMART CHOICE IMMIGRATION CONSULTANTS':'WHITE WAVE';text('competitionPopupTitle','CONGRATULATIONS!');text('competitionEmployeeName',(e.employee_name||'TEAM MEMBER').toUpperCase());text('competitionEmployeeRole',(e.employee_role||'ASSISTANT MANAGER').toUpperCase());text('competitionCompanyName',brand+' • +1 ENROLLMENT');text('competitionClientName',e.client_name||'New Client');text('competitionCaseId',e.case_id||'—');text('competitionRevenue',money(e.revenue||0));text('competitionPopupText',e.message||brand+' SCORES!');text('competitionPopupTime',(e.created_at||'')+' • Celebration closes automatically');if(photo){photo.onerror=()=>{photo.style.display='none';fallback.style.display='flex'};if(e.photo_url){fallback.style.display='none';photo.style.display='block';photo.src=e.photo_url+'?v='+encodeURIComponent(e.id||Date.now())}else{photo.style.display='none';fallback.style.display='flex'}}requestAnimationFrame(()=>pop.classList.add('show'));confetti();if(soundOn)victorySound();if(hideTimer)clearTimeout(hideTimer);hideTimer=setTimeout(hide,9000)}\n  async function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};text('scicLiveScore',(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0));text('wwicLiveScore',(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0));const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e,!!d.sound_enabled),i*9800));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\n  run();setInterval(run,3000);\n})();\n</script>",1)
-_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.53 • Quick Multi Lead Allocation')
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.54 • Quick Multi Lead Allocation')
 # === END GAUR CRM v3.9 PREMIUM LOGO BRANDING ===
 if os.environ.get("CLOUD_MODE", "").lower() in ("1","true","yes") or os.environ.get("RAILWAY_ENVIRONMENT"):
     app.config.update(
@@ -446,7 +446,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
         if "batch_code" not in import_cols: cur.execute("ALTER TABLE imports ADD COLUMN batch_code TEXT DEFAULT ''")
 
 
-    # v3.53 structured enrollment/payment ledger
+    # v3.54 structured enrollment/payment ledger
     payment_case_cols=[
         ("package_amount","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
         ("package_amount_datetime","TEXT DEFAULT ''"),
@@ -487,7 +487,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
                    WHERE COALESCE(after_visa_payment,0)>0 AND COALESCE(after_visa_payment_datetime,'')=''""")
 
 
-    # v3.53 Excel-style split payments + lead/counselor interlink
+    # v3.54 Excel-style split payments + lead/counselor interlink
     v343_case_cols=[
       ("lead_db_id","BIGINT" if IS_POSTGRES else "INTEGER"),("counselor_name","TEXT DEFAULT ''"),
       ("am_name","TEXT DEFAULT ''"),("interaction_date","TEXT DEFAULT ''"),
@@ -949,7 +949,7 @@ def employee_month_rankings(con,start_date,end_date,company_code=None,designatio
 
 
 def am_business_month_rankings(con,start_date,end_date,company_code=None):
-    """v3.53: ranking is based ONLY on actual enrollment count."""
+    """v3.54: ranking is based ONLY on actual enrollment count."""
     q="""SELECT u.id,u.full_name,u.company_code,u.designation,u.photo_mime,u.active,u.employee_id
          FROM users u WHERE u.role='AM'"""
     params=[]
@@ -2462,7 +2462,7 @@ def lead_control_center():
         clauses.append("l.assigned_am IS NULL")
     elif am.isdigit():
         clauses.append("l.assigned_am=?"); p.append(int(am))
-    # v3.53: Area uses imported Source/Area field; Location uses City/Location field.
+    # v3.54: Area uses imported Source/Area field; Location uses City/Location field.
     if area:
         clauses.append("LOWER(TRIM(COALESCE(l.source,'')))=LOWER(?)"); p.append(area)
     if location:
@@ -3756,7 +3756,7 @@ def my_leads():
     return render_template("my_leads.html",u=u,rows=rows,filters=filters)
 
 
-# ===== v3.53 UI PRIVACY + CASH BOOK =====
+# ===== v3.54 UI PRIVACY + CASH BOOK =====
 
 _GAUR_V337_TEMPLATES['finance_cash_book.html'] = r"""{% extends "base.html" %}{% block content %}
 <h1 class="title">Daily Cash Book & Monthly Accounts</h1>
@@ -4010,7 +4010,7 @@ _GAUR_V337_TEMPLATES['my_profile.html']=r'''{% extends "base.html" %}{% block co
 </div></div>{% endblock %}'''
 
 
-# === v3.53 Responsive Mobile UI / PWA metadata ===
+# === v3.54 Responsive Mobile UI / PWA metadata ===
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
     '</head>',
     '''<link rel="manifest" href="/manifest.webmanifest">
@@ -4096,7 +4096,7 @@ _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
 
 
 
-# === v3.53 Login title branding only ===
+# === v3.54 Login title branding only ===
 for _login_key in ('login.html','md_login.html','gaur_login.html'):
     if _login_key in _GAUR_V337_TEMPLATES:
         _GAUR_V337_TEMPLATES[_login_key]=_GAUR_V337_TEMPLATES[_login_key].replace(
@@ -4112,7 +4112,7 @@ for _login_key in ('login.html','md_login.html','gaur_login.html'):
 
 
 
-# === v3.53 Quick Multi Lead Allocation UI ===
+# === v3.54 Quick Multi Lead Allocation UI ===
 _GAUR_V337_TEMPLATES['lead_control.html']=r"""{% extends "base.html" %}{% block content %}
 <style>
 .alloc-filter{position:sticky;top:0;z-index:40;background:#071a2d;border:1px solid #315a7b;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 8px 28px rgba(0,0,0,.26)}
@@ -4266,24 +4266,24 @@ refreshSelected();
 
 
 
-# === v3.53 THE GAUR Easy Chat ===
+# === v3.54 THE GAUR Easy Chat ===
 _GAUR_V337_TEMPLATES['chat_center.html']=r'''{% extends "base.html" %}{% block content %}
 <style>
-.wa-shell{height:calc(100vh - 120px);min-height:620px;display:grid;grid-template-columns:360px 1fr;border:1px solid #315f85;border-radius:16px;overflow:hidden;background:#06182a;box-shadow:0 18px 55px rgba(0,0,0,.3)}
+.wa-shell{height:620px;min-height:420px;display:grid;grid-template-columns:360px 1fr;border:1px solid #315f85;border-radius:16px;overflow:hidden;background:#06182a;box-shadow:0 18px 55px rgba(0,0,0,.3)}
 .wa-side{background:#081e34;border-right:1px solid #315f85;display:grid;grid-template-rows:auto auto 1fr;min-width:0}
 .wa-side-head{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;background:#0b2946}.wa-side-head b{color:#e6b73f;font-size:19px}
 .wa-search{padding:9px;background:#071a2d}.wa-search input{width:100%;border-radius:22px;padding:10px 14px}
-.wa-people{overflow:auto}
+.wa-people{min-height:0;overflow:auto}
 .wa-person{display:grid;grid-template-columns:50px 1fr auto;gap:10px;align-items:center;padding:11px 12px;border-bottom:1px solid #183c57;cursor:pointer;color:#fff;text-decoration:none}
 .wa-person:hover,.wa-person.active{background:#0d3151}.wa-person-main{min-width:0}.wa-person-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wa-person-sub{font-size:12px;opacity:.68;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
 .wa-thread{display:grid;grid-template-rows:auto 1fr auto;min-width:0;background:#06182a}
 .wa-thread-head{padding:10px 14px;background:#0b2946;border-bottom:1px solid #315f85;display:flex;align-items:center;justify-content:space-between}.wa-peer{display:flex;align-items:center;gap:10px}.wa-peer strong{color:#fff;font-size:17px}.wa-peer small{opacity:.7}
-.wa-thread-body{overflow:auto;padding:18px 5%;scroll-behavior:smooth}.wa-bubble{max-width:min(74%,560px);padding:8px 10px 6px;border-radius:11px;margin:4px 0;box-shadow:0 1px 2px rgba(0,0,0,.25);line-height:1.35;white-space:pre-wrap;word-break:break-word}.wa-bubble.mine{margin-left:auto;background:#174873;border-top-right-radius:3px}.wa-bubble.theirs{margin-right:auto;background:#0c2945;border-top-left-radius:3px}.wa-time{display:flex;justify-content:flex-end;gap:4px;align-items:center;font-size:10px;opacity:.6;margin-top:4px}.wa-check{font-weight:900;color:#8fc8ff}
-.wa-compose{background:#081e34;border-top:1px solid #315f85;padding:9px 10px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:end}.wa-compose textarea{min-height:44px;max-height:110px;border-radius:22px;padding:11px 14px;resize:none}.wa-icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid #315f85;background:#0d3151;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.wa-send{background:#e6b73f;color:#071629;border:0}
+.wa-thread-body{min-height:0;overflow:auto;padding:18px 5%;scroll-behavior:smooth}.wa-bubble{max-width:min(74%,560px);padding:8px 10px 6px;border-radius:11px;margin:4px 0;box-shadow:0 1px 2px rgba(0,0,0,.25);line-height:1.35;white-space:pre-wrap;word-break:break-word}.wa-bubble.mine{margin-left:auto;background:#174873;border-top-right-radius:3px}.wa-bubble.theirs{margin-right:auto;background:#0c2945;border-top-left-radius:3px}.wa-time{display:flex;justify-content:flex-end;gap:4px;align-items:center;font-size:10px;opacity:.6;margin-top:4px}.wa-check{font-weight:900;color:#8fc8ff}
+.wa-compose{position:sticky;bottom:0;z-index:20;background:#081e34;border-top:1px solid #315f85;padding:9px 10px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:end}.wa-compose textarea{min-height:44px;max-height:110px;border-radius:22px;padding:11px 14px;resize:none}.wa-icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid #315f85;background:#0d3151;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.wa-send{background:#e6b73f;color:#071629;border:0}
 .wa-extra{grid-column:1/-1;display:none;padding:8px;border:1px solid #315f85;border-radius:12px;margin-top:2px}.wa-extra.open{display:block}.wa-extra-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .wa-file,.wa-lead{margin-top:7px;border-radius:9px;padding:8px}.wa-file{border:1px solid #4f7593;background:rgba(0,0,0,.12)}.wa-lead{border:1px solid #e6b73f;background:#102d48}
 .wa-empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;opacity:.7}.wa-broadcast{margin-top:14px}.wa-broadcast summary{cursor:pointer;font-weight:900;color:#e6b73f;padding:10px}.wa-back{display:none}
-@media(max-width:900px){.wa-shell{height:calc(100dvh - 82px);min-height:560px;grid-template-columns:1fr}.wa-side{display:{% if peer %}none{% else %}grid{% endif %}}.wa-thread{display:{% if peer %}grid{% else %}none{% endif %}}.wa-thread-body{padding:14px 10px}.wa-bubble{max-width:88%}.wa-back{display:flex}}
+@media(max-width:900px){.wa-shell{height:calc(100dvh - 76px);min-height:420px;grid-template-columns:1fr}.wa-side{display:{% if peer %}none{% else %}grid{% endif %}}.wa-thread{display:{% if peer %}grid{% else %}none{% endif %}}.wa-thread-body{padding:14px 10px}.wa-bubble{max-width:88%}.wa-back{display:flex}}
 </style>
 <div class="wa-shell">
 <div class="wa-side">
@@ -4345,7 +4345,7 @@ function filterPeople(v){v=(v||'').toLowerCase();document.querySelectorAll('.wa-
 function toggleExtra(){document.getElementById('waExtra')?.classList.toggle('open')}
 function showSelectedFile(i){const e=document.getElementById('selectedFileName');if(e)e.textContent=(i.files&&i.files[0])?i.files[0].name:'No file selected'}
 function sendOnEnter(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(e.target.value.trim())document.getElementById('waCompose').requestSubmit()}}
-document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('threadBody');if(b)b.scrollTop=b.scrollHeight;const m=document.getElementById('waMessage');if(m)m.focus()});
+function fitChatViewport(){const shell=document.querySelector('.wa-shell');if(!shell)return;const top=shell.getBoundingClientRect().top;const reserve=window.innerWidth<=900?10:18;shell.style.height=Math.max(420,window.innerHeight-top-reserve)+'px';}document.addEventListener('DOMContentLoaded',()=>{fitChatViewport();const b=document.getElementById('threadBody');if(b)b.scrollTop=b.scrollHeight;const m=document.getElementById('waMessage');if(m)m.focus();document.body.classList.add('chat-page-active');});window.addEventListener('resize',fitChatViewport);
 </script>
 {% endblock %}'''
 
@@ -4370,6 +4370,9 @@ _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
     '<div class="chat-head"><strong>💬 THE GAUR Chat</strong>'
 )
 
+
+# v3.54 full chat viewport fix
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('</head>','<style>body.chat-page-active .chat-fab,body.chat-page-active .notif-bell,body.chat-page-active .chat-panel,body.chat-page-active .notif-panel{display:none!important}body.chat-page-active{padding-bottom:0!important}body.chat-page-active main{padding-bottom:8px!important}</style></head>',1)
 
 @app.context_processor
 def inject_user():
