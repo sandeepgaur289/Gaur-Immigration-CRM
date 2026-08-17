@@ -31,7 +31,7 @@ app.config["MAX_CONTENT_LENGTH"] = int(os.environ.get("MAX_UPLOAD_MB", "20")) * 
 
 
 
-# === v3.60 Mobile PWA ===
+# === v3.61 Mobile PWA ===
 @app.route("/manifest.webmanifest")
 def pwa_manifest():
     manifest={
@@ -210,7 +210,7 @@ _GAUR_V337_TEMPLATES['cases.html'] = r"""{% extends "base.html" %}{% block conte
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('.competition-popup{position:fixed;right:22px;top:84px;width:min(420px,calc(100vw - 30px));z-index:999999;background:linear-gradient(145deg,#091f37,#152e4a);border:2px solid #e6b73f;border-radius:20px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);transform:translateX(130%);opacity:0;transition:.45s ease}\n.competition-popup.show{transform:translateX(0);opacity:1}.competition-popup.wwic{border-color:#4da6ff}.comp-pop-title{font-size:26px;color:#e6b73f;font-weight:900}.comp-fire{font-size:40px;animation:compPulse .75s infinite alternate}@keyframes compPulse{from{transform:scale(1)}to{transform:scale(1.15)}}\n','.competition-popup{position:fixed;inset:0;z-index:9999999;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 50% 42%,rgba(36,74,119,.55),rgba(0,7,18,.92) 58%,rgba(0,0,0,.98));opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease;overflow:hidden}\n.competition-popup.show{opacity:1;visibility:visible;pointer-events:auto}.competition-popup:before{content:"";position:absolute;inset:-30%;background:conic-gradient(from 0deg,transparent,rgba(255,214,64,.10),transparent,rgba(76,169,255,.12),transparent);animation:celebrateSpin 9s linear infinite}.celebrate-stage{position:relative;width:min(940px,96vw);min-height:min(690px,92vh);border:2px solid #f5c84b;border-radius:34px;background:linear-gradient(155deg,#071426 0%,#102f51 45%,#071426 100%);box-shadow:0 0 0 7px rgba(245,200,75,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(245,200,75,.22) inset;padding:26px 30px 24px;text-align:center;overflow:hidden;transform:scale(.72) translateY(35px);transition:transform .48s cubic-bezier(.2,.9,.25,1.18)}\n.competition-popup.show .celebrate-stage{transform:scale(1) translateY(0)}.competition-popup.wwic .celebrate-stage{border-color:#55aaff;box-shadow:0 0 0 7px rgba(85,170,255,.08),0 30px 100px rgba(0,0,0,.72),0 0 60px rgba(85,170,255,.22) inset}.celebrate-glow{position:absolute;left:50%;top:43%;width:520px;height:520px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,210,64,.30),rgba(255,210,64,.04) 52%,transparent 72%);filter:blur(2px);animation:celebrateGlow 1s ease-in-out infinite alternate}.competition-popup.wwic .celebrate-glow{background:radial-gradient(circle,rgba(85,170,255,.32),rgba(85,170,255,.05) 52%,transparent 72%)}.celebrate-crown{position:relative;z-index:2;font-size:72px;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));animation:crownBounce .75s ease-in-out infinite alternate}.comp-pop-title{position:relative;z-index:2;margin:6px 0 0;font-family:Arial Black,Arial,sans-serif;font-size:clamp(34px,6vw,76px);line-height:.98;color:#ffd85e;text-shadow:0 3px 0 #8c3517,0 7px 18px rgba(0,0,0,.7);letter-spacing:1px}.competition-popup.wwic .comp-pop-title{color:#d9efff;text-shadow:0 3px 0 #145792,0 7px 18px rgba(0,0,0,.7)}.celebrate-subtitle{position:relative;z-index:2;display:inline-block;margin:10px auto 17px;padding:8px 28px;border-radius:999px;background:linear-gradient(180deg,#1b66c7,#0d3f87);border:2px solid rgba(255,255,255,.34);font-family:Arial Black,Arial,sans-serif;font-size:clamp(21px,3.4vw,39px);letter-spacing:1px;box-shadow:0 8px 20px rgba(0,0,0,.35)}.celebrate-person{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;margin:2px auto 14px}.celebrate-avatar-wrap{width:170px;height:170px;border-radius:50%;padding:5px;background:linear-gradient(145deg,#fff7b0,#d99e14);box-shadow:0 0 0 8px rgba(255,210,75,.10),0 0 40px rgba(255,210,75,.38);animation:avatarPop .72s cubic-bezier(.2,.9,.3,1.3)}.competition-popup.wwic .celebrate-avatar-wrap{background:linear-gradient(145deg,#e5f6ff,#4096e8);box-shadow:0 0 0 8px rgba(85,170,255,.10),0 0 40px rgba(85,170,255,.38)}.celebrate-avatar{width:100%;height:100%;object-fit:cover;border-radius:50%;background:#09192a}.celebrate-avatar-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#102b49;font-size:70px}.celebrate-person-info{text-align:left;min-width:260px}.celebrate-name{font-family:Arial Black,Arial,sans-serif;font-size:clamp(29px,4vw,48px);color:#fff}.celebrate-role{font-size:20px;color:#ffd85e;font-weight:800;letter-spacing:.6px}.competition-popup.wwic .celebrate-role{color:#7fc4ff}.celebrate-company{margin-top:6px;font-size:16px;opacity:.86}.celebrate-details{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(760px,100%);margin:10px auto}.celebrate-detail{padding:11px 12px;background:rgba(0,0,0,.27);border:1px solid rgba(255,255,255,.16);border-radius:13px}.celebrate-detail small{display:block;opacity:.67;margin-bottom:3px}.celebrate-detail b{display:block;font-size:19px;color:#ffe27b;word-break:break-word}.competition-popup.wwic .celebrate-detail b{color:#9fd1ff}.celebrate-save{position:relative;z-index:2;display:inline-flex;align-items:center;gap:8px;margin-top:7px;padding:10px 21px;border-radius:999px;background:#138b42;border:2px solid #5bea8b;font-size:20px;font-weight:900;box-shadow:0 8px 20px rgba(0,0,0,.3)}.celebrate-close{position:absolute;right:16px;top:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.35);color:#fff;font-size:24px;cursor:pointer}.celebrate-countdown{position:relative;z-index:2;margin-top:8px;font-size:13px;opacity:.7}.confetti-piece{position:absolute;z-index:4;top:-12vh;width:10px;height:20px;border-radius:2px;animation:confettiFall linear forwards}.firework{position:absolute;z-index:1;width:8px;height:8px;border-radius:50%;box-shadow:0 -70px #ffd75e,49px -49px #ff5964,70px 0 #5bc0ff,49px 49px #66e49a,0 70px #ff8ce8,-49px 49px #ffb14e,-70px 0 #78a7ff,-49px -49px #d7ff61;animation:fireworkBurst 1.45s ease-out infinite}.fw1{left:13%;top:20%}.fw2{right:13%;top:18%;animation-delay:.4s}.fw3{left:20%;bottom:21%;animation-delay:.8s}.fw4{right:19%;bottom:20%;animation-delay:1.1s}.celebrate-side{position:absolute;z-index:2;font-size:54px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));animation:sideFloat 1s ease-in-out infinite alternate}.side-left{left:4%;top:48%}.side-right{right:4%;top:48%;animation-delay:.35s}@keyframes celebrateSpin{to{transform:rotate(360deg)}}@keyframes celebrateGlow{from{transform:translate(-50%,-50%) scale(.88);opacity:.55}to{transform:translate(-50%,-50%) scale(1.08);opacity:1}}@keyframes crownBounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-9px) rotate(3deg)}}@keyframes avatarPop{0%{transform:scale(.2) rotate(-16deg)}75%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1)}}@keyframes confettiFall{0%{transform:translate3d(0,-10vh,0) rotate(0);opacity:1}100%{transform:translate3d(var(--drift),115vh,0) rotate(900deg);opacity:.1}}@keyframes fireworkBurst{0%{transform:scale(.08);opacity:0}18%{opacity:1}70%{transform:scale(1);opacity:.9}100%{transform:scale(1.2);opacity:0}}@keyframes sideFloat{from{transform:translateY(-7px) rotate(-6deg)}to{transform:translateY(7px) rotate(6deg)}}@media(max-width:700px){.celebrate-stage{padding:18px 14px;min-height:auto}.celebrate-crown{font-size:54px}.celebrate-avatar-wrap{width:125px;height:125px}.celebrate-person-info{text-align:center;min-width:0}.celebrate-details{grid-template-columns:1fr}.celebrate-side{display:none}.firework{transform:scale(.7)}}\n',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('<div id="competitionPopup" class="competition-popup no-print"><div class="comp-fire">🔥🏆</div><div id="competitionPopupTitle" class="comp-pop-title">NEW ENROLLMENT!</div><div id="competitionPopupText"></div><small id="competitionPopupTime"></small></div>','<div id="competitionPopup" class="competition-popup no-print" aria-live="assertive" aria-label="Enrollment celebration">\n  <div class="celebrate-glow"></div><div class="firework fw1"></div><div class="firework fw2"></div><div class="firework fw3"></div><div class="firework fw4"></div>\n  <div class="celebrate-stage">\n    <button type="button" class="celebrate-close" id="competitionPopupClose" title="Close">×</button>\n    <div class="celebrate-side side-left">🏆🎲</div><div class="celebrate-side side-right">🎯🏆</div>\n    <div class="celebrate-crown">👑</div>\n    <div id="competitionPopupTitle" class="comp-pop-title">CONGRATULATIONS!</div>\n    <div class="celebrate-subtitle">🎉 ENROLLMENT DONE! 🎉</div>\n    <div class="celebrate-person">\n      <div class="celebrate-avatar-wrap"><img id="competitionEmployeePhoto" class="celebrate-avatar" alt="Assistant Manager"><div id="competitionEmployeeFallback" class="celebrate-avatar-fallback" style="display:none">👤</div></div>\n      <div class="celebrate-person-info"><div id="competitionEmployeeName" class="celebrate-name">TEAM MEMBER</div><div id="competitionEmployeeRole" class="celebrate-role">ASSISTANT MANAGER</div><div id="competitionCompanyName" class="celebrate-company"></div></div>\n    </div>\n    <div class="celebrate-details">\n      <div class="celebrate-detail"><small>Client</small><b id="competitionClientName">—</b></div>\n      <div class="celebrate-detail"><small>Enrollment ID</small><b id="competitionCaseId">—</b></div>\n      <div class="celebrate-detail"><small>Amount Received</small><b id="competitionRevenue">₹0</b></div>\n    </div>\n    <div class="celebrate-save">✓ SUCCESSFULLY SAVED!</div>\n    <div id="competitionPopupText" style="position:relative;z-index:2;margin-top:9px;font-weight:bold"></div>\n    <div id="competitionPopupTime" class="celebrate-countdown"></div>\n  </div>\n</div>',1)
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace("<script>\n(function(){let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true;const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');if(!bar||!pop)return;\nfunction money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}function show(e){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');document.getElementById('competitionPopupTitle').textContent=(e.company_code==='SCIC'?'SMART CHOICE':'WHITE WAVE')+' SCORES! 🎉';document.getElementById('competitionPopupText').textContent=e.message||'New enrollment';document.getElementById('competitionPopupTime').textContent=e.created_at||'';requestAnimationFrame(()=>pop.classList.add('show'));setTimeout(()=>pop.classList.remove('show'),9000)}\nasync function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};document.getElementById('scicLiveScore').textContent=(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0);document.getElementById('wwicLiveScore').textContent=(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0);const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e),i*1200));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\nrun();setInterval(run,5000)})();\n</script>","<script>\n(function(){\n  let last=Number(sessionStorage.getItem('gaurCompEvent')||0),first=true,hideTimer=null;\n  const bar=document.getElementById('competitionLiveBar'),pop=document.getElementById('competitionPopup');\n  if(!bar||!pop)return;\n  const photo=document.getElementById('competitionEmployeePhoto'),fallback=document.getElementById('competitionEmployeeFallback');\n  const closeBtn=document.getElementById('competitionPopupClose');if(closeBtn)closeBtn.addEventListener('click',()=>hide());\n  function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')} function text(id,val){const x=document.getElementById(id);if(x)x.textContent=val??''}\n  function hide(){pop.classList.remove('show');document.querySelectorAll('.confetti-piece').forEach(x=>x.remove());if(hideTimer)clearTimeout(hideTimer)}\n  function confetti(){const colors=['#ffd64d','#ff4d67','#4da6ff','#48d58b','#f78cff','#ffffff'];for(let i=0;i<95;i++){const c=document.createElement('i');c.className='confetti-piece';c.style.left=(Math.random()*100)+'vw';c.style.background=colors[i%colors.length];c.style.setProperty('--drift',((Math.random()-.5)*280)+'px');c.style.animationDuration=(2.7+Math.random()*3)+'s';c.style.animationDelay=(Math.random()*.7)+'s';c.style.transform='rotate('+(Math.random()*360)+'deg)';pop.appendChild(c);setTimeout(()=>c.remove(),7000)}}\n  function victorySound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const ctx=new A(),now=ctx.currentTime;[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,now+i*.13);g.gain.exponentialRampToValueAtTime(.12,now+i*.13+.02);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.38);o.connect(g);g.connect(ctx.destination);o.start(now+i*.13);o.stop(now+i*.13+.42)});setTimeout(()=>ctx.close(),1600)}catch(e){}}\n  function show(e,soundOn){pop.className='competition-popup no-print '+(e.company_code==='SCIC'?'scic':'wwic');const brand=e.company_code==='SCIC'?'SMART CHOICE IMMIGRATION CONSULTANTS':'WHITE WAVE';text('competitionPopupTitle','CONGRATULATIONS!');text('competitionEmployeeName',(e.employee_name||'TEAM MEMBER').toUpperCase());text('competitionEmployeeRole',(e.employee_role||'ASSISTANT MANAGER').toUpperCase());text('competitionCompanyName',brand+' • +1 ENROLLMENT');text('competitionClientName',e.client_name||'New Client');text('competitionCaseId',e.case_id||'—');text('competitionRevenue',money(e.revenue||0));text('competitionPopupText',e.message||brand+' SCORES!');text('competitionPopupTime',(e.created_at||'')+' • Celebration closes automatically');if(photo){photo.onerror=()=>{photo.style.display='none';fallback.style.display='flex'};if(e.photo_url){fallback.style.display='none';photo.style.display='block';photo.src=e.photo_url+'?v='+encodeURIComponent(e.id||Date.now())}else{photo.style.display='none';fallback.style.display='flex'}}requestAnimationFrame(()=>pop.classList.add('show'));confetti();if(soundOn)victorySound();if(hideTimer)clearTimeout(hideTimer);hideTimer=setTimeout(hide,9000)}\n  async function run(){try{const r=await fetch('/api/competition/live?after='+last,{cache:'no-store'});if(!r.ok)return;const d=await r.json();if(!d.enabled){bar.classList.remove('show');return}bar.classList.add('show');const s=d.scores||{};text('scicLiveScore',(s.SCIC?.enrollments||0)+' • '+money(s.SCIC?.revenue||0));text('wwicLiveScore',(s.WWIC?.enrollments||0)+' • '+money(s.WWIC?.revenue||0));const st=Number(d.scic_target||0),wt=Number(d.wwic_target||0);document.getElementById('scicMeter').style.width=(st?Math.min(100,(s.SCIC?.enrollments||0)/st*100):0)+'%';document.getElementById('wwicMeter').style.width=(wt?Math.min(100,(s.WWIC?.enrollments||0)/wt*100):0)+'%';if(first){last=Number(d.latest_id||0);sessionStorage.setItem('gaurCompEvent',last);first=false;return}if(d.popup_enabled&&d.events?.length)d.events.forEach((e,i)=>setTimeout(()=>show(e,!!d.sound_enabled),i*9800));last=Number(d.latest_id||last);sessionStorage.setItem('gaurCompEvent',last)}catch(e){}}\n  run();setInterval(run,3000);\n})();\n</script>",1)
-_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.60 • Quick Multi Lead Allocation')
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('CRM v3.36 • Large Company Logos','CRM v3.61 • Quick Multi Lead Allocation')
 # === END GAUR CRM v3.9 PREMIUM LOGO BRANDING ===
 if os.environ.get("CLOUD_MODE", "").lower() in ("1","true","yes") or os.environ.get("RAILWAY_ENVIRONMENT"):
     app.config.update(
@@ -446,7 +446,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
         if "batch_code" not in import_cols: cur.execute("ALTER TABLE imports ADD COLUMN batch_code TEXT DEFAULT ''")
 
 
-    # v3.60 structured enrollment/payment ledger
+    # v3.61 structured enrollment/payment ledger
     payment_case_cols=[
         ("package_amount","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
         ("package_amount_datetime","TEXT DEFAULT ''"),
@@ -487,7 +487,23 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
                    WHERE COALESCE(after_visa_payment,0)>0 AND COALESCE(after_visa_payment_datetime,'')=''""")
 
 
-    # v3.60 Excel-style split payments + lead/counselor interlink
+    # v3.61 payment-channel tracking for bank-wise Accounts reports
+    v361_case_cols=[
+      ("first_payment_method","TEXT DEFAULT ''"),
+      ("second_payment_method","TEXT DEFAULT ''"),
+      ("other_payment_method","TEXT DEFAULT ''"),
+      ("other_payment_bank","TEXT DEFAULT ''")
+    ]
+    if IS_POSTGRES:
+        for col,ctype in v361_case_cols:
+            cur.execute(f"ALTER TABLE client_cases ADD COLUMN IF NOT EXISTS {col} {ctype}")
+    else:
+        _v361cols=[r["name"] for r in cur.execute("PRAGMA table_info(client_cases)").fetchall()]
+        for col,ctype in v361_case_cols:
+            if col not in _v361cols:
+                cur.execute(f"ALTER TABLE client_cases ADD COLUMN {col} {ctype}")
+
+    # v3.61 Excel-style split payments + lead/counselor interlink
     v343_case_cols=[
       ("lead_db_id","BIGINT" if IS_POSTGRES else "INTEGER"),("counselor_name","TEXT DEFAULT ''"),
       ("am_name","TEXT DEFAULT ''"),("interaction_date","TEXT DEFAULT ''"),
@@ -507,7 +523,7 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
             if col not in existing: cur.execute(f"ALTER TABLE client_cases ADD COLUMN {col} {ctype}")
 
 
-    # v3.60 profile personalization
+    # v3.61 profile personalization
     v358_user_cols=[
       ("profile_cover_data","BYTEA" if IS_POSTGRES else "BLOB"),
       ("profile_cover_mime","TEXT DEFAULT ''"),
@@ -1082,7 +1098,7 @@ def employee_month_rankings(con,start_date,end_date,company_code=None,designatio
 
 
 def am_business_month_rankings(con,start_date,end_date,company_code=None):
-    """v3.60: ranking is based ONLY on actual enrollment count."""
+    """v3.61: ranking is based ONLY on actual enrollment count."""
     q="""SELECT u.id,u.full_name,u.company_code,u.designation,u.photo_mime,u.active,u.employee_id
          FROM users u WHERE u.role='AM'"""
     params=[]
@@ -2210,8 +2226,80 @@ def finance_reconciliation_export():
     return send_file(bio,mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",download_name=f"THE_GAUR_Bank_Reconciliation_{run['id']}.xlsx",as_attachment=True)
 
 
+
+@app.route("/accounts/reports")
+@require_roles("MD","GM")
+def accounts_report_center():
+    u=current_user(); con=db(); today=datetime.date.today()
+    mode=(request.args.get("mode") or "daily").lower()
+    if mode not in ("daily","weekly","monthly","yearly"): mode="daily"
+    allowed=_finance_companies(u)
+    company=(request.args.get("company") or "").strip()
+    if company not in allowed: company=allowed[0] if len(allowed)==1 else ""
+
+    if mode=="daily":
+        d=datetime.datetime.strptime(request.args.get("date") or today.isoformat(),"%Y-%m-%d").date(); start=end=d; label=d.strftime("%d %b %Y")
+    elif mode=="weekly":
+        d=datetime.datetime.strptime(request.args.get("date") or today.isoformat(),"%Y-%m-%d").date()
+        start=d-datetime.timedelta(days=d.weekday()); end=start+datetime.timedelta(days=6); label=f"{start.strftime('%d %b')} – {end.strftime('%d %b %Y')}"
+    elif mode=="monthly":
+        y,m=map(int,(request.args.get("month") or today.strftime("%Y-%m")).split("-")); start=datetime.date(y,m,1)
+        nxt=datetime.date(y+1,1,1) if m==12 else datetime.date(y,m+1,1); end=nxt-datetime.timedelta(days=1); label=start.strftime("%B %Y")
+    else:
+        y=int(request.args.get("year") or today.year); start=datetime.date(y,1,1); end=datetime.date(y,12,31); label=str(y)
+    s,e=start.isoformat(),end.isoformat()
+
+    cwhere=""; cp=[]
+    if company: cwhere=" AND company_code=?"; cp=[company]
+    cases=con.execute("SELECT * FROM client_cases WHERE 1=1"+cwhere,cp).fetchall()
+    inflow=[]
+    def add_in(c,amount,bank,method,dt,stage):
+        amount=float(amount or 0)
+        if amount<=0:return
+        date=(dt or c["enrollment_date"] or c["created_at"] or "")[:10]
+        if not date or not(s<=date<=e):return
+        inflow.append({"date":date,"company":c["company_code"],"party":c["client_name"] or c["case_id"],
+                       "ref":c["case_id"],"stage":stage,"bank":bank or "Cash",
+                       "method":method or ("Cash" if (bank or "").lower()=="cash" else "Net Banking"),
+                       "amount":amount,"source":"Enrollment"})
+    for c in cases:
+        fm=c["first_payment_method"] or "Net Banking"; sm=c["second_payment_method"] or "Net Banking"
+        add_in(c,c["first_cash"],"Cash","Cash",c["first_payment_datetime"],"1st Payment")
+        add_in(c,c["first_rbl"],"RBL Bank",fm,c["first_payment_datetime"],"1st Payment")
+        add_in(c,c["first_yes_bank"],"Yes Bank",fm,c["first_payment_datetime"],"1st Payment")
+        add_in(c,c["first_au_bank"],"AU Bank",fm,c["first_payment_datetime"],"1st Payment")
+        add_in(c,c["second_cash"],"Cash","Cash",c["second_payment_datetime"],"2nd Payment")
+        add_in(c,c["second_rbl"],"RBL Bank",sm,c["second_payment_datetime"],"2nd Payment")
+        add_in(c,c["second_yes_bank"],"Yes Bank",sm,c["second_payment_datetime"],"2nd Payment")
+        add_in(c,c["second_au_bank"],"AU Bank",sm,c["second_payment_datetime"],"2nd Payment")
+        add_in(c,c["other_payment_received"],c["other_payment_bank"] or "Other / Unspecified",
+               c["other_payment_method"] or "Other",c["other_payment_datetime"],"Other Payment")
+
+    wh=["t.status='POSTED'","t.txn_date BETWEEN ? AND ?"]; pa=[s,e]
+    if company: wh.append("t.company_code=?"); pa.append(company)
+    manual=con.execute("""SELECT t.*,b.bank_name,b.account_name,b.account_last4 FROM finance_transactions t
+                          LEFT JOIN finance_banks b ON b.id=t.account_id WHERE """+" AND ".join(wh)+" ORDER BY t.txn_date,t.id",pa).fetchall()
+    outflow=[]; manual_income=[]
+    for r in manual:
+        item={"date":r["txn_date"],"company":r["company_code"],"party":r["party_name"],"ref":r["voucher_no"],
+              "stage":r["head"],"bank":r["bank_name"] or ("Cash" if r["payment_mode"]=="Cash" else "Unspecified"),
+              "method":r["payment_mode"] or "Other","amount":float(r["amount"] or 0),"source":"Accounts"}
+        (manual_income if r["direction"]=="IN" else outflow).append(item)
+    all_in=inflow+manual_income
+    bank_totals={}; method_totals={}
+    for x in all_in:
+        bank_totals[x["bank"]]=bank_totals.get(x["bank"],0)+x["amount"]
+        method_totals[x["method"]]=method_totals.get(x["method"],0)+x["amount"]
+    total_in=sum(x["amount"] for x in all_in); total_out=sum(x["amount"] for x in outflow); net=total_in-total_out
+    paired=[{"in":all_in[i] if i<len(all_in) else None,"out":outflow[i] if i<len(outflow) else None} for i in range(max(len(all_in),len(outflow)))]
+    con.close()
+    return render_template("accounts_reports.html",u=u,mode=mode,label=label,start=s,end=e,company=company,companies=allowed,
+                           inflow=all_in,outflow=outflow,paired=paired,bank_totals=sorted(bank_totals.items(),key=lambda x:-x[1]),
+                           method_totals=sorted(method_totals.items(),key=lambda x:-x[1]),total_in=total_in,total_out=total_out,net=net)
+
+
 @app.route("/finance/cash-book")
-@require_roles("MD")
+@require_roles("MD","GM")
 def finance_cash_book():
     u=current_user(); con=db()
     day=(request.args.get("date") or datetime.date.today().isoformat()).strip()
@@ -2245,7 +2333,7 @@ def finance_cash_book():
                            monthly_in=monthly_in,monthly_out=monthly_out,monthly_net=monthly_in-monthly_out)
 
 @app.route("/finance",methods=["GET","POST"])
-@require_roles("MD")
+@require_roles("MD","GM")
 def finance_center():
     u=current_user();con=db();companies=_finance_companies(u)
     if request.method=="POST":
@@ -2286,7 +2374,7 @@ def finance_center():
     return render_template("finance.html",u=u,rows=rows,banks=banks,companies=companies,heads=FINANCE_HEADS,k=k,today=datetime.date.today().isoformat(),f={"date_from":df,"date_to":dt,"company":company,"head":head})
 
 @app.route("/finance/banks",methods=["GET","POST"])
-@require_roles("MD")
+@require_roles("MD","GM")
 def finance_banks():
     ensure_bank_manager_schema()
     u=current_user();con=db();companies=_finance_companies(u)
@@ -2303,7 +2391,7 @@ def finance_banks():
 
 
 @app.route("/payment-accounts")
-@require_roles("MD")
+@require_roles("MD","GM")
 def payment_accounts():
     ensure_bank_manager_schema()
     u=current_user();con=db()
@@ -2629,7 +2717,7 @@ def lead_control_center():
         clauses.append("l.assigned_am IS NULL")
     elif am.isdigit():
         clauses.append("l.assigned_am=?"); p.append(int(am))
-    # v3.60: Area uses imported Source/Area field; Location uses City/Location field.
+    # v3.61: Area uses imported Source/Area field; Location uses City/Location field.
     if area:
         clauses.append("LOWER(TRIM(COALESCE(l.source,'')))=LOWER(?)"); p.append(area)
     if location:
@@ -3729,7 +3817,7 @@ def edit_client_record(lead_db_id):
 @require_roles("MD","GM")
 def cases():
     u=current_user();con=db()
-    # v3.60 repair/sync: every Enrolled lead must have exactly one linked client account shell.
+    # v3.61 repair/sync: every Enrolled lead must have exactly one linked client account shell.
     if request.method=="GET":
         if u["role"]=="GM":
             _enrolled=con.execute("""SELECT id FROM leads WHERE company_code=? AND LOWER(TRIM(COALESCE(status,'')))='enrolled'
@@ -3783,6 +3871,13 @@ def cases():
            lead_db_id,counselor,am_name,request.form.get("interaction_date",""),pkg,avp,
            fc,fr,fy,fa,first,fs,fdt,sc,sr,sy,sa,second,ss,sdt,other,odt,total,ss,
            request.form.get("filing_status","Documents Pending"),request.form.get("remarks",""),u["login_id"],now,now))
+        _new_case_row=con.execute("SELECT id FROM client_cases WHERE case_id=?",(case_id,)).fetchone()
+        if _new_case_row:
+            con.execute("""UPDATE client_cases SET first_payment_method=?,second_payment_method=?,
+                           other_payment_method=?,other_payment_bank=? WHERE id=?""",
+                        (request.form.get("first_payment_method",""),request.form.get("second_payment_method",""),
+                         request.form.get("other_payment_method",""),request.form.get("other_payment_bank",""),
+                         _new_case_row["id"]))
         if lead_db_id:
             con.execute("UPDATE leads SET status='Enrolled' WHERE id=?",(lead_db_id,))
             con.execute("INSERT INTO lead_activity(lead_id,status,followup_date,remarks,updated_by,updated_at) VALUES(?,?,?,?,?,?)",
@@ -3825,11 +3920,16 @@ def update_case(case_id):
     total=first+second+other
     con.execute("""UPDATE client_cases SET package_amount=?,after_visa_payment=?,interaction_date=?,counselor_name=?,am_name=?,
       first_cash=?,first_rbl=?,first_yes_bank=?,first_au_bank=?,booking_amount=?,first_payment_status=?,first_payment_datetime=?,
-      second_cash=?,second_rbl=?,second_yes_bank=?,second_au_bank=?,second_payment=?,second_payment_status=?,second_payment_datetime=?,
-      other_payment_received=?,other_payment_datetime=?,total_received=?,payment_status=?,remarks=?,updated_at=? WHERE id=?""",
+      first_payment_method=?,second_cash=?,second_rbl=?,second_yes_bank=?,second_au_bank=?,second_payment=?,second_payment_status=?,second_payment_datetime=?,
+      second_payment_method=?,other_payment_received=?,other_payment_datetime=?,other_payment_method=?,other_payment_bank=?,
+      total_received=?,payment_status=?,remarks=?,updated_at=? WHERE id=?""",
       (pkg,avp,request.form.get("interaction_date",r["interaction_date"] or ""),request.form.get("counselor_name",r["counselor_name"] or ""),
-       request.form.get("am_name",r["am_name"] or ""),fc,fr,fy,fa,first,fs,fdt,sc,sr,sy,sa,second,ss,sdt,other,odt,total,ss,
-       request.form.get("remarks",r["remarks"] or ""),now,case_id))
+       request.form.get("am_name",r["am_name"] or ""),fc,fr,fy,fa,first,fs,fdt,
+       request.form.get("first_payment_method",r["first_payment_method"] or "Net Banking"),
+       sc,sr,sy,sa,second,ss,sdt,request.form.get("second_payment_method",r["second_payment_method"] or "Net Banking"),
+       other,odt,request.form.get("other_payment_method",r["other_payment_method"] or ""),
+       request.form.get("other_payment_bank",r["other_payment_bank"] or ""),
+       total,ss,request.form.get("remarks",r["remarks"] or ""),now,case_id))
     con.commit();con.close();flash("Client account updated.","success");return redirect(url_for("cases"))
 
 @app.route("/allocate", methods=["POST"])
@@ -3986,7 +4086,7 @@ def my_leads():
     return render_template("my_leads.html",u=u,rows=rows,filters=filters)
 
 
-# ===== v3.60 UI PRIVACY + CASH BOOK =====
+# ===== v3.61 UI PRIVACY + CASH BOOK =====
 
 _GAUR_V337_TEMPLATES['finance_cash_book.html'] = r"""{% extends "base.html" %}{% block content %}
 <h1 class="title">Daily Cash Book & Monthly Accounts</h1>
@@ -4240,7 +4340,7 @@ _GAUR_V337_TEMPLATES['my_profile.html']=r'''{% extends "base.html" %}{% block co
 </div></div>{% endblock %}'''
 
 
-# === v3.60 Responsive Mobile UI / PWA metadata ===
+# === v3.61 Responsive Mobile UI / PWA metadata ===
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
     '</head>',
     '''<link rel="manifest" href="/manifest.webmanifest">
@@ -4326,7 +4426,7 @@ _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
 
 
 
-# === v3.60 Login title branding only ===
+# === v3.61 Login title branding only ===
 for _login_key in ('login.html','md_login.html','gaur_login.html'):
     if _login_key in _GAUR_V337_TEMPLATES:
         _GAUR_V337_TEMPLATES[_login_key]=_GAUR_V337_TEMPLATES[_login_key].replace(
@@ -4342,7 +4442,7 @@ for _login_key in ('login.html','md_login.html','gaur_login.html'):
 
 
 
-# === v3.60 Quick Multi Lead Allocation UI ===
+# === v3.61 Quick Multi Lead Allocation UI ===
 _GAUR_V337_TEMPLATES['lead_control.html']=r"""{% extends "base.html" %}{% block content %}
 <style>
 .alloc-filter{position:sticky;top:0;z-index:40;background:#071a2d;border:1px solid #315a7b;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 8px 28px rgba(0,0,0,.26)}
@@ -4496,7 +4596,7 @@ refreshSelected();
 
 
 
-# === v3.60 THE GAUR Easy Chat ===
+# === v3.61 THE GAUR Easy Chat ===
 _GAUR_V337_TEMPLATES['chat_center.html']=r'''{% extends "base.html" %}{% block content %}
 <style>
 .wa-shell{height:620px;min-height:420px;display:grid;grid-template-columns:360px 1fr;border:1px solid #315f85;border-radius:16px;overflow:hidden;background:#06182a;box-shadow:0 18px 55px rgba(0,0,0,.3)}
@@ -4601,14 +4701,14 @@ _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
 )
 
 
-# v3.60 full chat viewport fix
+# v3.61 full chat viewport fix
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('</head>','<style>body.chat-page-active .chat-fab,body.chat-page-active .notif-bell,body.chat-page-active .chat-panel,body.chat-page-active .notif-panel{display:none!important}body.chat-page-active{padding-bottom:0!important}body.chat-page-active main{padding-bottom:8px!important}</style></head>',1)
 
-# === v3.60 Compact Dashboard + Profile Settings ===
+# === v3.61 Compact Dashboard + Profile Settings ===
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('</head>','<style>.dashboard-identity-card{display:none!important}.dashboard-heading-row{display:block!important}.dashboard-heading-row h1{margin-bottom:8px!important}</style></head>',1)
 _GAUR_V337_TEMPLATES['my_profile.html']=_GAUR_V337_TEMPLATES['my_profile.html'].replace('{% endblock %}','\n<div class="card" style="margin-top:16px;border-color:#e6b73f">\n  <h2 style="color:#e6b73f;margin-top:0">🔐 Login ID & Password</h2>\n  <p style="opacity:.75">Login and password changes are available only here in My Professional Profile. Current password verification is required.</p>\n  <form method="post" action="{{url_for(\'my_profile_account\')}}">\n    <div class="grid3">\n      <div><label>Login ID</label><input name="new_login_id" value="{{u[\'login_id\']}}" required autocomplete="username"></div>\n      <div><label>Current Password *</label><input type="password" name="current_password" required autocomplete="current-password" placeholder="Enter current password"></div>\n      <div><label>New Password</label><input type="password" name="new_password" minlength="8" autocomplete="new-password" placeholder="Leave blank if not changing"></div>\n      <div><label>Confirm New Password</label><input type="password" name="confirm_password" minlength="8" autocomplete="new-password" placeholder="Repeat new password"></div>\n    </div>\n    <button class="btn" style="margin-top:12px">Save Login & Security Changes</button>\n  </form>\n</div>\n{% endblock %}',1)
 
-# === v3.60 Monthly Lead Overview at Dashboard Top ===
+# === v3.61 Monthly Lead Overview at Dashboard Top ===
 _dash=_GAUR_V337_TEMPLATES['dashboard.html']
 _marker='<form method="get" class="month-toolbar no-print">'
 _top='\n<div class="month-overview-top">\n  <div class="month-main-kpis">\n    <div class="month-kpi"><span>Total Leads of {{month_label}}</span><b>{{total_leads}}</b><small>Selected month</small></div>\n    <div class="month-kpi"><span>Allocated</span><b>{{allocated}}</b><small>Assigned to AMs</small></div>\n    <div class="month-kpi"><span>Unallocated</span><b>{{unallocated}}</b><small>Pending allocation</small></div>\n  </div>\n\n  {% if u[\'role\'] in [\'MD\',\'GM\'] %}\n  <div class="am-month-grid">\n    {% for a in allocation_summary %}\n    <div class="am-month-card">\n      <div class="am-card-head">\n        <div>\n          <div class="am-card-name">{{a[\'full_name\']}}</div>\n          <small>{{a[\'company_code\']}} • Assistant Manager</small>\n        </div>\n        <div class="am-conversion">{{a[\'positive_pct\'] or 0}}%</div>\n      </div>\n      <div class="am-card-stats">\n        <div><span>Interested / Allocated</span><b>{{a[\'positive_count\'] or 0}} / {{a[\'allocated_count\'] or 0}}</b></div>\n        <div><span>Hot Leads</span><b>{{a[\'hot_count\'] or 0}}</b></div>\n        <div><span>Enrolled</span><b>{{a[\'enrolled_count\'] or 0}}</b></div>\n      </div>\n      <div class="am-progress"><i style="width:{{a[\'positive_pct\'] or 0}}%"></i></div>\n      <small class="am-note">Conversion = Interested (50%+) ÷ Allocated</small>\n    </div>\n    {% else %}\n    <div class="card">No Assistant Managers created yet.</div>\n    {% endfor %}\n  </div>\n  {% endif %}\n</div>\n'
@@ -4623,7 +4723,7 @@ if _old_start in _dash and _old_end in _dash:
 _GAUR_V337_TEMPLATES['dashboard.html']=_dash
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace('</head>','\n<style>\n.month-overview-top{margin:8px 0 14px}\n.month-main-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}\n.month-kpi{background:#0d3151;border:1px solid #315f85;border-radius:14px;padding:15px 18px;box-shadow:0 7px 20px rgba(0,0,0,.18)}\n.month-kpi span{font-weight:800}.month-kpi b{display:block;color:#f3bd2f;font-size:32px;line-height:1.05;margin-top:6px}.month-kpi small{opacity:.65}\n.am-month-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}\n.am-month-card{background:linear-gradient(145deg,#0a2945,#0d3557);border:1px solid #315f85;border-radius:14px;padding:13px;box-shadow:0 6px 20px rgba(0,0,0,.18)}\n.am-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.am-card-name{font-size:18px;font-weight:900;color:#f3bd2f}.am-card-head small{opacity:.7}\n.am-conversion{font-size:25px;font-weight:900;color:#55dca0;white-space:nowrap}\n.am-card-stats{display:grid;grid-template-columns:1.5fr .7fr .7fr;gap:7px;margin-top:12px}\n.am-card-stats>div{background:#071d32;border:1px solid #244866;border-radius:9px;padding:8px}.am-card-stats span{display:block;font-size:11px;opacity:.7}.am-card-stats b{font-size:17px}\n.am-progress{height:7px;background:#071629;border-radius:8px;overflow:hidden;margin-top:10px}.am-progress i{display:block;height:100%;background:#55dca0;border-radius:8px}\n.am-note{display:block;margin-top:7px;opacity:.58}\n@media(max-width:900px){.month-main-kpis{grid-template-columns:1fr 1fr 1fr}.am-card-stats{grid-template-columns:1fr 1fr 1fr}}\n@media(max-width:600px){.month-main-kpis{grid-template-columns:1fr}.am-month-grid{grid-template-columns:1fr}}\n</style></head>\n',1)
 
-# === v3.60 Gallery-style Lead Multi Selection ===
+# === v3.61 Gallery-style Lead Multi Selection ===
 if 'lead_control.html' in _GAUR_V337_TEMPLATES:
     _lc=_GAUR_V337_TEMPLATES['lead_control.html']
     _lc=_lc.replace('<button type="button" class="quick-btn gold" onclick="selectAllFiltered()">✓ Select All Filtered</button>','<button type="button" class="quick-btn gold" id="selectionModeBtn" onclick="toggleSelectionMode()">Selection Mode</button>\\n<button type="button" class="quick-btn gold" onclick="selectAllFiltered()">✓ Select All Filtered</button>',1)
@@ -4637,7 +4737,7 @@ if 'lead_control.html' in _GAUR_V337_TEMPLATES:
 _GAUR_V337_TEMPLATES['my_profile.html']='{% extends "base.html" %}{% block content %}\n<style>\n.profile-topnav{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:12px}.profile-topnav a{padding:9px 13px;border:1px solid #315f85;border-radius:10px;background:#0b2946;color:#fff;text-decoration:none;font-weight:800}.profile-topnav .active{background:#e6b73f;color:#071629}\n.profile-shell{max-width:1180px;margin:auto}.profile-hero{border:1px solid #315f85;border-radius:18px;overflow:hidden;background:#0a223a}.profile-cover{height:250px;background:linear-gradient(135deg,#0d3151,#163b5a);background-size:cover;background-position:center;position:relative}.profile-cover.theme-flowers{background:radial-gradient(circle at 20% 25%,#ffd2e8 0 7%,transparent 8%),radial-gradient(circle at 78% 34%,#ffeaa6 0 7%,transparent 8%),linear-gradient(135deg,#7d375f,#233a63)}.profile-cover.theme-nature{background:linear-gradient(135deg,#416f54,#9bc78b)}.profile-cover.theme-minimal{background:linear-gradient(135deg,#dfe7ef,#f7f8fa)}.profile-cover.theme-ocean{background:linear-gradient(135deg,#0b4a6f,#20a6c9,#7ad8dc)}.profile-cover.theme-sunset{background:linear-gradient(135deg,#7f3765,#e3765b,#f4c06a)}\n.cover-edit{position:absolute;right:16px;top:16px;background:rgba(6,22,41,.82);border:1px solid #e6b73f;color:#fff;padding:8px 11px;border-radius:10px;cursor:pointer}.profile-main{padding:0 26px 24px}.profile-avatar-row{margin-top:-78px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}.profile-avatar-xl,.profile-avatar-ph-xl{width:156px;height:156px;border-radius:50%;border:6px solid #06182a;background:#0b2946}.profile-avatar-xl{object-fit:cover}.profile-avatar-ph-xl{display:flex;align-items:center;justify-content:center;color:#e6b73f;font-size:54px;font-weight:900}.profile-name{font-size:32px;font-weight:900;margin-top:14px}.profile-headline{font-size:19px;opacity:.9}.profile-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;opacity:.75}.profile-actions{display:flex;gap:8px;flex-wrap:wrap}\n.profile-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px}.profile-card{background:#0b2946;border:1px solid #315f85;border-radius:16px;padding:18px}.profile-card h2{color:#e6b73f;margin-top:0}.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.theme-choice{border:1px solid #315f85;border-radius:10px;padding:8px;text-align:center}.reminder-item{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid #2d5879;border-radius:11px;padding:10px;margin:8px 0;background:#081e34}.reminder-item.overdue{border-color:#b94150;background:#2b171d}.security-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}\nbody.user-light{background:#eef2f6!important;color:#132238!important}body.user-light main{background:#eef2f6!important}body.user-light .profile-card,body.user-light .profile-hero{background:#fff!important;color:#132238!important;border-color:#cbd6e2!important}body.user-light input,body.user-light select,body.user-light textarea{background:#fff!important;color:#132238!important}\n@media(max-width:900px){.profile-cover{height:190px}.profile-grid{grid-template-columns:1fr}.profile-avatar-xl,.profile-avatar-ph-xl{width:120px;height:120px}.profile-main{padding:0 14px 18px}.profile-avatar-row{margin-top:-60px}.profile-name{font-size:26px}.security-grid,.theme-grid{grid-template-columns:1fr}}\n</style>\n<script>document.addEventListener(\'DOMContentLoaded\',function(){if("{{u[\'appearance_mode\'] or \'dark\'}}"==="light")document.body.classList.add(\'user-light\');});</script>\n<div class="profile-shell">\n<div class="profile-topnav">\n<a href="{{url_for(\'dashboard\')}}">🏠 Home</a><a href="{{url_for(\'dashboard\')}}">📊 Dashboard</a><a href="{{url_for(\'chat_center\')}}">💬 Messages{% if chat_unread_count %} ({{chat_unread_count}}){% endif %}</a><a href="{{url_for(\'notification_center\')}}">🔔 Notifications{% if notification_unread_count %} ({{notification_unread_count}}){% endif %}</a><a class="active" href="{{url_for(\'my_profile\')}}">👤 Me</a>\n</div>\n<form method="post" enctype="multipart/form-data">\n<div class="profile-hero">\n{% set theme=u[\'profile_theme\'] or \'royal\' %}\n<div class="profile-cover theme-{{theme}}" {% if u[\'profile_cover_mime\'] %}style="background-image:url(\'{{url_for(\'user_cover\',user_id=u[\'id\'])}}\')"{% endif %}><label class="cover-edit">✎ Change Cover<input type="file" name="profile_cover" accept=".jpg,.jpeg,.png,.webp" hidden></label></div>\n<div class="profile-main"><div class="profile-avatar-row"><div>{% if u[\'photo_mime\'] %}<img class="profile-avatar-xl" src="{{url_for(\'user_photo\',user_id=u[\'id\'],v=\'358\')}}">{% else %}<div class="profile-avatar-ph-xl">{{(u[\'full_name\'] or \'?\')[0]|upper}}</div>{% endif %}</div><div class="profile-actions"><label class="toolbtn">Change Photo<input type="file" name="profile_photo" accept=".jpg,.jpeg,.png,.webp" hidden></label><button class="btn">Save Profile</button></div></div>\n<div class="profile-name">{{u[\'full_name\']}}</div><div class="profile-headline">{{u[\'profile_headline\'] or role_display(u[\'role\'],u[\'designation\'])}}</div><div class="profile-meta"><span>{{u[\'company_code\'] or \'THE GAUR\'}}</span><span>{{u[\'branch\'] or \'Branch not set\'}}</span><span>{{u[\'official_mobile\'] or \'Mobile not set\'}}</span><span>{{u[\'official_email\'] or \'Email not set\'}}</span></div></div></div>\n<div class="profile-grid"><div>\n<div class="profile-card"><h2>About</h2><textarea name="profile_bio" rows="5" maxlength="600" placeholder="Write your professional introduction...">{{u[\'profile_bio\'] or \'\'}}</textarea><div class="grid3" style="margin-top:12px"><div><label>Professional Headline</label><input name="profile_headline" value="{{u[\'profile_headline\'] or \'\'}}"></div><div><label>Official Mobile</label><input name="official_mobile" maxlength="10" value="{{u[\'official_mobile\'] or \'\'}}"></div><div><label>Official Email</label><input type="email" name="official_email" value="{{u[\'official_email\'] or \'\'}}"></div><div><label>Department</label><input name="department" value="{{u[\'department\'] or \'\'}}"></div><div><label>Branch / Office</label><input name="branch" value="{{u[\'branch\'] or \'\'}}"></div></div></div>\n<div class="profile-card" style="margin-top:16px"><h2>🔔 Reminders & Follow-ups</h2><p style="opacity:.72">Due and overdue follow-ups automatically appear here after login.</p>{% for r in reminder_rows %}<div class="reminder-item {% if r[\'followup_date\'] < today %}overdue{% endif %}"><div><b>{{r[\'client_name\'] or r[\'lead_id\']}}</b><br><small>Follow-up {{r[\'followup_date\']}} • {{r[\'status\']}} • Interest {{r[\'interest_score\'] or 0}}%</small></div><a class="toolbtn" href="{{url_for(\'lead_profile\',lead_db_id=r[\'id\'])}}">Open</a></div>{% else %}<div style="opacity:.65">No due follow-ups right now.</div>{% endfor %}</div>\n</div>\n<div><div class="profile-card"><h2>🎨 Profile Appearance</h2><label>Mode</label><select name="appearance_mode"><option value="dark" {% if (u[\'appearance_mode\'] or \'dark\')==\'dark\' %}selected{% endif %}>Dark Mode</option><option value="light" {% if u[\'appearance_mode\']==\'light\' %}selected{% endif %}>Light Mode</option><option value="system" {% if u[\'appearance_mode\']==\'system\' %}selected{% endif %}>System Mode</option></select><label style="margin-top:10px">Cover Theme</label><div class="theme-grid">{% for val,label in [(\'royal\',\'Royal\'),(\'flowers\',\'Flowers\'),(\'nature\',\'Nature\'),(\'minimal\',\'Minimal\'),(\'ocean\',\'Ocean\'),(\'sunset\',\'Sunset\')] %}<label class="theme-choice"><input type="radio" name="profile_theme" value="{{val}}" {% if (u[\'profile_theme\'] or \'royal\')==val %}checked{% endif %}>{{label}}</label>{% endfor %}</div><small style="opacity:.65">Custom cover image overrides preset theme.</small></div>\n<div class="profile-card" style="margin-top:16px"><h2>Official Identity</h2><div><b>Role:</b> {{role_display(u[\'role\'],u[\'designation\'])}}</div><div><b>Company:</b> {{u[\'company_code\'] or \'THE GAUR\'}}</div><div><b>Employee ID:</b> {{employee[\'employee_code\'] if employee else (u[\'identity_code\'] or \'-\')}}</div></div></div></div>\n</form>\n<div class="profile-card" style="margin-top:16px;border-color:#e6b73f"><h2>🔐 Login ID & Password</h2><form method="post" action="{{url_for(\'my_profile_account\')}}"><div class="security-grid"><div><label>Login ID</label><input name="new_login_id" value="{{u[\'login_id\']}}" required></div><div><label>Current Password *</label><input type="password" name="current_password" required></div><div><label>New Password</label><input type="password" name="new_password" minlength="8"></div><div><label>Confirm New Password</label><input type="password" name="confirm_password" minlength="8"></div></div><button class="btn" style="margin-top:12px">Save Login & Security Changes</button></form></div>\n</div>\n{% endblock %}'
 
 
-# === v3.60 LinkedIn-style Personal Header integrated into Main Dashboard ===
+# === v3.61 LinkedIn-style Personal Header integrated into Main Dashboard ===
 if 'dashboard.html' in _GAUR_V337_TEMPLATES:
     _d=_GAUR_V337_TEMPLATES['dashboard.html']
     _old_start='<div class="dashboard-heading-row">'
@@ -4755,6 +4855,62 @@ body.user-light{background:#eef2f6!important;color:#132238!important}body.user-l
 </style></head>""",
   1
 )
+
+
+
+_GAUR_V337_TEMPLATES['accounts_reports.html']=r"""{% extends "base.html" %}{% block content %}
+<style>
+.acc-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.acc-tabs a{padding:9px 13px;border:1px solid #315f85;border-radius:10px;color:#fff;text-decoration:none;background:#0b2946;font-weight:800}.acc-tabs a.active{background:#e6b73f;color:#071629}
+.acc-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.acc-kpi{background:#0d3151;border:1px solid #315f85;border-radius:13px;padding:13px}.acc-kpi b{display:block;color:#e6b73f;font-size:26px}.bank-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}.bank-card{background:#081e34;border:1px solid #315f85;border-radius:11px;padding:11px}.bank-card b{display:block;color:#55dca0;font-size:21px}.report-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:end}.inmoney{color:#55dca0;font-weight:900}.outmoney{color:#ff7b86;font-weight:900}@media(max-width:900px){.acc-kpis{grid-template-columns:1fr 1fr}}@media(max-width:560px){.acc-kpis{grid-template-columns:1fr}}
+</style>
+<h1 class="title">📒 Accounts • Inflow & Outflow</h1>
+<p style="opacity:.75">Enrollment payments + manual accounts entries • Bank-wise • Method-wise • Daily / Weekly / Monthly / Yearly.</p>
+<div class="acc-tabs">
+<a class="{{'active' if mode=='daily' else ''}}" href="{{url_for('accounts_report_center',mode='daily',company=company)}}">Daily</a>
+<a class="{{'active' if mode=='weekly' else ''}}" href="{{url_for('accounts_report_center',mode='weekly',company=company)}}">Weekly</a>
+<a class="{{'active' if mode=='monthly' else ''}}" href="{{url_for('accounts_report_center',mode='monthly',company=company)}}">Monthly</a>
+<a class="{{'active' if mode=='yearly' else ''}}" href="{{url_for('accounts_report_center',mode='yearly',company=company)}}">Yearly</a>
+<a href="{{url_for('finance_banks')}}">🏦 Bank Manager</a><a href="{{url_for('finance_center')}}">➕ Accounts Entry</a>
+</div>
+<div class="card no-print"><form method="get" class="report-filters"><input type="hidden" name="mode" value="{{mode}}">
+{% if mode in ['daily','weekly'] %}<div><label>Date</label><input type="date" name="date" value="{{start}}"></div>{% endif %}
+{% if mode=='monthly' %}<div><label>Month</label><input type="month" name="month" value="{{start[:7]}}"></div>{% endif %}
+{% if mode=='yearly' %}<div><label>Year</label><input type="number" name="year" value="{{start[:4]}}" min="2020" max="2100"></div>{% endif %}
+{% if u.role=='MD' %}<div><label>Company</label><select name="company"><option value="">Both Companies</option>{% for c in companies %}<option value="{{c}}" {% if company==c %}selected{% endif %}>{{c}}</option>{% endfor %}</select></div>{% endif %}
+<div><button class="btn">View Report</button></div></form></div>
+<h2 style="color:#e6b73f">{{label}}</h2>
+<div class="acc-kpis"><div class="acc-kpi">Total Receipt<b>₹{{"{:,.0f}".format(total_in)}}</b></div><div class="acc-kpi">Total Expenses / Refunds<b>₹{{"{:,.0f}".format(total_out)}}</b></div><div class="acc-kpi">Net Cash Flow<b>₹{{"{:,.0f}".format(net)}}</b></div><div class="acc-kpi">Receipt Entries<b>{{inflow|length}}</b></div></div>
+<div class="card"><h2 style="color:#e6b73f">🏦 Bank / Cash-wise Receipt</h2><div class="bank-grid">{% for bank,total in bank_totals %}<div class="bank-card"><span>{{bank}}</span><b>₹{{"{:,.0f}".format(total)}}</b></div>{% else %}<div>No receipts.</div>{% endfor %}</div></div>
+<div class="card"><h2 style="color:#e6b73f">💳 Payment Method-wise Receipt</h2><div class="bank-grid">{% for method,total in method_totals %}<div class="bank-card"><span>{{method}}</span><b>₹{{"{:,.0f}".format(total)}}</b></div>{% else %}<div>No methods recorded.</div>{% endfor %}</div></div>
+<div class="card" style="border-color:#e6b73f"><h2 style="text-align:center;color:#e6b73f">Payment Inflow And Outflow • {{label}}</h2><div class="tablewrap"><table>
+<thead><tr><th>Date / Co.</th><th>Inflow Particular</th><th>Bank</th><th>Method</th><th>Amount</th><th>Date / Co.</th><th>Outflow Particular</th><th>Bank / Method</th><th>Amount</th></tr></thead>
+<tbody>{% for p in paired %}<tr>
+{% if p['in'] %}<td>{{p['in']['date']}}<br><small>{{p['in']['company']}}</small></td><td>{{p['in']['party']}}<br><small>{{p['in']['stage']}} • {{p['in']['ref']}}</small></td><td>{{p['in']['bank']}}</td><td>{{p['in']['method']}}</td><td class="inmoney">₹{{"{:,.0f}".format(p['in']['amount'])}}</td>{% else %}<td></td><td></td><td></td><td></td><td></td>{% endif %}
+{% if p['out'] %}<td>{{p['out']['date']}}<br><small>{{p['out']['company']}}</small></td><td>{{p['out']['party']}}<br><small>{{p['out']['stage']}} • {{p['out']['ref']}}</small></td><td>{{p['out']['bank']}}<br><small>{{p['out']['method']}}</small></td><td class="outmoney">₹{{"{:,.0f}".format(p['out']['amount'])}}</td>{% else %}<td></td><td></td><td></td><td></td>{% endif %}
+</tr>{% else %}<tr><td colspan="9">No transactions.</td></tr>{% endfor %}</tbody>
+<tfoot><tr><th colspan="4">Total Receipt</th><th>₹{{"{:,.0f}".format(total_in)}}</th><th colspan="3">Total Expenses</th><th>₹{{"{:,.0f}".format(total_out)}}</th></tr><tr><th colspan="8">Net</th><th>₹{{"{:,.0f}".format(net)}}</th></tr></tfoot>
+</table></div></div><div class="no-print"><button class="toolbtn" onclick="window.print()">Print / Save PDF</button></div>
+{% endblock %}"""
+
+if 'cases.html' in _GAUR_V337_TEMPLATES:
+    _c=_GAUR_V337_TEMPLATES['cases.html']
+    _c=_c.replace('<div><label>1st Payment Total</label><input id="ft" readonly></div>',
+                  '<div><label>1st Payment Total</label><input id="ft" readonly></div><div><label>How Received</label><select name="first_payment_method"><option>QR / UPI</option><option>Net Banking</option><option>Cash Deposit</option><option>Cheque</option><option>Card / POS</option><option>Cash</option></select></div>',1)
+    _c=_c.replace('<div><label>2nd Payment Total</label><input id="st" readonly></div>',
+                  '<div><label>2nd Payment Total</label><input id="st" readonly></div><div><label>How Received</label><select name="second_payment_method"><option>QR / UPI</option><option>Net Banking</option><option>Cash Deposit</option><option>Cheque</option><option>Card / POS</option><option>Cash</option></select></div>',1)
+    _c=_c.replace('<div><label>Other Payment Received</label><input type="number" step=".01" name="other_payment_received" id="oth" value="0"></div>',
+                  '<div><label>Other Payment Received</label><input type="number" step=".01" name="other_payment_received" id="oth" value="0"></div><div><label>Other Payment Bank / Cash</label><input name="other_payment_bank" placeholder="Cash / Bank name"></div><div><label>How Received</label><select name="other_payment_method"><option>QR / UPI</option><option>Net Banking</option><option>Cash Deposit</option><option>Cheque</option><option>Card / POS</option><option>Cash</option><option>Other</option></select></div>',1)
+    _c=_c.replace('<div><label>Status</label><select name="first_payment_status">',
+                  '<div><label>How Received</label><select name="first_payment_method"><option selected>{{r.first_payment_method or "Net Banking"}}</option><option>QR / UPI</option><option>Net Banking</option><option>Cash Deposit</option><option>Cheque</option><option>Card / POS</option><option>Cash</option></select></div><div><label>Status</label><select name="first_payment_status">',1)
+    _c=_c.replace('<div><label>Status</label><select name="second_payment_status">',
+                  '<div><label>How Received</label><select name="second_payment_method"><option selected>{{r.second_payment_method or "Net Banking"}}</option><option>QR / UPI</option><option>Net Banking</option><option>Cash Deposit</option><option>Cheque</option><option>Card / POS</option><option>Cash</option></select></div><div><label>Status</label><select name="second_payment_status">',1)
+    _c=_c.replace('<div><label>Other Received</label><input type="number" step=".01" name="other_payment_received" value="{{r.other_payment_received or 0}}"></div>',
+                  '<div><label>Other Received</label><input type="number" step=".01" name="other_payment_received" value="{{r.other_payment_received or 0}}"></div><div><label>Other Bank / Cash</label><input name="other_payment_bank" value="{{r.other_payment_bank or \'\')}}"></div><div><label>Other Method</label><select name="other_payment_method"><option selected>{{r.other_payment_method or "Other"}}</option><option>QR / UPI</option><option>Net Banking</option><option>Cash Deposit</option><option>Cheque</option><option>Card / POS</option><option>Cash</option><option>Other</option></select></div>',1)
+    _GAUR_V337_TEMPLATES['cases.html']=_c
+
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
+    '<a href="{{ url_for(\'cases\') }}">Client Accounts / Enrollment</a>',
+    '<a href="{{url_for(\'accounts_report_center\')}}">📒 Accounts Reports</a><a href="{{url_for(\'finance_banks\')}}">🏦 Bank Manager</a><a href="{{ url_for(\'cases\') }}">Client Accounts / Enrollment</a>',1)
 
 
 @app.context_processor
