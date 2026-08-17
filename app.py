@@ -1501,7 +1501,14 @@ def chat_people_api():
     out=[]
     for p in people[:50]:
         unread=con.execute("SELECT COUNT(*) c FROM chat_messages WHERE sender_id=? AND recipient_id=? AND COALESCE(read_at,'')=''",(p["id"],u["id"])).fetchone()["c"]
-        out.append({"id":p["id"],"name":p["full_name"],"designation":role_display(p["role"],p["designation"]),"company":p["company_code"],"unread":unread,"photo":url_for("user_photo",user_id=p["id"],v="350") if p["photo_mime"] else ""})
+        last=con.execute("""SELECT message,created_at,sender_id FROM chat_messages
+                            WHERE (sender_id=? AND recipient_id=?) OR (sender_id=? AND recipient_id=?)
+                            ORDER BY id DESC LIMIT 1""",(u["id"],p["id"],p["id"],u["id"])).fetchone()
+        preview=(last["message"] if last and last["message"] else "Attachment / shared lead") if last else ""
+        out.append({"id":p["id"],"name":p["full_name"],"designation":role_display(p["role"],p["designation"]),
+                    "company":p["company_code"],"unread":unread,
+                    "photo":url_for("user_photo",user_id=p["id"],v="353") if p["photo_mime"] else "",
+                    "preview":preview[:70],"last_at":last["created_at"] if last else ""})
     con.close()
     return jsonify({"people":out})
 
@@ -2534,7 +2541,7 @@ def lead_control_center():
         "SELECT DISTINCT TRIM(city) v FROM leads"+opt_where+" AND COALESCE(TRIM(city),'')<>'' ORDER BY v",
         opt_params).fetchall()]
 
-    archived=con.execute("SELECT * FROM leads WHERE COALESCE(deleted_at,'')<>'' ORDER BY deleted_at DESC LIMIT 500").fetchall() if u["role"]=="MD" else []
+    archived=con.execute("SELECT * FROM leads WHERE COALESCE(deleted_at,'')<>'' ORDER BY deleted_at DESC LIMIT 250").fetchall() if u["role"]=="MD" else con.execute("SELECT * FROM leads WHERE COALESCE(deleted_at,'')<>'' AND company_code=? ORDER BY deleted_at DESC LIMIT 250",(u["company_code"],)).fetchall()
     k={"total":len(rows),
        "latest_batch":sum(1 for r in rows if r["data_age"]=="LATEST"),
        "old_data":sum(1 for r in rows if r["data_age"]!="LATEST"),
@@ -2574,30 +2581,8 @@ def lead_bulk_action():
     return redirect(url_for("lead_control_center"))
 
 
-
-@app.route("/lead-control/delete/<int:lead_id>",methods=["POST"])
-@require_roles("MD","GM")
-def delete_lead_to_recycle_bin(lead_id):
-    u=current_user(); con=db()
-    row=con.execute("SELECT * FROM leads WHERE id=? AND COALESCE(deleted_at,'')=''",(lead_id,)).fetchone()
-    if not row or (u["role"]=="GM" and row["company_code"]!=u["company_code"]):
-        con.close(); flash("Lead not found or access denied.","error")
-        return redirect(url_for("lead_control_center"))
-    reason=(request.form.get("reason") or "Deleted by management").strip()
-    now=datetime.datetime.now().isoformat(timespec="seconds")
-    con.execute("UPDATE leads SET deleted_at=?,deleted_by=?,deletion_reason=? WHERE id=?",
-                (now,u["login_id"],reason,lead_id))
-    con.commit(); con.close()
-    log_activity("LEAD_MOVED_TO_RECYCLE_BIN","Lead Deleted / Moved to Recycle Bin",
-                 "LEADS","Lead",lead_id,row["lead_id"],
-                 details={"client":row["client_name"],"reason":reason},
-                 severity="WARNING",actor=u,company_code=row["company_code"])
-    flash(f"{row['client_name'] or row['lead_id']} moved to Recycle Bin.","success")
-    return redirect(url_for("lead_control_center"))
-
-
 @app.route("/lead-control/recycle-bulk",methods=["POST"])
-@require_roles("MD")
+@require_roles("MD","GM")
 def recycle_bin_bulk_action():
     u=current_user(); con=db(); action=request.form.get("action","")
     ids=[int(x) for x in request.form.getlist("lead_ids") if str(x).isdigit()]
@@ -4195,7 +4180,7 @@ _GAUR_V337_TEMPLATES['lead_control.html']=r"""{% extends "base.html" %}{% block 
 <form method="post" action="{{url_for('lead_bulk_action')}}" id="bulkForm">
 <div class="card" style="padding:0">
 <div class="tablewrap"><table id="allocationTable">
-<thead><tr><th style="width:55px">Select</th><th>Lead ID</th><th>Client</th><th>Company</th><th>Area</th><th>Location</th><th>Country / Visa</th><th>Interest</th><th>Current AM</th><th>Batch</th><th>Work</th><th>Action</th></tr></thead>
+<thead><tr><th style="width:55px">Select</th><th>Lead ID</th><th>Client</th><th>Company</th><th>Area</th><th>Location</th><th>Country / Visa</th><th>Interest</th><th>Current AM</th><th>Batch</th><th>Work</th></tr></thead>
 <tbody>
 {% for r in rows %}
 <tr class="alloc-row" data-unallocated="{{1 if not r.assigned_am else 0}}" data-company="{{r.company_code}}">
@@ -4210,15 +4195,9 @@ _GAUR_V337_TEMPLATES['lead_control.html']=r"""{% extends "base.html" %}{% block 
 <td>{% if r.am_name %}<span class="badge-mini">{{r.am_name}}</span>{% else %}<span class="badge-mini badge-unalloc">UNALLOCATED</span>{% endif %}</td>
 <td>{{r.upload_batch or 'Legacy'}}<br><small>{{r.data_age}}</small></td>
 <td><span class="badge-mini">{{r.work_state}}</span></td>
-<td>
-<form method="post" action="{{url_for('delete_lead_to_recycle_bin',lead_id=r.id)}}" onsubmit="event.stopPropagation();return confirm('Move this lead to Recycle Bin?');">
-<input type="hidden" name="reason" value="Deleted from Lead Allocation">
-<button type="submit" class="quick-btn red" onclick="event.stopPropagation()">🗑 Delete</button>
-</form>
-</td>
 </tr>
 {% else %}
-<tr><td colspan="12">No leads match the selected filters.</td></tr>
+<tr><td colspan="11">No leads match the selected filters.</td></tr>
 {% endfor %}
 </tbody></table></div>
 </div>
@@ -4247,31 +4226,6 @@ _GAUR_V337_TEMPLATES['lead_control.html']=r"""{% extends "base.html" %}{% block 
 <div class="tablewrap"><table><thead><tr><th>Batch</th><th>Company</th><th>Total</th><th>Allocated</th><th>Unallocated</th><th>Worked</th><th>Not Worked</th></tr></thead><tbody>
 {% for b in batch_summary %}<tr><td>{{b.batch_code}}{% if b.is_latest %} • LATEST{% endif %}</td><td>{{b.company_code}}</td><td>{{b.total or 0}}</td><td>{{b.allocated or 0}}</td><td>{{b.unallocated or 0}}</td><td>{{b.worked or 0}}</td><td>{{b.not_worked or 0}}</td></tr>{% endfor %}
 </tbody></table></div></details>
-
-
-{% if u.role=='MD' %}
-<details class="card details-panel">
-<summary>🗑 Recycle Bin • MD Full Access ({{archived|length}}) ▾</summary>
-<p style="opacity:.76">GM can delete leads, but only MD can review, restore or permanently erase deleted data.</p>
-<form method="post" action="{{url_for('recycle_bin_bulk_action')}}" id="recycleForm">
-<div class="quick-row">
-<button type="button" class="quick-btn gold" onclick="document.querySelectorAll('.recyclebox').forEach(x=>x.checked=true)">Select All</button>
-<button class="quick-btn" name="action" value="restore" onclick="return confirm('Restore selected lead(s)?')">Restore Selected</button>
-<button class="quick-btn red" name="action" value="erase" onclick="return confirm('PERMANENTLY erase selected lead(s)? This cannot be undone.')">Erase Selected Permanently</button>
-<button class="quick-btn red" name="action" value="empty" onclick="return confirm('EMPTY RECYCLE BIN permanently? This cannot be undone.')">Empty Recycle Bin</button>
-</div>
-<div class="tablewrap" style="margin-top:10px"><table>
-<thead><tr><th>Select</th><th>Lead ID</th><th>Client</th><th>Company</th><th>Deleted By</th><th>Deleted At</th><th>Reason</th></tr></thead>
-<tbody>
-{% for r in archived %}
-<tr><td><input class="recyclebox bigcheck" type="checkbox" name="lead_ids" value="{{r.id}}"></td>
-<td>{{r.lead_id}}</td><td>{{r.client_name}}</td><td>{{r.company_code}}</td>
-<td>{{r.deleted_by}}</td><td>{{r.deleted_at}}</td><td>{{r.deletion_reason}}</td></tr>
-{% else %}<tr><td colspan="7">Recycle Bin is empty.</td></tr>{% endfor %}
-</tbody></table></div>
-</form>
-</details>
-{% endif %}
 
 <script>
 const boxes=()=>Array.from(document.querySelectorAll('.leadbox'));
@@ -4312,27 +4266,108 @@ refreshSelected();
 
 
 
-# === v3.53 Floating buttons no-overlap layout ===
+# === v3.53 THE GAUR Easy Chat ===
+_GAUR_V337_TEMPLATES['chat_center.html']=r'''{% extends "base.html" %}{% block content %}
+<style>
+.wa-shell{height:calc(100vh - 120px);min-height:620px;display:grid;grid-template-columns:360px 1fr;border:1px solid #315f85;border-radius:16px;overflow:hidden;background:#06182a;box-shadow:0 18px 55px rgba(0,0,0,.3)}
+.wa-side{background:#081e34;border-right:1px solid #315f85;display:grid;grid-template-rows:auto auto 1fr;min-width:0}
+.wa-side-head{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;background:#0b2946}.wa-side-head b{color:#e6b73f;font-size:19px}
+.wa-search{padding:9px;background:#071a2d}.wa-search input{width:100%;border-radius:22px;padding:10px 14px}
+.wa-people{overflow:auto}
+.wa-person{display:grid;grid-template-columns:50px 1fr auto;gap:10px;align-items:center;padding:11px 12px;border-bottom:1px solid #183c57;cursor:pointer;color:#fff;text-decoration:none}
+.wa-person:hover,.wa-person.active{background:#0d3151}.wa-person-main{min-width:0}.wa-person-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wa-person-sub{font-size:12px;opacity:.68;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.wa-thread{display:grid;grid-template-rows:auto 1fr auto;min-width:0;background:#06182a}
+.wa-thread-head{padding:10px 14px;background:#0b2946;border-bottom:1px solid #315f85;display:flex;align-items:center;justify-content:space-between}.wa-peer{display:flex;align-items:center;gap:10px}.wa-peer strong{color:#fff;font-size:17px}.wa-peer small{opacity:.7}
+.wa-thread-body{overflow:auto;padding:18px 5%;scroll-behavior:smooth}.wa-bubble{max-width:min(74%,560px);padding:8px 10px 6px;border-radius:11px;margin:4px 0;box-shadow:0 1px 2px rgba(0,0,0,.25);line-height:1.35;white-space:pre-wrap;word-break:break-word}.wa-bubble.mine{margin-left:auto;background:#174873;border-top-right-radius:3px}.wa-bubble.theirs{margin-right:auto;background:#0c2945;border-top-left-radius:3px}.wa-time{display:flex;justify-content:flex-end;gap:4px;align-items:center;font-size:10px;opacity:.6;margin-top:4px}.wa-check{font-weight:900;color:#8fc8ff}
+.wa-compose{background:#081e34;border-top:1px solid #315f85;padding:9px 10px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:end}.wa-compose textarea{min-height:44px;max-height:110px;border-radius:22px;padding:11px 14px;resize:none}.wa-icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid #315f85;background:#0d3151;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.wa-send{background:#e6b73f;color:#071629;border:0}
+.wa-extra{grid-column:1/-1;display:none;padding:8px;border:1px solid #315f85;border-radius:12px;margin-top:2px}.wa-extra.open{display:block}.wa-extra-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wa-file,.wa-lead{margin-top:7px;border-radius:9px;padding:8px}.wa-file{border:1px solid #4f7593;background:rgba(0,0,0,.12)}.wa-lead{border:1px solid #e6b73f;background:#102d48}
+.wa-empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;opacity:.7}.wa-broadcast{margin-top:14px}.wa-broadcast summary{cursor:pointer;font-weight:900;color:#e6b73f;padding:10px}.wa-back{display:none}
+@media(max-width:900px){.wa-shell{height:calc(100dvh - 82px);min-height:560px;grid-template-columns:1fr}.wa-side{display:{% if peer %}none{% else %}grid{% endif %}}.wa-thread{display:{% if peer %}grid{% else %}none{% endif %}}.wa-thread-body{padding:14px 10px}.wa-bubble{max-width:88%}.wa-back{display:flex}}
+</style>
+<div class="wa-shell">
+<div class="wa-side">
+<div class="wa-side-head"><b>💬 THE GAUR Chat</b><span>{{people|length}} Team</span></div>
+<div class="wa-search"><input id="waSearch" placeholder="Search employee..." oninput="filterPeople(this.value)"></div>
+<div class="wa-people">
+{% for p in people %}
+<a class="wa-person {% if peer and peer['id']==p['id'] %}active{% endif %}" data-name="{{(p['full_name'] or '')|lower}}" href="{{url_for('chat_center',peer=p['id'])}}">
+<div>{% if p['photo_mime'] %}<img class="chat-avatar" src="{{url_for('user_photo',user_id=p['id'],v='353')}}">{% else %}<div class="chat-avatar-ph">{{(p['full_name'] or '?')[0]|upper}}</div>{% endif %}</div>
+<div class="wa-person-main"><div class="wa-person-name">{{p['full_name']}}</div><div class="wa-person-sub">{{role_display(p['role'],p['designation'])}} • {{p['company_code'] or 'THE GAUR'}}</div></div>
+<div>{% if p['unread_count'] %}<span class="chat-unread" style="position:static">{{p['unread_count']}}</span>{% endif %}</div>
+</a>
+{% else %}<div style="padding:20px;opacity:.7">No authorized employees found.</div>{% endfor %}
+</div></div>
+
+<div class="wa-thread">
+{% if peer %}
+<div class="wa-thread-head"><div class="wa-peer"><a class="wa-icon-btn wa-back" href="{{url_for('chat_center')}}">←</a>
+{% if peer['photo_mime'] %}<img class="chat-avatar" src="{{url_for('user_photo',user_id=peer['id'],v='353')}}">{% else %}<div class="chat-avatar-ph">{{(peer['full_name'] or '?')[0]|upper}}</div>{% endif %}
+<div><strong>{{peer['full_name']}}</strong><br><small>{{role_display(peer['role'],peer['designation'])}} • {{peer['company_code'] or 'THE GAUR'}}</small></div></div></div>
+
+<div class="wa-thread-body" id="threadBody">
+{% for msg in messages %}
+<div class="wa-bubble {% if msg['sender_id']==u['id'] %}mine{% else %}theirs{% endif %}">
+{% if msg['message'] %}{{msg['message']}}{% endif %}
+{% if msg['attachment_id'] %}<div class="wa-file"><b>📎 {{msg['attachment_name']}}</b><br><small>{{msg['attachment_mime'] or 'File'}}</small><br><a class="toolbtn" href="{{url_for('chat_attachment',attachment_id=msg['attachment_id'],download=1)}}">Open / Download</a></div>{% endif %}
+{% if msg['lead_id'] %}<div class="wa-lead"><b>🔒 Official CRM Client</b><br>{{msg['lead_code']}} • {{msg['client_name'] or 'Client'}}<br><small>Status: {{msg['lead_status']}} • Interest {{msg['interest_score'] or 0}}%</small><br><a class="toolbtn" href="{{url_for('lead_profile',lead_db_id=msg['lead_id'])}}">Open Client</a></div>{% endif %}
+<div class="wa-time">{{msg['created_at']}}{% if msg['sender_id']==u['id'] %}<span class="wa-check">{% if msg['read_at'] %}✓✓{% else %}✓{% endif %}</span>{% endif %}</div>
+</div>
+{% else %}<div class="wa-empty">Start your secure conversation with {{peer['full_name']}}.</div>{% endfor %}
+</div>
+
+<form method="post" action="{{url_for('send_chat_message')}}" enctype="multipart/form-data" class="wa-compose" id="waCompose">
+<input type="hidden" name="recipient_id" value="{{peer['id']}}">
+<button type="button" class="wa-icon-btn" onclick="toggleExtra()">＋</button>
+<textarea name="message" id="waMessage" maxlength="2000" placeholder="Type a message..." onkeydown="sendOnEnter(event)"></textarea>
+<button class="wa-icon-btn wa-send">➤</button>
+<div class="wa-extra" id="waExtra"><div class="wa-extra-grid">
+<div><label class="attach-btn">📎 Photo / Document<input type="file" name="attachment" accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt" hidden onchange="showSelectedFile(this)"></label><div id="selectedFileName" class="attach-file-name">No file selected</div></div>
+<div><label>🔒 Share CRM Client</label><select name="lead_id"><option value="">No client attached</option>{% for l in shareable_leads %}<option value="{{l['id']}}">{{l['lead_id']}} • {{l['client_name'] or l['mobile']}}</option>{% endfor %}</select></div>
+</div></div></form>
+{% else %}
+<div class="wa-empty"><div><div style="font-size:55px">💬</div><h2 style="color:#e6b73f">THE GAUR Internal Chat</h2><p>Select an employee to start a private secure conversation.</p></div></div>
+{% endif %}
+</div></div>
+
+{% if u['role'] in ['MD','GM'] %}
+<details class="card wa-broadcast"><summary>📣 Management Broadcasts & Send Announcement ▾</summary>
+<form method="post" action="{{url_for('send_broadcast')}}">
+<div class="broadcast-form-grid">
+{% if u['role']=='MD' %}<div><label>Audience</label><select name="audience"><option value="GM_AM">All GM + AM</option><option value="GM_ONLY">Only GM</option><option value="AM_ONLY">Only AM</option><option value="COMPANY_ALL">Entire Selected Company</option><option value="ALL_STAFF">All Staff • Both Companies</option></select></div><div><label>Company</label><select name="company_scope"><option value="">Both</option><option value="SCIC">Smart Choice</option><option value="WWIC">White Wave</option></select></div>
+{% else %}<input type="hidden" name="company_scope" value="{{u['company_code']}}"><div><label>Audience</label><select name="audience"><option value="AM_ONLY">All AM</option><option value="COMPANY_ALL">Entire Company Team</option></select></div>{% endif %}
+<div><label>Type</label><select name="message_type"><option>ANNOUNCEMENT</option><option>URGENT</option><option>TARGET</option><option>LEAD_ALERT</option><option>NORMAL</option></select></div>
+</div><textarea name="message" rows="3" placeholder="Write announcement..." required></textarea><button class="btn">Send Broadcast</button></form>
+<hr style="border-color:#315f85">{% for b in broadcasts %}<div class="broadcast-card"><span class="broadcast-badge">{{b['message_type']}}</span> <b>{{b['sender_name']}}</b><div>{{b['message']}}</div><small>{{b['created_at']}} • {{b['audience']}}</small></div>{% else %}<div style="opacity:.7">No broadcasts.</div>{% endfor %}
+</details>{% endif %}
+<script>
+function filterPeople(v){v=(v||'').toLowerCase();document.querySelectorAll('.wa-person').forEach(x=>x.style.display=x.dataset.name.includes(v)?'grid':'none')}
+function toggleExtra(){document.getElementById('waExtra')?.classList.toggle('open')}
+function showSelectedFile(i){const e=document.getElementById('selectedFileName');if(e)e.textContent=(i.files&&i.files[0])?i.files[0].name:'No file selected'}
+function sendOnEnter(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(e.target.value.trim())document.getElementById('waCompose').requestSubmit()}}
+document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('threadBody');if(b)b.scrollTop=b.scrollHeight;const m=document.getElementById('waMessage');if(m)m.focus()});
+</script>
+{% endblock %}'''
+
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
     '</head>',
     '''<style>
-:root{--floating-rail-width:74px}
-main{padding-right:calc(22px + var(--floating-rail-width))!important;padding-bottom:110px!important}
-.chat-fab,.notification-fab,.floating-chat,.floating-notification{
-  position:fixed!important;right:18px!important;z-index:950!important;
-}
-.chat-fab,.floating-chat{bottom:18px!important}
-.notification-fab,.floating-notification{bottom:82px!important}
-.sticky-allocate{right:calc(18px + var(--floating-rail-width))!important}
+body{padding-bottom:96px}
+.chat-fab{right:22px!important;bottom:22px!important;width:58px!important;height:58px!important}
+.notif-bell{right:90px!important;bottom:22px!important;width:58px!important;height:58px!important}
+.chat-panel{right:18px!important;bottom:92px!important}
+.notif-panel{right:18px!important;bottom:92px!important}
 @media(max-width:900px){
-  :root{--floating-rail-width:0px}
-  main{padding-right:10px!important;padding-bottom:170px!important}
-  .chat-fab,.floating-chat{right:10px!important;bottom:12px!important}
-  .notification-fab,.floating-notification{right:72px!important;bottom:12px!important}
-  .sticky-allocate{left:8px!important;right:8px!important;bottom:78px!important}
+body{padding-bottom:108px!important}
+.chat-fab{right:12px!important;bottom:14px!important}
+.notif-bell{right:78px!important;bottom:14px!important}
+.chat-panel,.notif-panel{right:8px!important;left:8px!important;width:auto!important;bottom:84px!important;max-width:none!important}
 }
-</style></head>''',
-    1
+</style></head>''',1)
+
+_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
+    '<div class="chat-head"><strong>THE GAUR • Internal Chat</strong>',
+    '<div class="chat-head"><strong>💬 THE GAUR Chat</strong>'
 )
 
 

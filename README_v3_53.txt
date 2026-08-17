@@ -1,12 +1,15 @@
-GAUR CRM v3.53 — DELETE + RECYCLE BIN + FLOATING UI FIX
+GAUR CRM v3.53 — EASY WHATSAPP-STYLE INTERNAL CHAT
 
-• MD and GM can delete active leads.
-• Delete moves data to Recycle Bin; it does not permanently erase it.
-• Deleted By, Deleted Date/Time and Reason are retained.
-• Recycle Bin full access is MD ONLY.
-• MD can review, restore, permanently erase selected leads, or empty the Recycle Bin.
-• GM cannot open/manage the Recycle Bin.
-• Chat/Notification floating buttons are moved away from allocation content.
-• Desktop reserves a right-side rail for floating buttons.
-• Mobile lifts the allocation bar above the floating buttons.
-• Existing filters, multi-selection and Interest 100%→0% sorting remain.
+• Familiar two-pane internal chat: Team list + active conversation.
+• Mobile chat becomes full-screen with a Back button.
+• Employee search.
+• Photo, name, designation and company clearly shown.
+• Incoming/outgoing message bubbles.
+• Delivered ✓ and Read ✓✓.
+• Enter sends; Shift+Enter adds a new line.
+• + opens Photo/Document and Official CRM Client sharing.
+• Existing secure attachment and lead-sharing backend retained.
+• Management Broadcast placed in a collapsible panel.
+• Floating Chat + Bell moved into a safe bottom-right dock.
+• Main pages get bottom safe space so floating icons do not cover dropdowns, buttons or text.
+• Existing mobile/PWA behavior remains.
