@@ -1,0 +1,4 @@
+legacy_core.py SHA256
+6e75efc18ca1bf462acb448bd01a6d3d9e427c8a140ccccb76e34e464cd770b2
+
+Do not change this file silently. A changed hash means the frozen compatibility core was modified.
