@@ -10,3 +10,7 @@ Deployment command remains unchanged:
     gunicorn app:app
 
 New v4 work should be added only under `modules/`.
+
+
+## v4.0.1 Railway fix
+Deployment now binds to Railway `$PORT` and uses `/healthz` for healthchecks.
