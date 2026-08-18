@@ -1,0 +1,165 @@
+{% extends "base.html" %}{% block content %}
+<style>
+:root{--lc-green:#00a884;--lc-dark:#111b21;--lc-panel:#202c33;--lc-panel2:#182229;--lc-line:#2a3942;--lc-text:#e9edef;--lc-sub:#8696a0;--lc-mine:#005c4b;--lc-theirs:#202c33}
+body.chat-page-active{padding-bottom:0!important}
+body.chat-page-active .chat-fab,body.chat-page-active .notif-bell,body.chat-page-active .chat-panel,body.chat-page-active .notif-panel{display:none!important}
+.lcu-shell{height:calc(100dvh - 95px);min-height:570px;display:grid;grid-template-columns:390px minmax(0,1fr);background:var(--lc-dark);border:1px solid var(--lc-line);border-radius:12px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.34);font-family:Arial,Helvetica,sans-serif}
+.lcu-left{min-width:0;background:#111b21;border-right:1px solid var(--lc-line);display:grid;grid-template-rows:auto auto 1fr}
+.lcu-brand{height:64px;padding:0 16px;background:var(--lc-panel);display:flex;align-items:center;justify-content:space-between}
+.lcu-brand-title{font-size:21px;font-weight:900;color:#f3bd2f;white-space:nowrap}.lcu-brand-title span{color:var(--lc-green)}
+.lcu-brand-count{font-size:12px;color:var(--lc-sub)}
+.lcu-search{padding:8px 12px;background:#111b21}.lcu-searchbox{height:40px;border-radius:9px;background:var(--lc-panel);display:flex;align-items:center;padding:0 13px;gap:9px}.lcu-searchbox input{border:0!important;background:transparent!important;outline:0!important;color:var(--lc-text)!important;width:100%;padding:0!important;box-shadow:none!important}
+.lcu-list{overflow:auto;min-height:0}
+.lcu-person{height:72px;display:grid;grid-template-columns:49px 1fr auto;align-items:center;gap:11px;padding:0 12px;color:var(--lc-text);text-decoration:none;border-bottom:1px solid rgba(42,57,66,.55);transition:.12s}
+.lcu-person:hover,.lcu-person.active{background:#202c33}.lcu-person-avatar,.lcu-avatar-ph{width:46px;height:46px;border-radius:50%;object-fit:cover}.lcu-avatar-ph{display:flex;align-items:center;justify-content:center;background:#153d52;color:#f3bd2f;font-weight:900}
+.lcu-person-body{min-width:0}.lcu-person-top{display:flex;justify-content:space-between;gap:8px}.lcu-person-name{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lcu-person-preview{font-size:13px;color:var(--lc-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}.lcu-person-time{font-size:11px;color:var(--lc-sub);white-space:nowrap}
+.lcu-person-meta{text-align:right}.lcu-unread{display:inline-flex;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#25d366;color:#052d24;align-items:center;justify-content:center;font-size:11px;font-weight:900}.lcu-online-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#25d366;margin-left:5px;box-shadow:0 0 0 2px rgba(37,211,102,.15)}
+.lcu-main{min-width:0;display:grid;grid-template-rows:64px minmax(0,1fr) auto;background-color:#0b141a;background-image:radial-gradient(circle at 18px 18px,rgba(134,150,160,.055) 1.3px,transparent 1.7px),radial-gradient(circle at 55px 55px,rgba(134,150,160,.04) 1.2px,transparent 1.6px);background-size:72px 72px}
+.lcu-head{height:64px;background:var(--lc-panel);display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--lc-line)}
+.lcu-peer{display:flex;align-items:center;gap:11px;min-width:0}.lcu-peer-info{min-width:0}.lcu-peer-name{font-size:16px;font-weight:700;color:var(--lc-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lcu-peer-sub{font-size:12px;color:var(--lc-sub);margin-top:2px}.lcu-head-actions{display:flex;gap:8px}.lcu-round{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#aebac1;font-size:20px;cursor:pointer}.lcu-round:hover{background:#2a3942}
+.lcu-body{min-height:0;overflow:auto;padding:18px 7%;scroll-behavior:smooth;overscroll-behavior:contain}
+.lcu-day{width:max-content;margin:8px auto 16px;background:#182229;color:#cbd4d9;border-radius:8px;padding:6px 10px;font-size:11px;box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.lcu-row{display:flex;margin:3px 0}.lcu-row.mine{justify-content:flex-end}.lcu-row.theirs{justify-content:flex-start}
+.lcu-bubble{position:relative;max-width:min(72%,680px);min-width:92px;padding:7px 9px 5px;border-radius:8px;color:var(--lc-text);box-shadow:0 1px 1px rgba(0,0,0,.25);white-space:pre-wrap;word-break:break-word;line-height:1.38}
+.lcu-row.mine .lcu-bubble{background:var(--lc-mine);border-top-right-radius:2px}.lcu-row.theirs .lcu-bubble{background:var(--lc-theirs);border-top-left-radius:2px}
+.lcu-msgtext{font-size:14.3px;padding-right:4px}.lcu-meta{display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:3px;color:#9fb0b9;font-size:10px}.lcu-check{font-size:13px;color:#53bdeb}
+.lcu-file{margin-top:6px;border-radius:8px;background:rgba(11,20,26,.35);padding:8px}.lcu-file-row{display:flex;align-items:center;gap:9px}.lcu-file-icon{width:38px;height:38px;border-radius:50%;background:#32444d;display:flex;align-items:center;justify-content:center;font-size:20px}.lcu-file-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lcu-file a{color:#63d7bd;text-decoration:none;font-size:12px}
+.lcu-image{display:block;max-width:min(360px,100%);max-height:300px;border-radius:7px;margin:2px 0 5px;object-fit:cover}
+.lcu-audio{width:min(330px,100%);height:42px;margin:3px 0;accent-color:#00a884}
+.lcu-lead{margin-top:6px;background:#112e2a;border-left:3px solid #f3bd2f;border-radius:6px;padding:8px}.lcu-lead a{color:#f3bd2f;font-weight:700;text-decoration:none}
+.lcu-compose-wrap{background:var(--lc-panel);border-top:1px solid var(--lc-line)}
+.lcu-compose{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto auto;align-items:end;gap:5px;padding:9px 11px}
+.lcu-compose textarea{height:42px;min-height:42px;max-height:120px;border:0!important;border-radius:9px!important;background:#2a3942!important;color:var(--lc-text)!important;padding:11px 13px!important;resize:none!important;outline:0!important;box-shadow:none!important}
+.lcu-compose textarea::placeholder{color:#8696a0}.lcu-send{background:var(--lc-green)!important;color:#062e28!important}.lcu-mic.recording{background:#c62828!important;color:white!important;animation:lcuPulse 1s infinite}
+@keyframes lcuPulse{50%{box-shadow:0 0 0 8px rgba(198,40,40,.16)}}
+.lcu-tools{display:none;padding:0 12px 10px}.lcu-tools.open{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.lcu-tool{background:#182229;border:1px solid var(--lc-line);border-radius:10px;padding:10px;color:var(--lc-text)}.lcu-tool label{display:block;color:#f3bd2f;font-weight:700;margin-bottom:6px}.lcu-tool select{width:100%}
+.lcu-emoji{display:none;position:absolute;bottom:67px;left:438px;z-index:50;background:#202c33;border:1px solid #3a4a52;border-radius:10px;padding:8px;width:260px;box-shadow:0 12px 32px rgba(0,0,0,.35)}.lcu-emoji.open{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}.lcu-emoji button{border:0;background:transparent;font-size:21px;cursor:pointer;padding:4px}
+.lcu-record-status{display:none;color:#ffb3b3;font-size:12px;padding:0 14px 8px}.lcu-record-status.show{display:block}
+.lcu-empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--lc-sub);padding:30px}.lcu-empty-logo{font-size:72px;filter:grayscale(.15)}.lcu-empty h2{color:#f3bd2f;margin:10px 0 4px}
+.lcu-mobile-back{display:none}
+.lcu-broadcast{margin-top:12px}
+@media(max-width:900px){
+ .lcu-shell{height:calc(100dvh - 68px);min-height:500px;grid-template-columns:1fr;border-radius:0}
+ .lcu-left{display:{% if peer %}none{% else %}grid{% endif %}}
+ .lcu-main{display:{% if peer %}grid{% else %}none{% endif %}}
+ .lcu-mobile-back{display:inline-flex}
+ .lcu-body{padding:14px 9px}.lcu-bubble{max-width:87%}
+ .lcu-emoji{left:10px;right:10px;bottom:70px;width:auto}
+ .lcu-tools.open{grid-template-columns:1fr}
+}
+</style>
+
+<div class="lcu-shell" id="chatShell">
+  <aside class="lcu-left">
+    <div class="lcu-brand">
+      <div class="lcu-brand-title">💬 <span>Lets Chat Upp!!!!</span></div>
+      <div class="lcu-brand-count">{{people|length}} Team</div>
+    </div>
+    <div class="lcu-search">
+      <div class="lcu-searchbox">🔎 <input id="peopleSearch" placeholder="Search or start new chat"></div>
+    </div>
+    <div class="lcu-list" id="peopleList">
+      {% for p in people %}
+      <a class="lcu-person {% if peer and peer['id']==p.id %}active{% endif %}" data-name="{{p.full_name|lower}}" href="{{url_for('chat_center',peer=p.id)}}">
+        <div>
+          {% if p.photo_mime %}<img class="lcu-person-avatar" src="{{url_for('user_photo',user_id=p.id,v='430')}}">{% else %}<div class="lcu-avatar-ph">{{(p.full_name or '?')[0]|upper}}</div>{% endif %}
+        </div>
+        <div class="lcu-person-body">
+          <div class="lcu-person-top">
+            <div class="lcu-person-name">{{p.full_name}}{% if p.online %}<span class="lcu-online-dot" title="Online"></span>{% endif %}</div>
+            <div class="lcu-person-time">{{p.last_time[11:16] if p.last_time and p.last_time|length>=16 else ''}}</div>
+          </div>
+          <div class="lcu-person-preview">{{p.preview}}</div>
+        </div>
+        <div class="lcu-person-meta">{% if p.unread %}<span class="lcu-unread">{{p.unread}}</span>{% endif %}</div>
+      </a>
+      {% else %}
+      <div style="padding:25px;color:#8696a0">No authorized employees found.</div>
+      {% endfor %}
+    </div>
+  </aside>
+
+  <section class="lcu-main">
+    {% if peer %}
+    <header class="lcu-head">
+      <div class="lcu-peer">
+        <a class="lcu-round lcu-mobile-back" href="{{url_for('chat_center')}}">←</a>
+        {% if peer['photo_mime'] %}<img class="lcu-person-avatar" src="{{url_for('user_photo',user_id=peer['id'],v='430')}}">{% else %}<div class="lcu-avatar-ph">{{(peer['full_name'] or '?')[0]|upper}}</div>{% endif %}
+        <div class="lcu-peer-info">
+          <div class="lcu-peer-name">{{peer['full_name']}}</div>
+          <div class="lcu-peer-sub">{{role_display(peer['role'],peer['designation'])}} • {{peer['company_code'] or 'THE GAUR'}}</div>
+        </div>
+      </div>
+      <div class="lcu-head-actions">
+        <button class="lcu-round" type="button" title="Search in conversation" onclick="focusThreadSearch()">⌕</button>
+        <button class="lcu-round" type="button" title="Refresh chat" onclick="refreshThread(true)">↻</button>
+      </div>
+    </header>
+
+    <div class="lcu-body" id="threadBody">
+      <div class="lcu-day">Secure internal conversation</div>
+      {% for msg in messages %}
+      <div class="lcu-row {% if msg['sender_id']==u['id'] %}mine{% else %}theirs{% endif %}" data-msg-id="{{msg['id']}}">
+        <div class="lcu-bubble">
+          {% if msg['message'] %}<div class="lcu-msgtext">{{msg['message']}}</div>{% endif %}
+          {% if msg['attachment_id'] %}
+            {% if (msg['attachment_mime'] or '').startswith('audio/') %}
+              <div class="lcu-file"><audio class="lcu-audio" controls preload="metadata" src="{{url_for('chat_attachment',attachment_id=msg['attachment_id'])}}"></audio><div class="lcu-file-name">🎙 {{msg['attachment_name']}}</div></div>
+            {% elif (msg['attachment_mime'] or '').startswith('image/') %}
+              <a href="{{url_for('chat_attachment',attachment_id=msg['attachment_id'])}}" target="_blank"><img class="lcu-image" src="{{url_for('chat_attachment',attachment_id=msg['attachment_id'])}}" alt="{{msg['attachment_name']}}"></a>
+            {% else %}
+              <div class="lcu-file"><div class="lcu-file-row"><div class="lcu-file-icon">📄</div><div style="min-width:0"><div class="lcu-file-name">{{msg['attachment_name']}}</div><a href="{{url_for('chat_attachment',attachment_id=msg['attachment_id'],download=1)}}">Open / Download</a></div></div></div>
+            {% endif %}
+          {% endif %}
+          {% if msg['lead_id'] %}<div class="lcu-lead"><b>🔒 CRM Client</b><br>{{msg['lead_code']}} • {{msg['client_name'] or 'Client'}}<br><small>{{msg['lead_status']}} • Interest {{msg['interest_score'] or 0}}%</small><br><a href="{{url_for('lead_profile',lead_db_id=msg['lead_id'])}}">Open Client</a></div>{% endif %}
+          <div class="lcu-meta">{{msg['created_at'][11:16] if msg['created_at'] and msg['created_at']|length>=16 else msg['created_at']}}{% if msg['sender_id']==u['id'] %}<span class="lcu-check">{% if msg['read_at'] %}✓✓{% else %}✓{% endif %}</span>{% endif %}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="lcu-compose-wrap">
+      <div class="lcu-record-status" id="recordStatus">🔴 Recording voice note… click microphone again to send.</div>
+      <form id="chatForm" method="post" action="{{url_for('send_chat_message')}}" enctype="multipart/form-data">
+        <input type="hidden" name="recipient_id" value="{{peer['id']}}">
+        <input type="file" name="attachment" id="attachmentInput" hidden accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.mp3,.wav,.m4a,.aac,.ogg,.oga,.opus,.webm,audio/*">
+        <div class="lcu-compose">
+          <button class="lcu-round" type="button" title="Emoji" onclick="toggleEmoji()">☺</button>
+          <button class="lcu-round" type="button" title="Attach photo, document or audio" onclick="document.getElementById('attachmentInput').click()">＋</button>
+          <textarea name="message" id="messageBox" maxlength="4000" placeholder="Type a message"></textarea>
+          <button class="lcu-round lcu-mic" id="micBtn" type="button" title="Record voice note" onclick="toggleVoice()">🎙</button>
+          <button class="lcu-round lcu-send" id="sendBtn" type="submit" title="Send">➤</button>
+        </div>
+        <div class="lcu-tools" id="chatTools">
+          <div class="lcu-tool"><label>📎 Selected file / audio</label><div id="selectedFile">Nothing selected</div></div>
+          <div class="lcu-tool"><label>🔒 Share CRM Client</label><select name="lead_id"><option value="">No client attached</option>{% for l in shareable_leads %}<option value="{{l['id']}}">{{l['lead_id']}} • {{l['client_name'] or l['mobile']}}</option>{% endfor %}</select></div>
+          <div class="lcu-tool"><label>Tip</label><div style="color:#8696a0">Enter = Send • Shift+Enter = New line • Mic = Voice note</div></div>
+        </div>
+      </form>
+    </div>
+
+    <div class="lcu-emoji" id="emojiBox"></div>
+    {% else %}
+    <div class="lcu-empty"><div><div class="lcu-empty-logo">💬</div><h2>Lets Chat Upp!!!!</h2><p>Select a team member and start a fast internal conversation.</p><small>Messages • Photos • Documents • Audio files • Voice notes • CRM client sharing</small></div></div>
+    {% endif %}
+  </section>
+</div>
+
+{% if u['role'] in ['MD','GM'] %}
+<details class="card lcu-broadcast"><summary style="cursor:pointer;color:#e6b73f;font-weight:900">📣 Management Broadcasts & Announcements ▾</summary>
+<form method="post" action="{{url_for('send_broadcast')}}">
+<div class="broadcast-form-grid">
+{% if u['role']=='MD' %}<div><label>Audience</label><select name="audience"><option value="GM_AM">All GM + AM</option><option value="GM_ONLY">Only GM</option><option value="AM_ONLY">Only AM</option><option value="COMPANY_ALL">Entire Selected Company</option><option value="ALL_STAFF">All Staff • Both Companies</option></select></div><div><label>Company</label><select name="company_scope"><option value="">Both</option><option value="SCIC">Smart Choice</option><option value="WWIC">White Wave</option></select></div>
+{% else %}<input type="hidden" name="company_scope" value="{{u['company_code']}}"><div><label>Audience</label><select name="audience"><option value="AM_ONLY">All AM</option><option value="COMPANY_ALL">Entire Company Team</option></select></div>{% endif %}
+<div><label>Type</label><select name="message_type"><option>ANNOUNCEMENT</option><option>URGENT</option><option>TARGET</option><option>LEAD_ALERT</option><option>NORMAL</option></select></div>
+</div><textarea name="message" rows="3" placeholder="Write announcement..." required></textarea><button class="btn">Send Broadcast</button></form>
+<hr style="border-color:#315f85">{% for b in broadcasts %}<div class="broadcast-card"><span class="broadcast-badge">{{b['message_type']}}</span> <b>{{b['sender_name']}}</b><div>{{b['message']}}</div><small>{{b['created_at']}} • {{b['audience']}}</small></div>{% else %}<div style="opacity:.7">No broadcasts.</div>{% endfor %}
+</details>
+{% endif %}
+
+<script>
+window.LCU_PEER_ID={{peer['id'] if peer else 'null'}};
+window.LCU_USER_ID={{u['id']}};
+</script>
+<script src="{{url_for('v4_chat_notify.static',filename='chat_app.js',v='430')}}"></script>
+{% endblock %}

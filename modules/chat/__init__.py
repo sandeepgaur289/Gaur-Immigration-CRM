@@ -1,1 +1,1 @@
-"""v4 module: Chat Upp GYS, presence, notifications and MD oversight."""
+from .blueprint import bp, install_chat_alerts
