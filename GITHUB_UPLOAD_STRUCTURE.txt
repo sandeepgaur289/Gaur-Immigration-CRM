@@ -1,0 +1,19 @@
+IMPORTANT — UPLOAD THESE ITEMS TO THE GITHUB REPOSITORY ROOT
+
+app.py
+wsgi.py
+legacy_core.py
+requirements.txt
+Procfile
+railway.json
+static/
+modules/
+
+The modules/ folder MUST be visible in GitHub at repository root:
+  modules/__init__.py
+  modules/registry.py
+  modules/system/__init__.py
+  modules/system/blueprint.py
+
+DO NOT upload only this ZIP as a file inside GitHub.
+Extract the ZIP and upload/commit its CONTENTS.
