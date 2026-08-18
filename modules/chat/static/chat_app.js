@@ -4,6 +4,7 @@ const peer=window.LCU_PEER_ID;
 if(!peer)return;
 
 const body=document.getElementById("threadBody");
+if(!body){return;}
 const form=document.getElementById("chatForm");
 const msg=document.getElementById("messageBox");
 const fileInput=document.getElementById("attachmentInput");
@@ -32,7 +33,7 @@ function renderMessage(m){
     }else if(m.attachment_kind==="image"){
       media=`<a href="${url}" target="_blank"><img class="image" src="${url}" alt="${esc(m.attachment_name)}"></a>`;
     }else{
-      media=`<div class="file"><div class="lcu-file-row"><div class="lcu-file-icon">📄</div><div style="min-width:0"><div class="file-name">${esc(m.attachment_name||"Attachment")}</div><a href="${url}?download=1">Open / Download</a></div></div></div>`;
+      media=`<div class="file"><div class="file-row"><div class="file-icon">📄</div><div style="min-width:0"><div class="file-name">${esc(m.attachment_name||"Attachment")}</div><a href="${url}?download=1">Open / Download</a></div></div></div>`;
     }
   }
   let lead="";
@@ -181,4 +182,16 @@ setInterval(()=>refreshThread(false),2000);
 window.addEventListener("focus",()=>refreshThread(false));
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshThread(false);});
 msg.focus();
+
+function enforceDesktopLayout(){
+  if(window.innerWidth>=921){
+    const side=document.querySelector(".sidebar");
+    const main=document.querySelector(".main");
+    if(side){side.style.display="grid";}
+    if(main){main.style.display="grid";}
+  }
+}
+window.addEventListener("resize",enforceDesktopLayout);
+enforceDesktopLayout();
+
 })();
