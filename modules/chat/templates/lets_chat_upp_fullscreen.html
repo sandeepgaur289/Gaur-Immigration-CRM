@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lets Chat Upp!!!!</title>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:Arial,Helvetica,sans-serif;background:#0b141a;color:#e9edef;overflow:hidden}
+:root{--green:#00a884;--green2:#25d366;--page:#0b141a;--left:#111b21;--panel:#202c33;--panel2:#2a3942;--line:#2f3b43;--text:#e9edef;--sub:#8696a0;--mine:#005c4b;--theirs:#202c33;--gold:#f2c244}
+.app{height:100dvh;display:grid;grid-template-columns:420px minmax(0,1fr);background:var(--page)}
+.sidebar{min-width:0;background:var(--left);border-right:1px solid var(--line);display:grid;grid-template-rows:64px auto 1fr}
+.topbar{background:var(--panel);display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900;color:var(--gold)}.brand .logo{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#075e54;border:2px solid var(--green2);font-size:22px}
+.actions{display:flex;gap:4px}.iconbtn{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#aebac1;font-size:20px;cursor:pointer}.iconbtn:hover{background:#2a3942}
+.search-area{padding:9px 12px;background:var(--left);border-bottom:1px solid rgba(47,59,67,.4)}
+.searchbox{height:40px;background:var(--panel);border-radius:9px;display:flex;align-items:center;padding:0 12px;gap:9px}.searchbox input{width:100%;border:0;outline:0;background:transparent;color:var(--text);font-size:14px}.searchbox input::placeholder{color:var(--sub)}
+.filters{display:flex;gap:7px;padding:8px 0 0;overflow:auto}.chip{border:1px solid var(--line);background:transparent;color:#c9d1d5;border-radius:20px;padding:6px 11px;font-size:12px;white-space:nowrap;cursor:pointer}.chip.active{background:#0b5d4f;border-color:#0b5d4f;color:white}
+.chatlist{min-height:0;overflow:auto}
+.person{height:74px;display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:11px;padding:0 12px;text-decoration:none;color:var(--text);border-bottom:1px solid rgba(47,59,67,.55);transition:.1s}.person:hover,.person.active{background:#202c33}
+.avatar,.avatarph{width:49px;height:49px;border-radius:50%;object-fit:cover}.avatarph{display:grid;place-items:center;background:#153d52;color:var(--gold);font-weight:900;font-size:18px}
+.pbody{min-width:0}.prow{display:flex;justify-content:space-between;gap:8px}.pname{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ptime{font-size:11px;color:var(--sub);white-space:nowrap}.preview{font-size:13px;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:5px}.unread{min-width:21px;height:21px;padding:0 6px;border-radius:99px;background:var(--green2);color:#052d24;font:900 11px Arial;display:grid;place-items:center}.online{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green2);margin-left:5px}
+.main{min-width:0;display:grid;grid-template-rows:64px minmax(0,1fr) auto;background-color:#0b141a;background-image:radial-gradient(circle at 18px 18px,rgba(134,150,160,.055) 1.3px,transparent 1.7px),radial-gradient(circle at 55px 55px,rgba(134,150,160,.04) 1.2px,transparent 1.6px);background-size:72px 72px}
+.header{height:64px;background:var(--panel);display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line)}
+.peer{display:flex;align-items:center;gap:10px;min-width:0}.peerinfo{min-width:0}.peername{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.peersub{font-size:12px;color:var(--sub);margin-top:2px}
+.thread{min-height:0;overflow:auto;padding:22px max(14px,7vw);scroll-behavior:smooth}
+.notice{width:max-content;max-width:90%;margin:0 auto 14px;background:#182229;color:#cbd4d9;padding:7px 10px;border-radius:8px;font-size:11px}
+.row{display:flex;margin:3px 0}.row.mine{justify-content:flex-end}.row.theirs{justify-content:flex-start}.bubble{max-width:min(72%,690px);min-width:92px;padding:7px 9px 5px;border-radius:8px;box-shadow:0 1px 1px rgba(0,0,0,.26);white-space:pre-wrap;word-break:break-word;line-height:1.38}.mine .bubble{background:var(--mine);border-top-right-radius:2px}.theirs .bubble{background:var(--theirs);border-top-left-radius:2px}.msgtext{font-size:14.3px}.meta{display:flex;justify-content:flex-end;gap:4px;align-items:center;color:#9fb0b9;font-size:10px;margin-top:3px}.ticks{color:#53bdeb;font-size:13px}
+.file{margin-top:6px;border-radius:8px;background:rgba(11,20,26,.35);padding:8px}.file-row{display:flex;align-items:center;gap:9px}.file-icon{width:40px;height:40px;border-radius:50%;background:#32444d;display:grid;place-items:center;font-size:20px}.file-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file a{color:#63d7bd;text-decoration:none;font-size:12px}.image{display:block;max-width:min(390px,100%);max-height:330px;border-radius:7px;object-fit:cover;margin:2px 0 5px}.audio{width:min(340px,100%);height:42px;accent-color:var(--green)}
+.lead{margin-top:6px;background:#112e2a;border-left:3px solid var(--gold);border-radius:6px;padding:8px}.lead a{color:var(--gold);font-weight:700;text-decoration:none}
+.composewrap{background:var(--panel);border-top:1px solid var(--line);position:relative}.compose{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto auto;align-items:end;gap:5px;padding:9px 11px}.compose textarea{height:42px;min-height:42px;max-height:120px;border:0;border-radius:9px;background:#2a3942;color:var(--text);padding:11px 13px;resize:none;outline:0;font:14px Arial}.send{background:var(--green)!important;color:#062e28!important}.mic.recording{background:#c62828!important;color:#fff!important;animation:pulse 1s infinite}@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(198,40,40,.16)}}
+.tools{display:none;padding:0 12px 10px}.tools.open{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.tool{background:#182229;border:1px solid var(--line);border-radius:10px;padding:10px}.tool label{display:block;color:var(--gold);font-weight:700;margin-bottom:6px}.tool select{width:100%;background:#111b21;color:#fff;border:1px solid var(--line);border-radius:7px;padding:8px}.recordstatus{display:none;color:#ffb3b3;font-size:12px;padding:0 14px 8px}.recordstatus.show{display:block}
+.emoji{display:none;position:absolute;left:10px;bottom:68px;z-index:80;background:#202c33;border:1px solid #3a4a52;border-radius:10px;padding:8px;width:290px;box-shadow:0 12px 32px rgba(0,0,0,.45)}.emoji.open{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}.emoji button{border:0;background:transparent;font-size:21px;cursor:pointer;padding:4px}
+.empty{height:100%;display:grid;place-items:center;text-align:center;color:var(--sub);padding:30px}.emptylogo{width:92px;height:92px;border-radius:50%;background:#075e54;border:3px solid var(--green2);display:grid;place-items:center;font-size:46px;margin:auto}.empty h1{color:var(--gold);margin:14px 0 4px}.empty small{display:block;margin-top:8px}
+.back{display:inline-flex;color:#aebac1;text-decoration:none;align-items:center;gap:5px;font-size:13px}.mobileback{display:none}
+.broadcasts{display:none}
+@media(max-width:900px){
+ .app{grid-template-columns:1fr}
+ .sidebar{display:{% if peer %}none{% else %}grid{% endif %}}
+ .main{display:{% if peer %}grid{% else %}none{% endif %}}
+ .mobileback{display:inline-flex}.thread{padding:14px 9px}.bubble{max-width:88%}.tools.open{grid-template-columns:1fr}.emoji{left:8px;right:8px;width:auto}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="topbar">
+    <div class="brand"><div class="logo">💬</div><div>Lets Chat Upp!!!!</div></div>
+    <div class="actions">
+      <a class="iconbtn" href="/dashboard" title="Back to Dashboard" style="display:grid;place-items:center;text-decoration:none">⌂</a>
+      <button class="iconbtn" type="button" title="Refresh" onclick="location.reload()">↻</button>
+    </div>
+  </div>
+  <div class="search-area">
+    <div class="searchbox">🔎 <input id="peopleSearch" placeholder="Search or start new chat"></div>
+    <div class="filters"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="unread">Unread</button><button class="chip" data-filter="online">Online</button><button class="chip" data-filter="scic">Smart Choice</button><button class="chip" data-filter="wwic">White Wave</button></div>
+  </div>
+  <div class="chatlist" id="peopleList">
+    {% for p in people %}
+    <a class="person {% if peer and peer['id']==p.id %}active{% endif %}" data-name="{{p.full_name|lower}}" data-unread="{{1 if p.unread else 0}}" data-online="{{1 if p.online else 0}}" data-company="{{p.company_code|lower}}" href="{{url_for('chat_center',peer=p.id)}}">
+      <div>{% if p.photo_mime %}<img class="avatar" src="{{url_for('user_photo',user_id=p.id,v='440')}}">{% else %}<div class="avatarph">{{(p.full_name or '?')[0]|upper}}</div>{% endif %}</div>
+      <div class="pbody"><div class="prow"><div class="pname">{{p.full_name}}{% if p.online %}<span class="online"></span>{% endif %}</div><div class="ptime">{{p.last_time[11:16] if p.last_time and p.last_time|length>=16 else ''}}</div></div><div class="preview">{{p.preview}}</div></div>
+      <div>{% if p.unread %}<span class="unread">{{p.unread}}</span>{% endif %}</div>
+    </a>
+    {% else %}<div style="padding:22px;color:#8696a0">No authorized employees found.</div>{% endfor %}
+  </div>
+</aside>
+
+<section class="main">
+{% if peer %}
+  <header class="header">
+    <div class="peer">
+      <a class="iconbtn mobileback" href="{{url_for('chat_center')}}" style="text-decoration:none;place-items:center">←</a>
+      {% if peer['photo_mime'] %}<img class="avatar" src="{{url_for('user_photo',user_id=peer['id'],v='440')}}">{% else %}<div class="avatarph">{{(peer['full_name'] or '?')[0]|upper}}</div>{% endif %}
+      <div class="peerinfo"><div class="peername">{{peer['full_name']}}</div><div class="peersub">{{role_display(peer['role'],peer['designation'])}} • {{peer['company_code'] or 'THE GAUR'}}</div></div>
+    </div>
+    <div class="actions"><button class="iconbtn" type="button" title="Search" onclick="focusThreadSearch()">⌕</button><button class="iconbtn" type="button" title="Refresh" onclick="refreshThread(true)">↻</button><a class="iconbtn" href="/dashboard" title="Dashboard" style="display:grid;place-items:center;text-decoration:none">⌂</a></div>
+  </header>
+  <div class="thread" id="threadBody">
+    <div class="notice">🔒 Secure internal conversation • {{peer['full_name']}}</div>
+    {% for msg in messages %}
+    <div class="row {% if msg['sender_id']==u['id'] %}mine{% else %}theirs{% endif %}" data-msg-id="{{msg['id']}}">
+      <div class="bubble">
+        {% if msg['message'] %}<div class="msgtext">{{msg['message']}}</div>{% endif %}
+        {% if msg['attachment_id'] %}
+          {% if (msg['attachment_mime'] or '').startswith('audio/') %}
+            <div class="file"><audio class="audio" controls preload="metadata" src="{{url_for('chat_attachment',attachment_id=msg['attachment_id'])}}"></audio><div class="file-name">🎙 {{msg['attachment_name']}}</div></div>
+          {% elif (msg['attachment_mime'] or '').startswith('image/') %}
+            <a href="{{url_for('chat_attachment',attachment_id=msg['attachment_id'])}}" target="_blank"><img class="image" src="{{url_for('chat_attachment',attachment_id=msg['attachment_id'])}}" alt="{{msg['attachment_name']}}"></a>
+          {% else %}
+            <div class="file"><div class="file-row"><div class="file-icon">📄</div><div style="min-width:0"><div class="file-name">{{msg['attachment_name']}}</div><a href="{{url_for('chat_attachment',attachment_id=msg['attachment_id'],download=1)}}">Open / Download</a></div></div></div>
+          {% endif %}
+        {% endif %}
+        {% if msg['lead_id'] %}<div class="lead"><b>🔒 CRM Client</b><br>{{msg['lead_code']}} • {{msg['client_name'] or 'Client'}}<br><small>{{msg['lead_status']}} • Interest {{msg['interest_score'] or 0}}%</small><br><a href="{{url_for('lead_profile',lead_db_id=msg['lead_id'])}}">Open Client</a></div>{% endif %}
+        <div class="meta">{{msg['created_at'][11:16] if msg['created_at'] and msg['created_at']|length>=16 else msg['created_at']}}{% if msg['sender_id']==u['id'] %}<span class="ticks">{% if msg['read_at'] %}✓✓{% else %}✓{% endif %}</span>{% endif %}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="composewrap">
+    <div class="recordstatus" id="recordStatus">🔴 Recording voice note… click microphone again to send.</div>
+    <form id="chatForm" method="post" action="{{url_for('send_chat_message')}}" enctype="multipart/form-data">
+      <input type="hidden" name="recipient_id" value="{{peer['id']}}">
+      <input type="file" name="attachment" id="attachmentInput" hidden accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.mp3,.wav,.m4a,.aac,.ogg,.oga,.opus,.webm,audio/*">
+      <div class="compose">
+        <button class="iconbtn" type="button" title="Emoji" onclick="toggleEmoji()">☺</button>
+        <button class="iconbtn" type="button" title="Attach" onclick="document.getElementById('attachmentInput').click()">＋</button>
+        <textarea name="message" id="messageBox" maxlength="4000" placeholder="Type a message"></textarea>
+        <button class="iconbtn mic" id="micBtn" type="button" title="Record voice note" onclick="toggleVoice()">🎙</button>
+        <button class="iconbtn send" id="sendBtn" type="submit" title="Send">➤</button>
+      </div>
+      <div class="tools" id="chatTools">
+        <div class="tool"><label>📎 Selected file / audio</label><div id="selectedFile">Nothing selected</div></div>
+        <div class="tool"><label>🔒 Share CRM Client</label><select name="lead_id"><option value="">No client attached</option>{% for l in shareable_leads %}<option value="{{l['id']}}">{{l['lead_id']}} • {{l['client_name'] or l['mobile']}}</option>{% endfor %}</select></div>
+        <div class="tool"><label>Shortcuts</label><div style="color:#8696a0">Enter = Send • Shift+Enter = New line • Mic = Voice note</div></div>
+      </div>
+    </form>
+    <div class="emoji" id="emojiBox"></div>
+  </div>
+{% else %}
+  <div class="empty"><div><div class="emptylogo">💬</div><h1>Lets Chat Upp!!!!</h1><p>Select a team member to start a conversation.</p><small>Messages • Photos • Documents • Audio • Voice Notes • CRM Client Sharing</small><br><a class="back" href="/dashboard">← Back to Dashboard</a></div></div>
+{% endif %}
+</section>
+</div>
+
+<script>window.LCU_PEER_ID={{peer['id'] if peer else 'null'}};window.LCU_USER_ID={{u['id']}};</script>
+<script src="{{url_for('v4_chat_notify.static',filename='chat_app.js',v='440')}}"></script>
+</body>
+</html>

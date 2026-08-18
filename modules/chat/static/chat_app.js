@@ -16,7 +16,7 @@ let lastId=0,pollBusy=false,sending=false,recorder=null,chunks=[],recordStream=n
 
 document.querySelectorAll("[data-msg-id]").forEach(x=>lastId=Math.max(lastId,parseInt(x.dataset.msgId||"0",10)));
 body.scrollTop=body.scrollHeight;
-document.body.classList.add("chat-page-active");
+
 
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
 function timeOnly(s){return (s&&s.length>=16)?s.slice(11,16):s||"";}
@@ -28,21 +28,21 @@ function renderMessage(m){
   if(m.attachment_id){
     const url=`/chat/attachment/${m.attachment_id}`;
     if(m.attachment_kind==="audio"){
-      media=`<div class="lcu-file"><audio class="lcu-audio" controls preload="metadata" src="${url}"></audio><div class="lcu-file-name">🎙 ${esc(m.attachment_name||"Voice message")}</div></div>`;
+      media=`<div class="file"><audio class="audio" controls preload="metadata" src="${url}"></audio><div class="file-name">🎙 ${esc(m.attachment_name||"Voice message")}</div></div>`;
     }else if(m.attachment_kind==="image"){
-      media=`<a href="${url}" target="_blank"><img class="lcu-image" src="${url}" alt="${esc(m.attachment_name)}"></a>`;
+      media=`<a href="${url}" target="_blank"><img class="image" src="${url}" alt="${esc(m.attachment_name)}"></a>`;
     }else{
-      media=`<div class="lcu-file"><div class="lcu-file-row"><div class="lcu-file-icon">📄</div><div style="min-width:0"><div class="lcu-file-name">${esc(m.attachment_name||"Attachment")}</div><a href="${url}?download=1">Open / Download</a></div></div></div>`;
+      media=`<div class="file"><div class="lcu-file-row"><div class="lcu-file-icon">📄</div><div style="min-width:0"><div class="file-name">${esc(m.attachment_name||"Attachment")}</div><a href="${url}?download=1">Open / Download</a></div></div></div>`;
     }
   }
   let lead="";
   if(m.lead_id){
-    lead=`<div class="lcu-lead"><b>🔒 CRM Client</b><br>${esc(m.lead_code)} • ${esc(m.client_name||"Client")}<br><small>${esc(m.lead_status)} • Interest ${m.interest_score||0}%</small><br><a href="/lead/${m.lead_id}">Open Client</a></div>`;
+    lead=`<div class="lead"><b>🔒 CRM Client</b><br>${esc(m.lead_code)} • ${esc(m.client_name||"Client")}<br><small>${esc(m.lead_status)} • Interest ${m.interest_score||0}%</small><br><a href="/lead/${m.lead_id}">Open Client</a></div>`;
   }
   const row=document.createElement("div");
-  row.className="lcu-row "+(mine?"mine":"theirs");
+  row.className="row "+(mine?"mine":"theirs");
   row.dataset.msgId=m.id;
-  row.innerHTML=`<div class="lcu-bubble">${m.message?`<div class="lcu-msgtext">${esc(m.message)}</div>`:""}${media}${lead}<div class="lcu-meta">${timeOnly(m.created_at)}${mine?`<span class="lcu-check">${m.read_at?"✓✓":"✓"}</span>`:""}</div></div>`;
+  row.innerHTML=`<div class="bubble">${m.message?`<div class="msgtext">${esc(m.message)}</div>`:""}${media}${lead}<div class="meta">${timeOnly(m.created_at)}${mine?`<span class="ticks">${m.read_at?"✓✓":"✓"}</span>`:""}</div></div>`;
   body.appendChild(row);
   lastId=Math.max(lastId,Number(m.id)||0);
 }
@@ -126,9 +126,9 @@ window.focusThreadSearch=function(){
   const q=prompt("Search word in this conversation:");
   if(!q)return;
   const needle=q.toLowerCase();
-  const rows=[...document.querySelectorAll(".lcu-row")];
+  const rows=[...document.querySelectorAll(".row")];
   const hit=rows.find(x=>x.textContent.toLowerCase().includes(needle));
-  if(hit){hit.scrollIntoView({behavior:"smooth",block:"center"});hit.querySelector(".lcu-bubble").style.outline="2px solid #f3bd2f";setTimeout(()=>hit.querySelector(".lcu-bubble").style.outline="",1800);}
+  if(hit){hit.scrollIntoView({behavior:"smooth",block:"center"});hit.querySelector(".bubble").style.outline="2px solid #f3bd2f";setTimeout(()=>hit.querySelector(".bubble").style.outline="",1800);}
   else alert("No matching message currently loaded.");
 }
 
@@ -174,7 +174,7 @@ window.toggleVoice=async function(){
 const search=document.getElementById("peopleSearch");
 if(search)search.addEventListener("input",()=>{
   const q=search.value.trim().toLowerCase();
-  document.querySelectorAll(".lcu-person").forEach(p=>p.style.display=p.dataset.name.includes(q)?"grid":"none");
+  document.querySelectorAll(".person").forEach(p=>p.style.display=p.dataset.name.includes(q)?"grid":"none");
 });
 
 setInterval(()=>refreshThread(false),2000);

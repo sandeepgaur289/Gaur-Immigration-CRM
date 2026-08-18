@@ -180,7 +180,7 @@ def chat_page():
     con.close()
 
     return render_template(
-        "lets_chat_upp.html",
+        "lets_chat_upp_fullscreen.html",
         u=u,people=people,peer=peer,messages=messages,
         shareable_leads=shareable_leads,broadcasts=broadcasts,
         role_display=role_display
@@ -409,12 +409,18 @@ def state():
     return jsonify({"ok":True,"authenticated":True,"unread":unread,"latest_id":latest,"messages":messages})
 
 
+
 def install_chat_alerts(app):
-    """Install chat endpoint replacement plus global new-message alert JS."""
-    if app.extensions.get("v43_chat_installed"):
+    """
+    v4.4:
+    - keep /chat and /chat/send legacy URLs
+    - full-screen chat is rendered by the modular chat endpoint
+    - inject only cross-page notification JS
+    - rename the old floating launcher client-side without touching legacy_core.py
+    """
+    if app.extensions.get("v44_chat_installed"):
         return
 
-    # Keep old /chat and /chat/send URLs so all existing buttons/bookmarks continue to work.
     app.view_functions["chat_center"]=chat_page
     app.view_functions["send_chat_message"]=send_message
 
@@ -431,10 +437,12 @@ def install_chat_alerts(app):
             if "</body>" not in data:
                 return response
 
-            # Global alerts on every page, but full chat page handles its own live updates.
-            if "v43-chat-global.js" not in data:
-                tag='<script id="v43-chat-global-js" src="/v4/chat/static/chat_notify.js?v=4.3.0" defer></script>'
-                data=data.replace("</body>",tag+"</body>",1)
+            # Standalone /chat already loads its own application JS.
+            # Other pages receive only lightweight unread/sound + launcher-label helper.
+            if request.path != "/chat":
+                if "v44-chat-global-js" not in data:
+                    tag='<script id="v44-chat-global-js" src="/v4/chat/static/chat_notify.js?v=4.4.0" defer></script>'
+                    data=data.replace("</body>",tag+"</body>",1)
 
             response.set_data(data)
             response.headers["Content-Length"]=str(len(response.get_data()))
@@ -442,4 +450,4 @@ def install_chat_alerts(app):
             pass
         return response
 
-    app.extensions["v43_chat_installed"]=True
+    app.extensions["v44_chat_installed"]=True

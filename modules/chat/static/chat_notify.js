@@ -138,8 +138,22 @@ async function poll(){
   polling=false;
 }
 
+
+function renameLegacyLauncher(){
+  try{
+    document.querySelectorAll("button,a,div,span").forEach(el=>{
+      const t=(el.textContent||"").trim();
+      if(t==="Chat Upp GYS"||t==="Open Chat Upp GYS"||t==="THE GAUR Chat"){
+        if(t==="Open Chat Upp GYS")el.textContent="Open Lets Chat Upp!!!!";
+        else el.textContent="Lets Chat Upp!!!!";
+      }
+    });
+  }catch(e){}
+}
+
 function init(){
   ensureStyles();
+  renameLegacyLauncher();
   enablePrompt();
   if(enabled()) unlockAudio();
   document.addEventListener("click",()=>{ if(enabled())unlockAudio(); },{passive:true});
