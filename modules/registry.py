@@ -3,6 +3,7 @@ from .leads.blueprint import bp as leads_bp
 from .performance import install_performance_patch
 from .chat import bp as chat_bp, install_chat_alerts
 from .report_tools import bp as report_tools_bp, install_report_tools
+from .system.migrate_route import migrate_bp
 
 def register_modules(app):
     if app.extensions.get("gaur_v4_modules_registered"):
@@ -13,6 +14,7 @@ def register_modules(app):
     app.register_blueprint(leads_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(report_tools_bp)
+    app.register_blueprint(migrate_bp)
 
     install_chat_alerts(app)
     install_report_tools(app)
