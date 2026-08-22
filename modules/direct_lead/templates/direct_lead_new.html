@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% block content %}
+<style>
+.direct-wrap{max-width:1050px;margin:auto}.direct-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+.direct-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.direct-card{background:#0c2d49;border:1px solid #315a7b;border-radius:14px;padding:18px}
+.direct-note{padding:10px 12px;border:1px solid #e6b73f;border-radius:10px;background:#071e32;margin-bottom:14px}.direct-actions{display:flex;gap:10px;margin-top:16px}
+@media(max-width:850px){.direct-grid{grid-template-columns:1fr}.direct-head{align-items:flex-start;flex-direction:column}}
+</style>
+<div class="direct-wrap">
+<div class="direct-head"><div><h1 class="title">+ Add Direct Lead</h1><p>Direct call, walk-in, WhatsApp or referral client ko single Lead ID ke saath immediately create karein.</p></div>
+<a class="toolbtn" href="{{url_for('my_leads') if u.role=='AM' else url_for('leads')}}">← Back</a></div>
+
+<div class="direct-note">
+{% if u.role=='AM' %}
+This lead will be automatically assigned to <b>{{u.full_name}}</b> and will immediately appear in My Leads.
+{% else %}
+This lead will be created under <b>{{u.company_code}}</b>. You may assign it to an AM now or leave it unallocated.
+{% endif %}
+</div>
+
+<form method="post" class="direct-card">
+<div class="direct-grid">
+<div><label>Client Name *</label><input name="client_name" required placeholder="Full client name"></div>
+<div><label>Mobile Number *</label><input name="mobile" required inputmode="tel" placeholder="Mobile number"></div>
+<div><label>Email</label><input name="email" type="email" placeholder="Email address"></div>
+<div><label>City / Location</label><input name="city" placeholder="City"></div>
+<div><label>Interested Country</label><input name="country" placeholder="Canada / Australia etc."></div>
+<div><label>Visa Type</label><input name="visa_type" placeholder="Tourist / IMP / Work etc."></div>
+<div><label>Source</label><select name="source">
+<option>Direct Contact</option><option>Walk-in</option><option>Direct Call</option><option>WhatsApp</option><option>Referral</option><option>Social Media</option><option>Other</option>
+</select></div>
+<div><label>Status</label><select name="status">{% for s in statuses %}<option {% if s=='Interested' %}selected{% endif %}>{{s}}</option>{% endfor %}</select></div>
+<div><label>Interest Ranking (%)</label><input name="interest_score" type="number" min="0" max="100" value="50"></div>
+{% if u.role=='GM' %}
+<div><label>Assign to AM</label><select name="assigned_am"><option value="">Keep Unallocated</option>{% for a in ams %}<option value="{{a.id}}">{{a.full_name}}</option>{% endfor %}</select></div>
+{% endif %}
+</div>
+<div style="margin-top:12px"><label>Initial Remarks / Client Discussion</label><textarea name="remarks" rows="4" placeholder="Client requirement, discussion, callback details, objections, next action..."></textarea></div>
+<div class="direct-actions"><button class="btn" type="submit">Create Lead & Open Client Profile</button><a class="toolbtn" href="{{url_for('my_leads') if u.role=='AM' else url_for('leads')}}">Cancel</a></div>
+</form>
+</div>
+{% endblock %}
