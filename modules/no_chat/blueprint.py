@@ -1,22 +1,20 @@
 from flask import request, redirect, url_for, flash
 
-CHAT_PREFIXES = (
+REMOVED_PREFIXES=(
     "/chat",
     "/notifications",
-    "/md/chat-oversight",
-    "/api/presence",
     "/api/notifications",
+    "/api/presence",
+    "/md/chat-oversight",
 )
 
 def install_no_chat(app):
-    if app.extensions.get("v492_no_chat_installed"):
+    if app.extensions.get("v502_no_chat_installed"):
         return
-
     @app.before_request
-    def _disable_chat_system():
-        p = request.path or ""
-        if any(p == prefix or p.startswith(prefix + "/") for prefix in CHAT_PREFIXES):
-            flash("Chat / Communication system is disabled in this build.", "error")
+    def _no_chat_guard():
+        p=request.path or ""
+        if any(p==x or p.startswith(x+"/") for x in REMOVED_PREFIXES):
+            flash("Chat / Notifications are removed in this build.","error")
             return redirect(url_for("dashboard"))
-
-    app.extensions["v492_no_chat_installed"] = True
+    app.extensions["v502_no_chat_installed"]=True
