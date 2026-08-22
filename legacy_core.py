@@ -11,17 +11,6 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Load .env file early so all os.environ.get() calls below pick it up
-_env_file = os.path.join(APP_DIR, ".env")
-if os.path.exists(_env_file):
-    with open(_env_file) as _ef:
-        for _line in _ef:
-            _line = _line.strip()
-            if _line and not _line.startswith("#") and "=" in _line:
-                _k, _v = _line.split("=", 1)
-                os.environ.setdefault(_k.strip(), _v.strip())
-
 DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 IS_POSTGRES = DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://")
 DB_PATH = os.path.join(APP_DIR, "mini_crm.db")
@@ -824,101 +813,6 @@ def login():
 
     return render_template("login_gaur.html")
 
-
-# ── Forgot / Reset Password ────────────────────────────────────────────────
-import smtplib, secrets, hashlib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-MAIL_USERNAME = os.environ.get("MAIL_USERNAME", "")
-MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "")
-MAIL_SERVER   = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
-MAIL_PORT     = int(os.environ.get("MAIL_PORT", "587"))
-
-# In-memory token store: {token: {"login_id": ..., "expires": datetime}}
-_reset_tokens = {}
-
-def _send_reset_email(to_email, login_id, token):
-    reset_url = url_for("reset_password", token=token, _external=True)
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Gaur Portal — Password Reset Request"
-    msg["From"]    = MAIL_USERNAME
-    msg["To"]      = to_email
-    html_body = f"""
-    <div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;background:#020914;color:#fff;padding:30px;border:1px solid #e6b73f;border-radius:14px">
-      <h2 style="color:#e6b73f;text-align:center">🛡️ GAUR PORTAL</h2>
-      <p>Hi <b>{login_id}</b>,</p>
-      <p>A password reset was requested for your account. Click the button below to set a new password. This link is valid for <b>30 minutes</b>.</p>
-      <div style="text-align:center;margin:28px 0">
-        <a href="{reset_url}" style="background:linear-gradient(180deg,#f2c857,#d69f25);color:#091423;padding:13px 32px;border-radius:9px;text-decoration:none;font-weight:bold;font-size:16px">Reset My Password</a>
-      </div>
-      <p style="color:#a9c3d6;font-size:13px">If you did not request this, please ignore this email. Your password will not change.</p>
-      <p style="color:#7f9caf;font-size:12px;text-align:center;margin-top:24px">CONFIDENTIAL • GAUR IMMIGRATION CRM</p>
-    </div>
-    """
-    msg.attach(MIMEText(html_body, "html"))
-    with smtplib.SMTP(MAIL_SERVER, MAIL_PORT) as server:
-        server.ehlo()
-        server.starttls()
-        server.login(MAIL_USERNAME, MAIL_PASSWORD)
-        server.sendmail(MAIL_USERNAME, to_email, msg.as_string())
-
-@app.route("/forgot-password", methods=["GET","POST"])
-def forgot_password():
-    if current_user():
-        return redirect(url_for("dashboard"))
-    sent = False
-    if request.method == "POST":
-        login_id = request.form.get("login_id","").strip().lower()
-        con = db()
-        u = con.execute("SELECT * FROM users WHERE lower(login_id)=? AND active=1", (login_id,)).fetchone()
-        con.close()
-        # Always show success to prevent user enumeration
-        if u:
-            email = (u["official_email"] if u["official_email"] else "").strip()
-            if not email:
-                flash("No email address found for this account. Please contact your administrator.","error")
-                return render_template("forgot_password.html", sent=False)
-            token = secrets.token_urlsafe(32)
-            _reset_tokens[token] = {
-                "login_id": u["login_id"],
-                "expires": datetime.datetime.now() + datetime.timedelta(minutes=30)
-            }
-            try:
-                _send_reset_email(email, u["login_id"], token)
-            except Exception as e:
-                flash(f"Could not send email: {str(e)[:120]}","error")
-                return render_template("forgot_password.html", sent=False)
-        sent = True
-    return render_template("forgot_password.html", sent=sent)
-
-@app.route("/reset-password/<token>", methods=["GET","POST"])
-def reset_password(token):
-    if current_user():
-        return redirect(url_for("dashboard"))
-    info = _reset_tokens.get(token)
-    if not info or datetime.datetime.now() > info["expires"]:
-        flash("This reset link is invalid or has expired. Please request a new one.","error")
-        return redirect(url_for("forgot_password"))
-    if request.method == "POST":
-        pw1 = request.form.get("password","")
-        pw2 = request.form.get("confirm_password","")
-        if len(pw1) < 6:
-            flash("Password must be at least 6 characters.","error")
-        elif pw1 != pw2:
-            flash("Passwords do not match.","error")
-        else:
-            new_hash = generate_password_hash(pw1)
-            con = db()
-            con.execute("UPDATE users SET password_hash=? WHERE lower(login_id)=?",
-                        (new_hash, info["login_id"].lower()))
-            con.commit()
-            con.close()
-            _reset_tokens.pop(token, None)
-            flash("Password updated successfully. Please login with your new password.","success")
-            return redirect(url_for("login"))
-    return render_template("reset_password.html", token=token)
-# ── End Forgot / Reset Password ────────────────────────────────────────────
 
 
 @app.route("/user-cover/<int:user_id>")

@@ -2,7 +2,7 @@
 "use strict";
 const KEY_ENABLED="gaurChatAlertsEnabled";
 const KEY_LAST="gaurChatLastMessageId";
-const POLL_MS=5000;
+const POLL_MS=12000;
 let audioCtx=null, polling=false, baselineDone=false;
 
 function enabled(){ return localStorage.getItem(KEY_ENABLED)==="1"; }
@@ -158,9 +158,15 @@ function init(){
   if(enabled()) unlockAudio();
   document.addEventListener("click",()=>{ if(enabled())unlockAudio(); },{passive:true});
   poll();
-  setInterval(poll,POLL_MS);
-  document.addEventListener("visibilitychange",()=>{ if(!document.hidden)poll(); });
-  window.addEventListener("focus",poll);
+  let timer=null;
+  function schedule(){
+    if(timer)clearTimeout(timer);
+    const delay=document.hidden?30000:POLL_MS;
+    timer=setTimeout(async()=>{await poll();schedule();},delay);
+  }
+  schedule();
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden)poll();schedule(); });
+  window.addEventListener("focus",()=>{poll();schedule();});
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
 else init();

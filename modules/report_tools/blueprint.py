@@ -111,8 +111,16 @@ def excel_export():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
+
 def install_report_tools(app):
-    if app.extensions.get("v45_report_tools_installed"):
+    """
+    v4.5.1 robust management-tool integration.
+
+    The script is injected in <head> (not deferred), and buttons are also tagged
+    with inline fallback handlers. This makes the tools survive legacy scripts,
+    late DOM changes and duplicate/broken old click listeners.
+    """
+    if app.extensions.get("v451_report_tools_installed"):
         return
 
     @app.after_request
@@ -123,20 +131,40 @@ def install_report_tools(app):
             ctype=(response.headers.get("Content-Type") or "").lower()
             if "text/html" not in ctype:
                 return response
+
             u=current_user()
             if not u or u["role"] not in ("MD","GM"):
                 return response
 
             data=response.get_data(as_text=True)
-            if "</body>" not in data or "v45-management-tools" in data:
+
+            # LITE: only reporting pages/toolbars need this module.
+            if not any(x in data for x in ("safeWhatsAppBtn","safePrintBtn","safeExcelBtn")):
                 return response
 
-            tag='<script id="v45-management-tools" src="/v4/report-tools/static/report_tools.js?v=4.5.0" defer></script>'
-            data=data.replace("</body>",tag+"</body>",1)
+            # Hard fallback directly on the existing buttons.
+            data=data.replace(
+                'id="safeWhatsAppBtn"',
+                'id="safeWhatsAppBtn" onclick="return window.GaurReportTools?GaurReportTools.shareWhatsApp(event):true"'
+            )
+            data=data.replace(
+                'id="safePrintBtn"',
+                'id="safePrintBtn" onclick="return window.GaurReportTools?GaurReportTools.printReport(event):true"'
+            )
+            data=data.replace(
+                'id="safeExcelBtn"',
+                'id="safeExcelBtn" onclick="return window.GaurReportTools?GaurReportTools.downloadExcel(event,this):true"'
+            )
+
+            # Load early so onclick fallback is ready before the user can click.
+            if "v451-management-tools" not in data and "</head>" in data:
+                tag='<script id="v451-management-tools" src="/v4/report-tools/static/report_tools.js?v=4.5.1"></script>'
+                data=data.replace("</head>",tag+"</head>",1)
+
             response.set_data(data)
             response.headers["Content-Length"]=str(len(response.get_data()))
         except Exception:
             pass
         return response
 
-    app.extensions["v45_report_tools_installed"]=True
+    app.extensions["v451_report_tools_installed"]=True

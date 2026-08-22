@@ -178,9 +178,14 @@ if(search)search.addEventListener("input",()=>{
   document.querySelectorAll(".person").forEach(p=>p.style.display=p.dataset.name.includes(q)?"grid":"none");
 });
 
-setInterval(()=>refreshThread(false),2000);
+let chatTimer=null;
+function scheduleChatRefresh(){
+  if(chatTimer)clearTimeout(chatTimer);
+  chatTimer=setTimeout(async()=>{await refreshThread(false);scheduleChatRefresh();},document.hidden?12000:4000);
+}
+scheduleChatRefresh();
 window.addEventListener("focus",()=>refreshThread(false));
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshThread(false);});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshThread(false);scheduleChatRefresh();});
 msg.focus();
 
 function enforceDesktopLayout(){

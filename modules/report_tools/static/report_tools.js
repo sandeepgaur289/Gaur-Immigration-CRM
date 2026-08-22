@@ -2,157 +2,123 @@
 "use strict";
 
 function clean(s){return String(s||"").replace(/\s+/g," ").trim();}
-function pageTitle(){
-  const el=document.querySelector("h1.title, main h1, main h2, .title");
+function title(){
+  const el=document.querySelector("h1.title,main h1,main h2,.title");
   return clean(el?el.textContent:document.title)||"THE GAUR CRM Report";
 }
-function reportScope(){
-  const t=document.body.innerText||"";
-  if(/White Wave General Manager|WWIC/i.test(t)&&!/Smart Choice General Manager/i.test(t))return "White Wave";
-  if(/Smart Choice General Manager|SCIC/i.test(t)&&!/White Wave General Manager/i.test(t))return "Smart Choice";
+function scope(){
+  const text=(document.body&&document.body.innerText)||"";
+  const sc=/Smart Choice|SCIC/i.test(text), ww=/White Wave|WWIC/i.test(text);
+  if(sc&&!ww)return "Smart Choice";
+  if(ww&&!sc)return "White Wave";
   return "Both Companies";
 }
-function collectMetrics(){
-  const out=[], seen=new Set();
-  const selectors=[
-    ".identity-stat",".stat",".metric",".summary-card",".dashboard-card",
-    ".today-stat",".today-metric",".kpi",".perf-box",
-    "[class*='stat-card']","[class*='metric-card']"
-  ];
-  document.querySelectorAll(selectors.join(",")).forEach(el=>{
+function toast(msg){
+  let d=document.getElementById("gaurReportToolToast");
+  if(!d){
+    d=document.createElement("div");
+    d.id="gaurReportToolToast";
+    d.style.cssText="position:fixed;right:20px;top:20px;z-index:2147483647;background:#0b5d4f;color:#fff;border:2px solid #e6b73f;border-radius:10px;padding:10px 14px;font:700 13px Arial;box-shadow:0 8px 28px rgba(0,0,0,.35)";
+    document.body.appendChild(d);
+  }
+  d.textContent=msg;d.style.display="block";
+  clearTimeout(d._t);d._t=setTimeout(()=>d.style.display="none",1800);
+}
+function metrics(){
+  const out=[],seen=new Set();
+  document.querySelectorAll("main .card,main [class*='stat'],main [class*='metric'],main [class*='dashboard'],main [class*='today'],main [class*='kpi']").forEach(el=>{
     if(el.offsetParent===null)return;
     const txt=clean(el.innerText);
-    if(!txt||txt.length>180)return;
-    let label="",value="";
-    const b=el.querySelector("b,strong,.value,[class*='value']");
-    if(b){
-      value=clean(b.textContent);
-      label=clean(txt.replace(value,""));
-    }else{
-      const lines=txt.split(/\n+/).map(clean).filter(Boolean);
-      if(lines.length>=2){label=lines[0];value=lines.slice(1).join(" ");}
-    }
-    if(!label||!value)return;
-    const key=label+"|"+value;
-    if(seen.has(key))return;
-    seen.add(key);out.push({label,value});
-  });
-
-  // Dashboard cards in this CRM often do not use generic stat class names.
-  document.querySelectorAll("main div").forEach(el=>{
-    if(out.length>250||el.offsetParent===null)return;
-    if(el.children.length>8)return;
-    const txt=clean(el.innerText);
-    if(!txt||txt.length>100)return;
-    const nums=txt.match(/₹?[\d,]+(?:\.\d+)?%?/g);
-    if(!nums||nums.length!==1)return;
-    const value=nums[0];
-    const label=clean(txt.replace(value,""));
-    if(label.length<3||label.length>65)return;
-    const key=label+"|"+value;
-    if(!seen.has(key)){seen.add(key);out.push({label,value});}
+    if(!txt||txt.length>220)return;
+    const vals=txt.match(/₹\s?[\d,]+(?:\.\d+)?|[\d,]+(?:\.\d+)?%/g);
+    if(!vals||!vals.length)return;
+    const value=vals[0],label=clean(txt.replace(value,""));
+    if(!label||label.length>100)return;
+    const k=label+"|"+value;
+    if(!seen.has(k)){seen.add(k);out.push({label,value});}
   });
   return out.slice(0,300);
 }
-function collectTables(){
-  const tables=[];
-  document.querySelectorAll("main table, table").forEach((t,i)=>{
+function tables(){
+  const out=[];
+  document.querySelectorAll("main table,table").forEach((t,i)=>{
     if(t.offsetParent===null)return;
     const rows=[];
     t.querySelectorAll("tr").forEach(tr=>{
-      const cells=[...tr.querySelectorAll("th,td")].map(td=>clean(td.innerText));
-      if(cells.length)rows.push(cells);
+      const r=[...tr.querySelectorAll("th,td")].map(x=>clean(x.innerText));
+      if(r.length)rows.push(r);
     });
-    if(!rows.length)return;
-    let name="";
-    const cap=t.querySelector("caption");
-    if(cap)name=clean(cap.textContent);
-    if(!name){
-      let prev=t.previousElementSibling;
-      for(let n=0;prev&&n<4;n++,prev=prev.previousElementSibling){
-        if(/^H[1-6]$/.test(prev.tagName)){name=clean(prev.textContent);break;}
-      }
-    }
-    tables.push({name:name||("Table "+(i+1)),rows});
+    if(rows.length)out.push({name:"Table "+(i+1),rows});
   });
-  return tables;
+  return out;
 }
-function shareWhatsApp(){
-  const metrics=collectMetrics().slice(0,10);
-  let text="THE GAUR CRM\n"+pageTitle()+"\nScope: "+reportScope();
-  if(metrics.length){
-    text+="\n\n";
-    metrics.forEach(x=>text+=x.label+": "+x.value+"\n");
+function shareWhatsApp(ev){
+  if(ev){ev.preventDefault();ev.stopImmediatePropagation();}
+  toast("Opening WhatsApp…");
+  let msg="THE GAUR CRM\n"+title()+"\nScope: "+scope();
+  const m=metrics().slice(0,8);
+  if(m.length){
+    msg+="\n\n";
+    m.forEach(x=>msg+=x.label+": "+x.value+"\n");
   }
-  text+="\nOpen Report: "+location.href;
-  const a=document.createElement("a");
-  a.href="https://wa.me/?text="+encodeURIComponent(text);
-  a.target="_blank";a.rel="noopener";
-  document.body.appendChild(a);a.click();a.remove();
+  msg+="\nOpen Report: "+location.href;
+  // Same-tab navigation cannot be blocked by popup blockers.
+  location.href="https://wa.me/?text="+encodeURIComponent(msg);
+  return false;
 }
-function printReport(){
-  document.documentElement.classList.add("v45-printing");
-  setTimeout(()=>{
-    window.print();
-    setTimeout(()=>document.documentElement.classList.remove("v45-printing"),500);
-  },50);
+function printReport(ev){
+  if(ev){ev.preventDefault();ev.stopImmediatePropagation();}
+  toast("Opening Print / Save PDF…");
+  setTimeout(()=>window.print(),80);
+  return false;
 }
-async function downloadExcel(btn){
-  const old=btn.textContent;
-  btn.disabled=true;btn.textContent="Preparing Excel…";
+async function downloadExcel(ev,btn){
+  if(ev){ev.preventDefault();ev.stopImmediatePropagation();}
+  btn=btn||document.getElementById("safeExcelBtn");
+  const old=btn?btn.textContent:"";
+  if(btn){btn.disabled=true;btn.textContent="Preparing Excel…";}
+  toast("Preparing Excel…");
   try{
-    const payload={
-      title:pageTitle(),
-      url:location.href,
-      metrics:collectMetrics(),
-      tables:collectTables()
-    };
     const r=await fetch("/v4/report-tools/excel",{
       method:"POST",credentials:"same-origin",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(payload)
+      body:JSON.stringify({title:title(),url:location.href,metrics:metrics(),tables:tables()})
     });
     if(!r.ok){
-      let msg="Excel export failed.";
-      try{const j=await r.json();msg=j.error||msg;}catch(e){}
-      throw new Error(msg);
+      let e="Excel export failed.";
+      try{const j=await r.json();e=j.error||e;}catch(_){}
+      throw new Error(e);
     }
     const blob=await r.blob();
-    const cd=r.headers.get("Content-Disposition")||"";
     let filename="CRM_Report.xlsx";
-    const m=cd.match(/filename="?([^"]+)"?/i);
-    if(m)filename=m[1];
+    const cd=r.headers.get("Content-Disposition")||"";
+    const m=cd.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i);
+    if(m)filename=decodeURIComponent(m[1].replace(/"/g,""));
     const url=URL.createObjectURL(blob);
     const a=document.createElement("a");
-    a.href=url;a.download=filename;
+    a.href=url;a.download=filename;a.style.display="none";
     document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1500);
-  }catch(e){
-    alert(e.message||"Excel download could not start.");
+    setTimeout(()=>URL.revokeObjectURL(url),2500);
+    toast("Excel downloaded.");
+  }catch(err){
+    alert(err.message||"Excel download could not start.");
   }finally{
-    btn.disabled=false;btn.textContent=old;
+    if(btn){btn.disabled=false;btn.textContent=old;}
   }
+  return false;
 }
-function bind(){
-  const wa=document.getElementById("safeWhatsAppBtn");
-  const pr=document.getElementById("safePrintBtn");
-  const ex=document.getElementById("safeExcelBtn");
 
-  // Capture phase + stopImmediatePropagation prevents broken legacy handlers from also firing.
-  if(wa&&!wa.dataset.v45){
-    wa.dataset.v45="1";
-    wa.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();shareWhatsApp();},true);
-  }
-  if(pr&&!pr.dataset.v45){
-    pr.dataset.v45="1";
-    pr.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();printReport();},true);
-  }
-  if(ex&&!ex.dataset.v45){
-    ex.dataset.v45="1";
-    ex.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();downloadExcel(ex);},true);
-  }
-}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind);
-else bind();
-setTimeout(bind,600);
+window.GaurReportTools={shareWhatsApp,printReport,downloadExcel};
+
+// Capture-level delegation defeats old/broken bubble listeners and also works if the toolbar is re-rendered later.
+document.addEventListener("click",function(e){
+  const el=e.target&&e.target.closest?e.target.closest("#safeWhatsAppBtn,#safePrintBtn,#safeExcelBtn"):null;
+  if(!el)return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if(el.id==="safeWhatsAppBtn")shareWhatsApp(e);
+  else if(el.id==="safePrintBtn")printReport(e);
+  else if(el.id==="safeExcelBtn")downloadExcel(e,el);
+},true);
+
 })();

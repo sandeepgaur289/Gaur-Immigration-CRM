@@ -433,11 +433,14 @@ def install_chat_alerts(app):
             if "text/html" not in ctype or not current_user():
                 return response
 
+            # Standalone /chat owns its JS and must not pay the global injection cost.
+            if request.path == "/chat":
+                return response
+
             data=response.get_data(as_text=True)
             if "</body>" not in data:
                 return response
 
-            # Standalone /chat already loads its own application JS.
             # Other pages receive only lightweight unread/sound + launcher-label helper.
             if request.path != "/chat":
                 if "v44-chat-global-js" not in data:
