@@ -5516,8 +5516,6 @@ if 'dashboard.html' in _GAUR_V337_TEMPLATES:
 <div class="pro-dash-nav">
   <a class="active" href="{{url_for('dashboard')}}">🏠 Home</a>
   <a href="{{url_for('dashboard')}}">📊 Dashboard</a>
-  <a href="{{url_for('notification_center')}}">🔔 Notifications{% if notification_unread_count %}<span class="pro-badge">{{notification_unread_count}}</span>{% endif %}</a>
-  <a href="{{url_for('chat_center')}}">💬 Messages{% if chat_unread_count %}<span class="pro-badge">{{chat_unread_count}}</span>{% endif %}</a>
   <a href="{{url_for('my_profile')}}">👤 Me</a>
 </div>
 
@@ -5542,7 +5540,6 @@ if 'dashboard.html' in _GAUR_V337_TEMPLATES:
     </div>
     <div class="pro-profile-actions">
       <a class="toolbtn" href="{{url_for('my_profile')}}">Manage My Profile</a>
-      <a class="btn" href="{{url_for('chat_center')}}">Messages</a>
     </div>
   </div>
 </div>

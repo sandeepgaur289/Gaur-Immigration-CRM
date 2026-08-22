@@ -8,7 +8,7 @@ def health():
     return jsonify({
         "ok": True,
         "product": "GAUR Immigration CRM",
-        "version": "5.0.2",
+        "version": "5.0.3",
         "architecture": "modular",
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
     })
@@ -16,7 +16,7 @@ def health():
 @bp.get("/version")
 def version():
     return jsonify({
-        "version": "5.0.2",
+        "version": "5.0.3",
         "legacy_core_frozen": True,
         "modules_package": True,
     })
