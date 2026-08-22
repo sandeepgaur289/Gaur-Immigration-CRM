@@ -11,11 +11,11 @@ bp=Blueprint(
 
 def install_lead_statuses(app):
     """
-    v4.6.2 LITE:
+    v4.7.1 LITE:
     Inject the status helper ONLY on pages that actually contain a status dropdown.
     This avoids unnecessary JS/DOM work across Dashboard, Accounts, Chat, Reports, etc.
     """
-    if app.extensions.get("v462_lead_statuses_installed"):
+    if app.extensions.get("v471_lead_statuses_installed"):
         return
 
     @app.after_request
@@ -37,10 +37,10 @@ def install_lead_statuses(app):
             # Do not inject this module unless the page actually has a lead-status control.
             if 'name="status"' not in data and "name='status'" not in data:
                 return response
-            if "</body>" not in data or "v462-lead-status-manager" in data:
+            if "</body>" not in data or "v471-lead-status-manager" in data:
                 return response
 
-            tag='<script id="v462-lead-status-manager" src="/v4/lead-statuses/static/lead_statuses.js?v=4.6.2" defer></script>'
+            tag='<script id="v471-lead-status-manager" src="/v4/lead-statuses/static/lead_statuses.js?v=4.7.1" defer></script>'
             data=data.replace("</body>",tag+"</body>",1)
             response.set_data(data)
             response.headers["Content-Length"]=str(len(response.get_data()))
@@ -48,4 +48,4 @@ def install_lead_statuses(app):
             pass
         return response
 
-    app.extensions["v462_lead_statuses_installed"]=True
+    app.extensions["v471_lead_statuses_installed"]=True
