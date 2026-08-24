@@ -1994,7 +1994,21 @@ def active_client_case_predicate(con):
 
 def ensure_enrollment_recycle_schema():
     con=db(); cur=con.cursor()
-    cols=[("deleted_at","TEXT DEFAULT ''"),("deleted_by","TEXT DEFAULT ''"),("deletion_reason","TEXT DEFAULT ''")]
+    money="DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"
+    integer="BIGINT" if IS_POSTGRES else "INTEGER"
+    cols=[
+        ("deleted_at","TEXT DEFAULT ''"),("deleted_by","TEXT DEFAULT ''"),("deletion_reason","TEXT DEFAULT ''"),
+        ("first_cash",money),("first_rbl",money),("first_yes_bank",money),("first_au_bank",money),
+        ("second_cash",money),("second_rbl",money),("second_yes_bank",money),("second_au_bank",money),
+        ("first_payment_method","TEXT DEFAULT ''"),("second_payment_method","TEXT DEFAULT ''"),
+        ("other_payment_method","TEXT DEFAULT ''"),("other_payment_bank","TEXT DEFAULT ''"),
+        ("first_payment_status","TEXT DEFAULT 'Pending'"),("first_payment_datetime","TEXT DEFAULT ''"),
+        ("second_payment_status","TEXT DEFAULT 'Pending'"),("second_payment_datetime","TEXT DEFAULT ''"),
+        ("other_payment_received",money),("other_payment_datetime","TEXT DEFAULT ''"),
+        ("lead_db_id",integer),("counselor_name","TEXT DEFAULT ''"),("am_name","TEXT DEFAULT ''"),
+        ("interaction_date","TEXT DEFAULT ''"),
+        ("first_payment_bank_id",integer),("second_payment_bank_id",integer),("other_payment_bank_id",integer),
+    ]
     try:
         if IS_POSTGRES:
             for c,t in cols:
