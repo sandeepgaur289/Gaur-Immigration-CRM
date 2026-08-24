@@ -3402,19 +3402,13 @@ def leads_sample_excel():
         cell.fill = gold
         cell.alignment = Alignment(horizontal="center")
         ws.column_dimensions[cell.column_letter].width = 20
-    # Sample data rows - only 2 example rows to show format
-    samples = [
-        ["Rahul Sharma", "9876543210", "rahul@email.com", "Delhi", "Canada", "Study Visa", "Facebook"],
-        ["Priya Singh", "9123456789", "", "Mumbai", "Australia", "PR Visa", "Instagram"],
-    ]
-    for r_idx, row in enumerate(samples, 2):
-        for c_idx, val in enumerate(row, 1):
-            cell = ws.cell(row=r_idx, column=c_idx, value=val)
-            cell.font = Font(color="888888", italic=True)  # grey italic - example only
-    # Note row
-    ws.cell(row=4, column=1, value="↑ These 2 rows are examples only. Delete them and add your own data from row 2 onwards.")
-    ws.cell(row=4, column=1).font = Font(italic=True, color="FF0000")
-    ws.merge_cells("A4:G4")
+    # No sample data rows - user will fill their own data
+    # Just freeze the header row for convenience
+    ws.freeze_panes = "A2"
+    # Notes row at bottom
+    ws.cell(row=3, column=1, value="NOTE: Client Name and Mobile are required fields. Fill data from row 2 onwards.")
+    ws.cell(row=3, column=1).font = Font(italic=True, color="888888")
+    ws.merge_cells("A3:G3")
     import io
     bio = io.BytesIO()
     wb.save(bio)
