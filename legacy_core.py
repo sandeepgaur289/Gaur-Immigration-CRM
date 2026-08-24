@@ -3402,21 +3402,19 @@ def leads_sample_excel():
         cell.fill = gold
         cell.alignment = Alignment(horizontal="center")
         ws.column_dimensions[cell.column_letter].width = 20
-    # Sample data rows
+    # Sample data rows - only 2 example rows to show format
     samples = [
         ["Rahul Sharma", "9876543210", "rahul@email.com", "Delhi", "Canada", "Study Visa", "Facebook"],
-        ["Priya Singh", "9123456789", "priya@email.com", "Mumbai", "Australia", "PR Visa", "Instagram"],
-        ["Amrit Kaur", "8765432109", "", "Chandigarh", "UK", "Tourist Visa", "WhatsApp"],
-        ["Vikram Patel", "7654321098", "", "Ahmedabad", "USA", "Work Visa", "Walk-in"],
-        ["Sunita Devi", "6543210987", "", "Ludhiana", "Germany", "Student Visa", "Referral"],
+        ["Priya Singh", "9123456789", "", "Mumbai", "Australia", "PR Visa", "Instagram"],
     ]
     for r_idx, row in enumerate(samples, 2):
         for c_idx, val in enumerate(row, 1):
-            ws.cell(row=r_idx, column=c_idx, value=val)
-    # Notes row
-    ws.cell(row=8, column=1, value="NOTE: client_name and mobile are required. All other fields are optional.")
-    ws.cell(row=8, column=1).font = Font(italic=True, color="888888")
-    ws.merge_cells("A8:G8")
+            cell = ws.cell(row=r_idx, column=c_idx, value=val)
+            cell.font = Font(color="888888", italic=True)  # grey italic - example only
+    # Note row
+    ws.cell(row=4, column=1, value="↑ These 2 rows are examples only. Delete them and add your own data from row 2 onwards.")
+    ws.cell(row=4, column=1).font = Font(italic=True, color="FF0000")
+    ws.merge_cells("A4:G4")
     import io
     bio = io.BytesIO()
     wb.save(bio)
@@ -3448,7 +3446,7 @@ def leads():
                     best=m; header_idx=idx
             mapping=best
             if "mobile" not in mapping:
-                raise ValueError("Mobile/Contact column could not be identified")
+                raise ValueError("Mobile/Contact column not found. Please ensure your Excel has a column named: mobile, phone, contact, or phoneno. Download the Sample Excel for the correct format.")
             total=new=same=cross=invalid=0
             batch_time=datetime.datetime.now()
             batch_stamp=batch_time.isoformat(timespec="seconds")
