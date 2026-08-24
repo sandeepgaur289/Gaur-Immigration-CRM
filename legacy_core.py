@@ -1472,6 +1472,33 @@ def dashboard():
                            today_report=today_report,today_date=today_date)
 
 
+# ── Notification stubs (routes referenced in base.html template) ──────────
+@app.route("/api/notifications")
+def notifications_api():
+    u = current_user()
+    if not u: return jsonify({"ok": False}), 401
+    return jsonify({"ok": True, "notifications": [], "unread": 0})
+
+@app.route("/notifications")
+def notification_center():
+    u = current_user()
+    if not u: return redirect(url_for("login"))
+    return redirect(url_for("dashboard"))
+
+@app.route("/notifications/mark-all", methods=["POST"])
+def notifications_mark_all():
+    u = current_user()
+    if not u: return jsonify({"ok": False}), 401
+    return jsonify({"ok": True})
+
+@app.route("/notifications/open", methods=["POST"])
+def notification_open():
+    u = current_user()
+    if not u: return jsonify({"ok": False}), 401
+    return jsonify({"ok": True})
+# ── End Notification stubs ─────────────────────────────────────────────────
+
+
 
 
 
