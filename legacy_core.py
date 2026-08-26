@@ -1472,7 +1472,29 @@ def dashboard():
                            today_report=today_report,today_date=today_date)
 
 
-# ── Notification stubs (routes referenced in base.html template) ──────────
+# ── Temporary debug endpoint ──────────────────────────────────────────────
+@app.route("/debug/perf-check")
+@require_roles("MD")
+def debug_perf_check():
+    con = db()
+    # Check AM users and their employee_id links
+    users = con.execute("SELECT id, login_id, full_name, employee_id FROM users WHERE role='AM' ORDER BY full_name").fetchall()
+    # Check recent cases
+    cases = con.execute("""SELECT c.case_id, c.lead_db_id, c.assigned_employee_id, c.enrollment_date,
+                           l.assigned_am, l.client_name
+                           FROM client_cases c LEFT JOIN leads l ON l.id=c.lead_db_id
+                           WHERE c.enrollment_date >= '2026-08-01' LIMIT 20""").fetchall()
+    out = "<h2>AM Users</h2><table border=1>"
+    for u in users:
+        out += f"<tr><td>{u['id']}</td><td>{u['login_id']}</td><td>{u['full_name']}</td><td>employee_id: {u['employee_id']}</td></tr>"
+    out += "</table><h2>Recent Cases (Aug 2026)</h2><table border=1>"
+    out += "<tr><th>case_id</th><th>lead_db_id</th><th>assigned_employee_id</th><th>enrollment_date</th><th>assigned_am (from lead)</th><th>client_name</th></tr>"
+    for c in cases:
+        out += f"<tr><td>{c['case_id']}</td><td>{c['lead_db_id']}</td><td>{c['assigned_employee_id']}</td><td>{c['enrollment_date']}</td><td>{c['assigned_am']}</td><td>{c['client_name']}</td></tr>"
+    out += "</table>"
+    con.close()
+    return out
+# ── End debug ──────────────────────────────────────────────────────────────
 @app.route("/api/notifications")
 def notifications_api():
     u = current_user()
