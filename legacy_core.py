@@ -3873,14 +3873,23 @@ def performance_directory():
             WHERE employee_id=? AND performance_date BETWEEN ? AND ?""",
             (e["id"],start_date,end_date)).fetchone()
         d=dict(s)
-        # Enrollment and revenue ranking are automatically taken from Client Cases.
-        # Calls/follow-ups/rating continue to come from daily performance entries.
-        case_stats=con.execute("""SELECT COUNT(*) enrollments, COALESCE(SUM(COALESCE(total_received,0)),0) revenue
-                                  FROM client_cases
-                                  WHERE assigned_employee_id=? AND enrollment_date BETWEEN ? AND ?""",
-                               (e["id"],start_date,end_date)).fetchone()
-        d["enrollments"]=case_stats["enrollments"]
-        d["collection_amount"]=case_stats["revenue"]
+        # Two-path enrollment lookup (mirrors AM dashboard logic):
+        # Path 1: cases linked via lead_db_id → lead.assigned_am → user.employee_id
+        user_row=con.execute("SELECT id FROM users WHERE employee_id=?",(e["id"],)).fetchone()
+        linked_enr=0;linked_rev=0.0
+        if user_row:
+            lr=con.execute("""SELECT COUNT(DISTINCT c.id) enrollments,COALESCE(SUM(COALESCE(c.total_received,0)),0) revenue
+                              FROM client_cases c JOIN leads l ON l.id=c.lead_db_id
+                              WHERE c.enrollment_date BETWEEN ? AND ? AND l.assigned_am=?""",
+                           (start_date,end_date,user_row["id"])).fetchone()
+            linked_enr=int(lr["enrollments"] or 0);linked_rev=float(lr["revenue"] or 0)
+        # Path 2: legacy cases with no lead_db_id (assigned_employee_id)
+        legacy=con.execute("""SELECT COUNT(DISTINCT id) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
+                              FROM client_cases WHERE enrollment_date BETWEEN ? AND ?
+                              AND lead_db_id IS NULL AND assigned_employee_id=?""",
+                           (start_date,end_date,e["id"])).fetchone()
+        d["enrollments"]=linked_enr+int(legacy["enrollments"] or 0)
+        d["collection_amount"]=linked_rev+float(legacy["revenue"] or 0)
         d["employee"]=e
         raw.append(d)
 
@@ -4062,8 +4071,21 @@ def employee_performance(employee_id):
     case_stats=con.execute("""SELECT COUNT(*) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
                               FROM client_cases WHERE assigned_employee_id=? AND enrollment_date BETWEEN ? AND ?""",
                            (employee_id,start_date,end_date)).fetchone()
-    totals["enrollments"]=case_stats["enrollments"]
-    totals["collection_amount"]=case_stats["revenue"]
+    # Two-path enrollment lookup
+    emp_row=con.execute("SELECT id FROM users WHERE employee_id=?",(employee_id,)).fetchone()
+    linked_enr=0;linked_rev=0.0
+    if emp_row:
+        lr=con.execute("""SELECT COUNT(DISTINCT c.id) enrollments,COALESCE(SUM(COALESCE(c.total_received,0)),0) revenue
+                          FROM client_cases c JOIN leads l ON l.id=c.lead_db_id
+                          WHERE c.enrollment_date BETWEEN ? AND ? AND l.assigned_am=?""",
+                       (start_date,end_date,emp_row["id"])).fetchone()
+        linked_enr=int(lr["enrollments"] or 0);linked_rev=float(lr["revenue"] or 0)
+    legacy2=con.execute("""SELECT COUNT(DISTINCT id) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
+                           FROM client_cases WHERE enrollment_date BETWEEN ? AND ?
+                           AND lead_db_id IS NULL AND assigned_employee_id=?""",
+                        (start_date,end_date,employee_id)).fetchone()
+    totals["enrollments"]=linked_enr+int(legacy2["enrollments"] or 0)
+    totals["collection_amount"]=linked_rev+float(legacy2["revenue"] or 0)
     con.close()
 
     conversion=(totals["enrollments"]/totals["leads_assigned"]*100) if totals["leads_assigned"] else 0
