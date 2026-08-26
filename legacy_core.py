@@ -3895,9 +3895,10 @@ def performance_directory():
             WHERE employee_id=? AND performance_date BETWEEN ? AND ?""",
             (e["id"],start_date,end_date)).fetchone()
         d=dict(s)
-        # Two-path enrollment lookup (mirrors AM dashboard logic):
-        # Path 1: cases linked via lead_db_id → lead.assigned_am → user.employee_id
+        # Find user linked to this employee — try employee_id first, then name match
         user_row=con.execute("SELECT id FROM users WHERE employee_id=?",(e["id"],)).fetchone()
+        if not user_row:
+            user_row=con.execute("SELECT id FROM users WHERE full_name=? AND company_code=?",(e["full_name"],e["company_code"])).fetchone()
         linked_enr=0;linked_rev=0.0
         if user_row:
             lr=con.execute("""SELECT COUNT(DISTINCT c.id) enrollments,COALESCE(SUM(COALESCE(c.total_received,0)),0) revenue
@@ -3905,7 +3906,7 @@ def performance_directory():
                               WHERE c.enrollment_date BETWEEN ? AND ? AND l.assigned_am=?""",
                            (start_date,end_date,user_row["id"])).fetchone()
             linked_enr=int(lr["enrollments"] or 0);linked_rev=float(lr["revenue"] or 0)
-        # Path 2: legacy cases with no lead_db_id (assigned_employee_id)
+        # Also check direct company cases (no lead link)
         legacy=con.execute("""SELECT COUNT(DISTINCT id) enrollments,COALESCE(SUM(COALESCE(total_received,0)),0) revenue
                               FROM client_cases WHERE enrollment_date BETWEEN ? AND ?
                               AND lead_db_id IS NULL AND assigned_employee_id=?""",
@@ -4095,6 +4096,10 @@ def employee_performance(employee_id):
                            (employee_id,start_date,end_date)).fetchone()
     # Two-path enrollment lookup
     emp_row=con.execute("SELECT id FROM users WHERE employee_id=?",(employee_id,)).fetchone()
+    if not emp_row:
+        emp_master=con.execute("SELECT full_name,company_code FROM employee_master WHERE id=?",(employee_id,)).fetchone()
+        if emp_master:
+            emp_row=con.execute("SELECT id FROM users WHERE full_name=? AND company_code=?",(emp_master["full_name"],emp_master["company_code"])).fetchone()
     linked_enr=0;linked_rev=0.0
     if emp_row:
         lr=con.execute("""SELECT COUNT(DISTINCT c.id) enrollments,COALESCE(SUM(COALESCE(c.total_received,0)),0) revenue
