@@ -1,0 +1,157 @@
+{% extends "base.html" %}{% block content %}
+<style>
+.setup-steps{counter-reset:step;display:grid;gap:12px;margin-bottom:20px}
+.setup-step{background:#071d32;border:1px solid #315a7b;border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start}
+.step-num{counter-increment:step;width:32px;height:32px;background:#e6b73f;color:#07192b;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px}
+.step-num::before{content:counter(step)}
+.code-block{background:#07192b;border:1px solid #315f85;border-radius:8px;padding:10px 14px;font-size:13px;word-break:break-all;color:#8fc8ff;margin-top:8px}
+</style>
+
+<h1 class="title">⚙️ Facebook Integration Settings</h1>
+
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in msgs %}
+    <div class="flash {{cat}}">{{msg}}</div>
+  {% endfor %}
+{% endwith %}
+
+<!-- Setup Guide -->
+<div class="card">
+  <h3 style="color:#e6b73f;margin:0 0 14px">🚀 Setup Guide (5 Steps)</h3>
+  <div class="setup-steps">
+    <div class="setup-step">
+      <div class="step-num"></div>
+      <div>
+        <b>Meta App banao</b><br>
+        <span style="opacity:.8;font-size:14px">
+          <a href="https://developers.facebook.com/apps" target="_blank" style="color:#8fc8ff">developers.facebook.com/apps</a>
+          → Create App → Business type choose karo.
+        </span>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num"></div>
+      <div>
+        <b>Lead Ads Testing Tool se Form ID lo</b><br>
+        <span style="opacity:.8;font-size:14px">
+          <a href="https://developers.facebook.com/tools/lead-ads-testing" target="_blank" style="color:#8fc8ff">Lead Ads Testing Tool</a>
+          → apna Page select karo → Form select karo → URL mein form ID copy karo.
+          Ya Form Library mein jaao: Ads Manager → Tools → Instant Forms.
+        </span>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num"></div>
+      <div>
+        <b>Page Access Token generate karo</b><br>
+        <span style="opacity:.8;font-size:14px">
+          Graph API Explorer → apna app select karo → Generate User Token → Page Token exchange karo.
+          Phir <b>.env</b> mein set karo:
+          <div class="code-block">FB_PAGE_ACCESS_TOKEN=EAAxxxxxxxxxxxxx</div>
+          Agar alag pages hain SCIC/WWIC ke liye toh neeche form mein individual tokens de sakte ho.
+        </span>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num"></div>
+      <div>
+        <b>Webhook configure karo (Real-time ke liye)</b><br>
+        <span style="opacity:.8;font-size:14px">
+          Meta App Dashboard → Webhooks → Page → Subscribe karo.<br>
+          <b>Callback URL:</b>
+          <div class="code-block">{{webhook_url}}</div>
+          <b>Verify Token:</b>
+          <div class="code-block">{{verify_token}}</div>
+          Phir <b>leadgen</b> field subscribe karo. .env mein set karo:
+          <div class="code-block">FB_WEBHOOK_VERIFY_TOKEN={{verify_token}}<br>FB_APP_SECRET=your-meta-app-secret</div>
+        </span>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num"></div>
+      <div>
+        <b>Neeche form mein Form ID + Company add karo</b><br>
+        <span style="opacity:.8;font-size:14px">
+          Har Facebook Lead Form ek company se map karo (SCIC ya WWIC).
+          Done! Leads automatically aati rehni chahiye.
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Form -->
+<div class="card">
+  <h3 style="color:#e6b73f;margin:0 0 14px">➕ Form Mapping Add / Update karo</h3>
+  <form method="post" action="{{url_for('fb_leads.settings_save')}}">
+    <input type="hidden" name="action" value="add">
+    <div class="grid">
+      <div>
+        <label>Form ID <span style="color:#ff7a7a">*</span></label>
+        <input type="text" name="form_id" placeholder="e.g. 1234567890123456" required>
+        <small style="opacity:.7">Facebook Lead Form ka numeric ID</small>
+      </div>
+      <div>
+        <label>Form Name (label ke liye)</label>
+        <input type="text" name="form_name" placeholder="e.g. SCIC Canada Leads Jan 2026">
+      </div>
+      <div>
+        <label>Company <span style="color:#ff7a7a">*</span></label>
+        <select name="company_code">
+          <option value="SCIC">SCIC – Smart Choice</option>
+          <option value="WWIC">WWIC – White Wave</option>
+        </select>
+      </div>
+      <div>
+        <label>Page Access Token (optional – overrides default)</label>
+        <input type="text" name="page_token" placeholder="EAAxxxxx… (blank = use FB_PAGE_ACCESS_TOKEN from .env)">
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" name="active" value="1" checked style="width:auto"> Active (fetch karo is form se)
+      </label>
+    </div>
+    <div style="margin-top:14px">
+      <button class="btn" type="submit">💾 Save Form Mapping</button>
+    </div>
+  </form>
+</div>
+
+<!-- Existing Mappings -->
+{% if form_maps %}
+<div class="card">
+  <h3 style="color:#e6b73f;margin:0 0 12px">📋 Existing Form Mappings</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr>
+      <th>Form Name</th><th>Form ID</th><th>Company</th><th>Token</th><th>Status</th><th>Action</th>
+    </tr></thead>
+    <tbody>
+    {% for fm in form_maps %}
+    <tr>
+      <td><b>{{fm.form_name or '—'}}</b></td>
+      <td><code style="font-size:12px">{{fm.form_id}}</code></td>
+      <td>{{fm.company_code}}</td>
+      <td>{{'✓ Custom' if fm.page_token else 'Default'}}</td>
+      <td>{{'✅ Active' if fm.active else '⏸ Paused'}}</td>
+      <td>
+        <form method="post" action="{{url_for('fb_leads.settings_save')}}" style="display:inline"
+              onsubmit="return confirm('Delete this mapping?')">
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="form_id" value="{{fm.form_id}}">
+          <button class="btn" style="background:#5c3340;color:#fff;padding:6px 10px;font-size:13px">🗑 Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endif %}
+
+<div style="margin-top:12px">
+  <a href="{{url_for('fb_leads.home')}}" style="color:#e6b73f">← Back to FB Leads Dashboard</a>
+</div>
+{% endblock %}

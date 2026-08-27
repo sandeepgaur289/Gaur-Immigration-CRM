@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% block content %}
+<style>
+.log-info{color:#8fc8ff}.log-warn{color:#e6b73f}.log-error{color:#ff7a7a}
+</style>
+<h1 class="title">📋 Facebook Fetch Logs</h1>
+<div style="margin-bottom:14px">
+  <a href="{{url_for('fb_leads.home')}}" class="btn" style="background:#0c2d49;border:1px solid #427398;color:#fff">← Back</a>
+</div>
+<div class="card">
+  {% if rows %}
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>Time</th><th>Level</th><th>Message</th><th>Lead ID</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr>
+      <td style="opacity:.5">{{r.id}}</td>
+      <td style="white-space:nowrap;font-size:13px">{{r.created_at[:19]}}</td>
+      <td><span class="log-{{r.level|lower}}"><b>{{r.level}}</b></span></td>
+      <td style="font-size:13px">{{r.message}}</td>
+      <td style="font-size:12px;opacity:.7">{{r.lead_id or '—'}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+  <p style="opacity:.7">Koi logs nahi abhi tak.</p>
+  {% endif %}
+</div>
+{% endblock %}

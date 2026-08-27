@@ -1,0 +1,130 @@
+{% extends "base.html" %}{% block content %}
+<style>
+.fb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.fb-card{background:#0c2d49;border:1px solid #315a7b;border-radius:14px;padding:18px;text-align:center}
+.fb-card b{display:block;color:#e6b73f;font-size:32px;margin-top:6px}
+.fb-card span{font-size:14px;opacity:.8}
+.fb-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.fb-badge{display:inline-block;padding:4px 9px;border-radius:20px;font-size:13px;font-weight:bold}
+.fb-active{background:#1f6b45;color:#fff}.fb-paused{background:#5c3340;color:#fff}
+.fb-tag-scic{background:#5d4510;color:#e6b73f;border:1px solid #e6b73f}
+.fb-tag-wwic{background:#123c62;color:#8fc8ff;border:1px solid #4aa8ff}
+.log-info{color:#8fc8ff}.log-warn{color:#e6b73f}.log-error{color:#ff7a7a}
+.form-map-table td,.form-map-table th{padding:9px 12px}
+@media(max-width:800px){.fb-grid{grid-template-columns:1fr}}
+</style>
+
+<h1 class="title">📘 Facebook Lead Ads Integration</h1>
+
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in msgs %}
+    <div class="flash {{cat}}">{{msg}}</div>
+  {% endfor %}
+{% endwith %}
+
+<!-- Stats -->
+<div class="fb-grid">
+  <div class="fb-card"><span>Total FB Leads (All Time)</span><b>{{total_fb}}</b></div>
+  <div class="fb-card"><span>Imported Today</span><b>{{today_fb}}</b></div>
+  <div class="fb-card"><span>Active Form Mappings</span><b>{{form_maps|selectattr('active','equalto',1)|list|length}}</b></div>
+</div>
+
+<!-- Action Buttons -->
+<div class="fb-actions no-print">
+  <form method="post" action="{{url_for('fb_leads.manual_fetch')}}" style="display:inline">
+    <button class="btn" onclick="this.disabled=true;this.textContent='Fetching…';this.form.submit()">
+      🔄 Manual Fetch from Facebook
+    </button>
+  </form>
+  {% if u.role=='MD' %}
+  <a class="btn" href="{{url_for('fb_leads.settings')}}" style="background:#0c2d49;border:1px solid #427398;color:#fff">⚙️ Settings / Form Setup</a>
+  {% endif %}
+  <a class="btn" href="{{url_for('fb_leads.logs')}}" style="background:#0c2d49;border:1px solid #427398;color:#fff">📋 View Logs</a>
+  <a class="btn" href="{{url_for('lead_control_center')}}" style="background:#0c2d49;border:1px solid #427398;color:#fff">↗ Lead Allocation</a>
+</div>
+
+<!-- Webhook URL -->
+<div class="card" style="margin-bottom:16px">
+  <h3 style="color:#e6b73f;margin:0 0 8px">🔗 Facebook Webhook URL</h3>
+  <p style="margin:0 0 8px;opacity:.8;font-size:14px">
+    Meta Business Manager → Lead Ads → Webhooks → Subscribe karo yeh URL pe:
+  </p>
+  <code style="background:#071d32;border:1px solid #315a7b;border-radius:8px;padding:10px 14px;display:block;word-break:break-all;color:#8fc8ff">
+    {{webhook_url}}
+  </code>
+  <p style="margin:8px 0 0;font-size:13px;opacity:.7">
+    Verify Token: <code style="color:#e6b73f">{{request.environ.get('FB_WEBHOOK_VERIFY_TOKEN','gaur-crm-fb-webhook-2026')}}</code>
+    &nbsp;— iske baad "leadgen" field subscribe karo.
+  </p>
+</div>
+
+<!-- Form Mappings -->
+<div class="card">
+  <h3 style="color:#e6b73f;margin:0 0 12px">📋 Form → Company Mappings</h3>
+  {% if form_maps %}
+  <div class="tablewrap">
+  <table class="form-map-table">
+    <thead><tr>
+      <th>Form Name</th><th>Form ID</th><th>Company</th><th>Token</th><th>Status</th>
+    </tr></thead>
+    <tbody>
+    {% for fm in form_maps %}
+    <tr>
+      <td><b>{{fm.form_name or '—'}}</b></td>
+      <td><code style="font-size:13px">{{fm.form_id}}</code></td>
+      <td>
+        <span class="fb-badge {{'fb-tag-scic' if fm.company_code=='SCIC' else 'fb-tag-wwic'}}">
+          {{fm.company_code}}
+        </span>
+      </td>
+      <td>
+        {% if fm.page_token %}
+          <span style="color:#48d58b">✓ Custom Token</span>
+        {% else %}
+          <span style="opacity:.6">Uses default (FB_PAGE_ACCESS_TOKEN)</span>
+        {% endif %}
+      </td>
+      <td>
+        <span class="fb-badge {{'fb-active' if fm.active else 'fb-paused'}}">
+          {{'Active' if fm.active else 'Paused'}}
+        </span>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+  <p style="opacity:.7">
+    Koi form mapping nahi hai abhi.
+    {% if u.role=='MD' %}
+    <a href="{{url_for('fb_leads.settings')}}" style="color:#e6b73f">⚙️ Settings mein jaake forms add karo.</a>
+    {% endif %}
+  </p>
+  {% endif %}
+</div>
+
+<!-- Recent Logs -->
+<div class="card">
+  <h3 style="color:#e6b73f;margin:0 0 12px">📜 Recent Activity (Last 30)</h3>
+  {% if logs %}
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Time</th><th>Level</th><th>Message</th></tr></thead>
+    <tbody>
+    {% for row in logs %}
+    <tr>
+      <td style="white-space:nowrap;font-size:13px">{{row.created_at[:19]}}</td>
+      <td><span class="log-{{row.level|lower}}"><b>{{row.level}}</b></span></td>
+      <td style="font-size:13px">{{row.message}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+  <p style="opacity:.7">Abhi tak koi activity nahi. Manual Fetch karo ya webhook set karo.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
