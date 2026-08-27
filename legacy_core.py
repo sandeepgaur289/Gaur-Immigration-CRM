@@ -1502,11 +1502,14 @@ def create_meta_operator():
     con = db()
     existing = con.execute("SELECT id FROM users WHERE login_id='manjul.nagar'").fetchone()
     if existing:
+        # Update designation if needed
+        con.execute("UPDATE users SET designation='Meta Lead Operator' WHERE login_id='manjul.nagar'")
+        con.commit()
         con.close()
-        return "User manjul.nagar already exists.", 200
+        return "User manjul.nagar already exists (designation updated).", 200
     pw = generate_password_hash("socialtheka")
-    con.execute("INSERT INTO users (login_id, password_hash, full_name, role, company_code, active) VALUES (?,?,?,?,?,1)",
-                ("manjul.nagar", pw, "Manjul Nagar", "MD", "SCIC"))
+    con.execute("INSERT INTO users (login_id, password_hash, full_name, role, company_code, active, designation) VALUES (?,?,?,?,?,1,?)",
+                ("manjul.nagar", pw, "Manjul Nagar", "MD", "SCIC", "Meta Lead Operator"))
     con.commit()
     con.close()
     return "Meta Operator created. Login: manjul.nagar / socialtheka", 200
