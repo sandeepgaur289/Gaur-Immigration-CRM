@@ -4054,6 +4054,26 @@ def performance_directory():
                            (start_date,end_date,e["id"])).fetchone()
         d["enrollments"]=linked_enr+int(legacy["enrollments"] or 0)
         d["collection_amount"]=linked_rev+float(legacy["revenue"] or 0)
+        # ── Live leads count for performance directory ──────────────────────
+        live_leads_dir = 0
+        if user_row:
+            lr_live = con.execute("""
+                SELECT COUNT(*) c FROM leads
+                WHERE assigned_am=?
+                  AND COALESCE(deleted_at,'')=''
+                  AND COALESCE(NULLIF(assigned_at,''), imported_at, '') BETWEEN ? AND ?
+            """, (user_row["id"], start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
+            live_leads_dir = int(lr_live["c"] or 0)
+        if live_leads_dir == 0:
+            lr_live2 = con.execute("""
+                SELECT COUNT(*) c FROM leads
+                WHERE COALESCE(deleted_at,'')=''
+                  AND assigned_employee_id=?
+                  AND COALESCE(NULLIF(assigned_at,''), imported_at, '') BETWEEN ? AND ?
+            """, (e["id"], start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
+            live_leads_dir = int(lr_live2["c"] or 0)
+        d["leads_assigned"] = live_leads_dir
+        # ───────────────────────────────────────────────────────────────────
         d["employee"]=e
         raw.append(d)
 
@@ -4254,6 +4274,30 @@ def employee_performance(employee_id):
                         (start_date,end_date,employee_id)).fetchone()
     totals["enrollments"]=linked_enr+int(legacy2["enrollments"] or 0)
     totals["collection_amount"]=linked_rev+float(legacy2["revenue"] or 0)
+
+    # ── Live leads count (overrides manual entry) ──────────────────────────
+    live_leads = 0
+    if emp_row:
+        # Leads assigned to this user (AM) in the period
+        lr2 = con.execute("""
+            SELECT COUNT(*) c FROM leads
+            WHERE assigned_am=?
+              AND COALESCE(deleted_at,'')=''
+              AND COALESCE(NULLIF(assigned_at,''), imported_at, '') BETWEEN ? AND ?
+        """, (emp_row["id"], start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
+        live_leads = int(lr2["c"] or 0)
+    # Also count leads assigned directly via employee_id (fallback)
+    if live_leads == 0:
+        lr3 = con.execute("""
+            SELECT COUNT(*) c FROM leads
+            WHERE COALESCE(deleted_at,'')=''
+              AND assigned_employee_id=?
+              AND COALESCE(NULLIF(assigned_at,''), imported_at, '') BETWEEN ? AND ?
+        """, (employee_id, start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
+        live_leads = int(lr3["c"] or 0)
+    totals["leads_assigned"] = live_leads
+    # ───────────────────────────────────────────────────────────────────────
+
     con.close()
 
     conversion=(totals["enrollments"]/totals["leads_assigned"]*100) if totals["leads_assigned"] else 0
