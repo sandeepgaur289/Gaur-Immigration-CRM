@@ -75,6 +75,7 @@ table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:9px;bord
 {% if current_user['role'] in ['MD','GM','RECEPTION'] %}<a href="{{ url_for('reception') }}">Reception</a>{% endif %}
 {% if current_user['role'] in ['MD','GM'] %}<a href="{{ url_for('employees') }}">Employee Information</a><a href="{{ url_for('performance_directory') }}" style="border-left:4px solid #e6b73f">Performance Analysis</a><a href="{{ url_for('leads') }}">Lead Upload & Allocation</a><a href="{{ url_for('ams') }}">Assistant Managers</a><a href="{{ url_for('cases') }}">Enrollment / Payment / Filing</a>{% endif %}
 {% if current_user['role']=='AM' %}<a href="{{ url_for('my_leads') }}">My Leads</a>{% endif %}
+{% if session.get('md_original_uid') %}<a href="{{ url_for('md_return_to_portal') }}" style="border-left:4px solid #e6b73f;color:#e6b73f">← Return to MD Portal</a>{% endif %}
 <a href="{{ url_for('logout') }}">Sign Out</a>
 </nav>{% endif %}
 </aside>

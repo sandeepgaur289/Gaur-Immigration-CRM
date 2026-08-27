@@ -22,6 +22,9 @@
 <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
 <h2 style="margin:0">{{label}}</h2>
 <div>
+{% if u['role']=='MD' and emp_row_user_id %}
+<a class="btn" style="background:#e6b73f;color:#091423" href="{{url_for('md_open_employee_portal', user_id=emp_row_user_id)}}" target="_blank">Open Profile</a>
+{% endif %}
 <a class="btn" href="{{url_for('employee_performance',employee_id=employee['id'],period='week')}}">Weekly</a>
 <a class="btn" href="{{url_for('employee_performance',employee_id=employee['id'],period='month')}}">Monthly</a>
 <a class="btn" href="{{url_for('employee_performance',employee_id=employee['id'],period='year')}}">Yearly</a>

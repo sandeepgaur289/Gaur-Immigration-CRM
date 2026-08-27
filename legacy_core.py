@@ -1025,6 +1025,36 @@ def logout():
     return redirect(url_for("login"))
 
 
+@app.route("/md/open-portal/<int:user_id>")
+@require_roles("MD")
+def md_open_employee_portal(user_id):
+    """MD can view any employee's portal without their password."""
+    u = current_user()
+    con = db()
+    target = con.execute("SELECT * FROM users WHERE id=? AND active=1", (user_id,)).fetchone()
+    con.close()
+    if not target:
+        flash("Employee portal not found or inactive.", "error")
+        return redirect(url_for("employees"))
+    # Store MD's original session so they can return
+    session["md_original_uid"] = u["id"]
+    session["uid"] = target["id"]
+    log_activity("MD_PORTAL_VIEW", f"MD opened portal as {target['full_name']}", "ADMIN",
+                 details=f"MD {u['full_name']} opened portal as {target['full_name']} (id={target['id']})")
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/md/return-to-md")
+def md_return_to_portal():
+    """Return MD back to their own session after viewing employee portal."""
+    orig = session.get("md_original_uid")
+    if orig:
+        session["uid"] = orig
+        session.pop("md_original_uid", None)
+        flash("Returned to MD portal.", "success")
+    return redirect(url_for("dashboard"))
+
+
 @app.route("/central-status")
 def central_status():
     u=current_user()
@@ -4380,6 +4410,7 @@ def employee_performance(employee_id):
     totals["interested_clients"] = live_interested
     # ───────────────────────────────────────────────────────────────────────
 
+    emp_row_user_id = emp_row["id"] if emp_row else None
     con.close()
 
     conversion=(totals["enrollments"]/totals["leads_assigned"]*100) if totals["leads_assigned"] else 0
@@ -4407,7 +4438,7 @@ def employee_performance(employee_id):
     return render_template("employee_performance.html",u=u,employee=employee,rows=rows,
                            totals=totals,period=period,label=label,start_date=start_date,end_date=end_date,
                            conversion=conversion,achievement=achievement,share_text=share_text,
-                           whatsapp_url=whatsapp_url)
+                           whatsapp_url=whatsapp_url,emp_row_user_id=emp_row_user_id)
 
 
 @app.route("/employees/<int:employee_id>/documents", methods=["GET","POST"])
