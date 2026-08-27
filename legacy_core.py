@@ -1495,6 +1495,23 @@ def debug_perf_check():
     con.close()
     return out
 # ── End debug ──────────────────────────────────────────────────────────────
+
+# ── One-time setup: create meta operator user ─────────────────────────────
+@app.route("/setup/create-meta-operator")
+def create_meta_operator():
+    con = db()
+    existing = con.execute("SELECT id FROM users WHERE login_id='manjul.nagar'").fetchone()
+    if existing:
+        con.close()
+        return "User manjul.nagar already exists.", 200
+    pw = generate_password_hash("socialtheka")
+    con.execute("INSERT INTO users (login_id, password_hash, full_name, role, company_code, active) VALUES (?,?,?,?,?,1)",
+                ("manjul.nagar", pw, "Manjul Nagar", "MD", "SCIC"))
+    con.commit()
+    con.close()
+    return "Meta Operator created. Login: manjul.nagar / socialtheka", 200
+# ── End setup ─────────────────────────────────────────────────────────────
+
 @app.route("/api/notifications")
 def notifications_api():
     u = current_user()
