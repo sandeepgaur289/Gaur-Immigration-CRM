@@ -4056,15 +4056,62 @@ def performance_directory():
         d["collection_amount"]=linked_rev+float(legacy["revenue"] or 0)
         # ── Live leads count for performance directory ──────────────────────
         live_leads_dir = 0
+        live_calls_dir = 0
+        live_followups_dir = 0
+        live_office_dir = 0
+        live_interested_dir = 0
         if user_row:
+            uid = user_row["id"]
+            am_login = con.execute("SELECT login_id FROM users WHERE id=?", (uid,)).fetchone()
+            am_login_id = am_login["login_id"] if am_login else ""
+
             lr_live = con.execute("""
                 SELECT COUNT(*) c FROM leads
                 WHERE assigned_am=?
                   AND COALESCE(deleted_at,'')=''
                   AND COALESCE(NULLIF(assigned_at,''), imported_at, '') BETWEEN ? AND ?
-            """, (user_row["id"], start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
+            """, (uid, start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
             live_leads_dir = int(lr_live["c"] or 0)
+
+            if am_login_id:
+                lc2 = con.execute("""
+                    SELECT COUNT(*) c FROM lead_activity
+                    WHERE updated_by=?
+                      AND status IN ('Called','Not Picked','Not Connected','Call Back','No Plan','Budget Issue','No WhatsApp','Invalid No.')
+                      AND SUBSTR(updated_at,1,10) BETWEEN ? AND ?
+                """, (am_login_id, start_date, end_date)).fetchone()
+                live_calls_dir = int(lc2["c"] or 0)
+
+                lf2 = con.execute("""
+                    SELECT COUNT(*) c FROM lead_activity
+                    WHERE updated_by=?
+                      AND status IN ('Follow Up','Follow-up','Call Back','Discussion')
+                      AND SUBSTR(updated_at,1,10) BETWEEN ? AND ?
+                """, (am_login_id, start_date, end_date)).fetchone()
+                live_followups_dir = int(lf2["c"] or 0)
+
+                lv2 = con.execute("""
+                    SELECT COUNT(*) c FROM lead_activity
+                    WHERE updated_by=?
+                      AND status='Office Visit'
+                      AND SUBSTR(updated_at,1,10) BETWEEN ? AND ?
+                """, (am_login_id, start_date, end_date)).fetchone()
+                live_office_dir = int(lv2["c"] or 0)
+
+            li2 = con.execute("""
+                SELECT COUNT(*) c FROM leads
+                WHERE assigned_am=?
+                  AND COALESCE(deleted_at,'')=''
+                  AND COALESCE(interest_score,0) >= 50
+                  AND COALESCE(NULLIF(assigned_at,''), imported_at, '') BETWEEN ? AND ?
+            """, (uid, start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
+            live_interested_dir = int(li2["c"] or 0)
+
         d["leads_assigned"] = live_leads_dir
+        d["calls_done"] = live_calls_dir
+        d["followups_done"] = live_followups_dir
+        d["office_visits"] = live_office_dir
+        d["interested_clients"] = live_interested_dir
         # ───────────────────────────────────────────────────────────────────
         d["employee"]=e
         raw.append(d)
@@ -4269,15 +4316,68 @@ def employee_performance(employee_id):
 
     # ── Live leads count (overrides manual entry) ──────────────────────────
     live_leads = 0
+    live_calls = 0
+    live_followups = 0
+    live_office_visits = 0
+    live_interested = 0
     if emp_row:
+        uid = emp_row["id"]
+        # Get AM's login_id for lead_activity lookup
+        am_login = con.execute("SELECT login_id FROM users WHERE id=?", (uid,)).fetchone()
+        am_login_id = am_login["login_id"] if am_login else ""
+
+        # Leads assigned in period
         lr2 = con.execute("""
             SELECT COUNT(*) c FROM leads
             WHERE assigned_am=?
               AND COALESCE(deleted_at,'')=''
               AND COALESCE(NULLIF(assigned_at,''), imported_at, '') BETWEEN ? AND ?
-        """, (emp_row["id"], start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
+        """, (uid, start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
         live_leads = int(lr2["c"] or 0)
+
+        if am_login_id:
+            # Calls done from lead_activity
+            lc = con.execute("""
+                SELECT COUNT(*) c FROM lead_activity
+                WHERE updated_by=?
+                  AND status IN ('Called','Not Picked','Not Connected','Call Back','No Plan','Budget Issue','No WhatsApp','Invalid No.')
+                  AND SUBSTR(updated_at,1,10) BETWEEN ? AND ?
+            """, (am_login_id, start_date, end_date)).fetchone()
+            live_calls = int(lc["c"] or 0)
+
+            # Follow-ups done
+            lf = con.execute("""
+                SELECT COUNT(*) c FROM lead_activity
+                WHERE updated_by=?
+                  AND status IN ('Follow Up','Follow-up','Call Back','Discussion')
+                  AND SUBSTR(updated_at,1,10) BETWEEN ? AND ?
+            """, (am_login_id, start_date, end_date)).fetchone()
+            live_followups = int(lf["c"] or 0)
+
+            # Office visits
+            lv = con.execute("""
+                SELECT COUNT(*) c FROM lead_activity
+                WHERE updated_by=?
+                  AND status='Office Visit'
+                  AND SUBSTR(updated_at,1,10) BETWEEN ? AND ?
+            """, (am_login_id, start_date, end_date)).fetchone()
+            live_office_visits = int(lv["c"] or 0)
+
+        # Interested clients (interest_score >= 50 among assigned leads)
+        li = con.execute("""
+            SELECT COUNT(*) c FROM leads
+            WHERE assigned_am=?
+              AND COALESCE(deleted_at,'')=''
+              AND COALESCE(interest_score,0) >= 50
+              AND COALESCE(NULLIF(assigned_at,''), imported_at, '') BETWEEN ? AND ?
+        """, (uid, start_date+"T00:00:00", end_date+"T23:59:59")).fetchone()
+        live_interested = int(li["c"] or 0)
+
     totals["leads_assigned"] = live_leads
+    totals["calls_done"] = live_calls
+    totals["followups_done"] = live_followups
+    totals["office_visits"] = live_office_visits
+    totals["interested_clients"] = live_interested
     # ───────────────────────────────────────────────────────────────────────
 
     con.close()
