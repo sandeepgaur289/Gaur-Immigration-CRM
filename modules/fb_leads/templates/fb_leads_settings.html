@@ -80,6 +80,18 @@
   </div>
 </div>
 
+<!-- Save Token to DB -->
+<div class="card" style="border-color:#48d58b">
+  <h3 style="color:#48d58b;margin:0 0 8px">🔑 Facebook Access Token Save Karo</h3>
+  <p style="opacity:.8;font-size:14px;margin:0 0 12px">
+    Token yahan save karo — Render environment variable se independent rahega.
+  </p>
+  <form method="post" action="{{url_for('fb_leads.save_token')}}">
+    <input type="text" name="fb_page_access_token" placeholder="EAANUQ5T1brg..." style="width:100%;margin-bottom:10px;font-size:13px">
+    <button class="btn" style="background:#48d58b;color:#07192b;font-weight:bold" type="submit">💾 Token Save Karo</button>
+  </form>
+</div>
+
 <!-- Auto Import All Forms -->
 <div class="card" style="border-color:#e6b73f">
   <h3 style="color:#e6b73f;margin:0 0 8px">⚡ Auto-Import All Forms from Facebook</h3>

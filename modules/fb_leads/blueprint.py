@@ -108,7 +108,19 @@ def _ensure_tables(con):
     con.commit()
 
 
-def _fetch_lead_from_fb(lead_id, page_token):
+def _get_token(con=None):
+    """Get FB page access token - checks DB first, then env var."""
+    close_con = False
+    if con is None:
+        con = db()
+        _ensure_tables(con)
+        close_con = True
+    db_token = _get_setting(con, "fb_page_access_token", "").strip()
+    if close_con:
+        con.close()
+    if db_token:
+        return db_token
+    return os.environ.get("FB_PAGE_ACCESS_TOKEN", "").strip()
     """
     Call Graph API to get a single lead's field data.
     Returns dict of {field_name: value} or raises on error.
@@ -346,7 +358,7 @@ def manual_fetch():
     con = db()
     _ensure_tables(con)
     
-    default_token = os.environ.get("FB_PAGE_ACCESS_TOKEN", "").strip()
+    default_token = _get_token(con)
     form_maps = [dict(r) for r in con.execute(
         "SELECT * FROM fb_form_map WHERE active=1"
     ).fetchall()]
@@ -420,7 +432,7 @@ def webhook_receive():
     con = db()
     _ensure_tables(con)
     
-    default_token = os.environ.get("FB_PAGE_ACCESS_TOKEN", "").strip()
+    default_token = _get_token(con)
     
     try:
         for entry in payload.get("entry", []):
@@ -554,17 +566,34 @@ def settings_save():
     return redirect(url_for("fb_leads.settings"))
 
 
+@bp.post("/settings/save-token")
+@require_roles("MD")
+def save_token():
+    """Save FB Page Access Token directly to database."""
+    token = request.form.get("fb_page_access_token", "").strip()
+    if not token:
+        flash("Token cannot be empty.", "error")
+        return redirect(url_for("fb_leads.settings"))
+    con = db()
+    _ensure_tables(con)
+    _set_setting(con, "fb_page_access_token", token)
+    con.commit()
+    con.close()
+    flash("✓ Facebook Access Token saved successfully!", "success")
+    return redirect(url_for("fb_leads.settings"))
+
+
 @bp.post("/settings/auto-import-forms")
 @require_roles("MD")
 def auto_import_forms():
     """Fetch all Lead Ad forms from all pages via Graph API and register them in CRM."""
-    token = os.environ.get("FB_PAGE_ACCESS_TOKEN", "").strip()
-    if not token:
-        flash("FB_PAGE_ACCESS_TOKEN not set. Add it in Render Environment Variables.", "error")
-        return redirect(url_for("fb_leads.settings"))
-
     con = db()
     _ensure_tables(con)
+    token = _get_token(con)
+    if not token:
+        con.close()
+        flash("FB_PAGE_ACCESS_TOKEN not set. Save it in Settings below.", "error")
+        return redirect(url_for("fb_leads.settings"))
 
     added = 0
     skipped = 0
@@ -667,10 +696,17 @@ def logs():
 def debug_token():
     """Quick debug to check if FB token is visible to app."""
     token = os.environ.get("FB_PAGE_ACCESS_TOKEN", "")
+    # Also check DB
+    con = db()
+    _ensure_tables(con)
+    db_token = _get_setting(con, "fb_page_access_token", "")
+    con.close()
     return jsonify({
         "token_set": bool(token),
         "token_len": len(token),
         "token_preview": token[:15] + "..." if token else "EMPTY",
+        "db_token_set": bool(db_token),
+        "db_token_len": len(db_token),
         "IS_POSTGRES": IS_POSTGRES
     })
 
