@@ -662,6 +662,19 @@ def logs():
     return render_template("fb_leads_logs.html", u=u, rows=rows)
 
 
+@bp.get("/debug-token")
+@require_roles("MD")
+def debug_token():
+    """Quick debug to check if FB token is visible to app."""
+    token = os.environ.get("FB_PAGE_ACCESS_TOKEN", "")
+    return jsonify({
+        "token_set": bool(token),
+        "token_len": len(token),
+        "token_preview": token[:15] + "..." if token else "EMPTY",
+        "IS_POSTGRES": IS_POSTGRES
+    })
+
+
 # ─────────────────────────────────────────────
 # INSTALL
 # ─────────────────────────────────────────────
