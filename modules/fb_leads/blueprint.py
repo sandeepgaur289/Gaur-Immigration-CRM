@@ -417,8 +417,32 @@ def webhook_receive():
                 fm = con.execute(
                     f"SELECT * FROM fb_form_map WHERE form_id={ph} AND active=1", (form_id,)
                 ).fetchone()
-                
-                company_code = dict(fm)["company_code"] if fm else "SCIC"
+
+                # Auto-register new form if not found
+                if not fm and form_id:
+                    page_name = str(value.get("page_id", ""))
+                    auto_name = f"Auto-{form_id[-6:]}"
+                    try:
+                        if IS_POSTGRES:
+                            con.execute("""
+                                INSERT INTO fb_form_map(form_id, company_code, page_token, form_name, active)
+                                VALUES (%s,%s,%s,%s,%s)
+                                ON CONFLICT(form_id) DO NOTHING
+                            """, (form_id, "WWIC", "", auto_name, 1))
+                        else:
+                            con.execute("""
+                                INSERT OR IGNORE INTO fb_form_map(form_id, company_code, page_token, form_name, active)
+                                VALUES (?,?,?,?,?)
+                            """, (form_id, "WWIC", "", auto_name, 1))
+                        con.commit()
+                        _log(con, "INFO", f"Auto-registered new form {form_id} as '{auto_name}' (WWIC)")
+                        fm = con.execute(
+                            f"SELECT * FROM fb_form_map WHERE form_id={ph}", (form_id,)
+                        ).fetchone()
+                    except Exception as ae:
+                        _log(con, "WARN", f"Auto-register form failed: {ae}")
+
+                company_code = dict(fm)["company_code"] if fm else "WWIC"
                 token = (dict(fm)["page_token"].strip() if fm else "") or default_token
                 
                 if not token:
