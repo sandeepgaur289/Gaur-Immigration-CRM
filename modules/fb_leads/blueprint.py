@@ -145,12 +145,22 @@ def _fetch_all_pages(token):
 
 def _fetch_forms_for_page(page_id, page_token):
     """Fetch all lead ad forms for a given page."""
-    import urllib.request
+    import urllib.request, urllib.error
     forms = []
     url = f"https://graph.facebook.com/v19.0/{page_id}/leadgen_forms?fields=id,name,leads_count&limit=100&access_token={page_token}"
     while url:
-        with urllib.request.urlopen(url, timeout=15) as resp:
-            data = json.loads(resp.read().decode())
+        try:
+            with urllib.request.urlopen(url, timeout=15) as resp:
+                data = json.loads(resp.read().decode())
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="replace")
+            try:
+                err_json = json.loads(err_body)
+                fb_msg = err_json.get("error", {}).get("message", err_body[:300])
+                fb_code = err_json.get("error", {}).get("code", e.code)
+                raise Exception(f"FB API {e.code} (code {fb_code}): {fb_msg}")
+            except (json.JSONDecodeError, KeyError):
+                raise Exception(f"FB API HTTP {e.code}: {err_body[:300]}")
         forms.extend(data.get("data", []))
         url = data.get("paging", {}).get("next")
     return forms
