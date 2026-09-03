@@ -7,10 +7,14 @@ Route:
 """
 
 import datetime
+import traceback
 from flask import Blueprint, render_template_string, request, redirect, url_for, flash
-from legacy_core import current_user, require_roles, db
+from legacy_core import current_user, require_roles, db, IS_POSTGRES
 
 bp = Blueprint("am_activity", __name__, url_prefix="/md/am-activity")
+
+def _ph():
+    return "%s" if IS_POSTGRES else "?"
 
 # ── HTML Templates ────────────────────────────────────────────────────────────
 
@@ -273,7 +277,7 @@ def summary():
         ).fetchall()]
     else:
         all_ams = [dict(r) for r in con.execute(
-            "SELECT id, full_name, company_code FROM users WHERE role='AM' AND company_code=? ORDER BY full_name",
+            f"SELECT id, full_name, company_code FROM users WHERE role='AM' AND company_code={_ph()} ORDER BY full_name",
             (company,)
         ).fetchall()]
 
@@ -281,10 +285,10 @@ def summary():
     am_where = "WHERE u.role='AM'"
     am_params = []
     if company:
-        am_where += " AND u.company_code=?"
+        am_where += f" AND u.company_code={_ph()}"
         am_params.append(company)
     if am_id and am_id.isdigit():
-        am_where += " AND u.id=?"
+        am_where += f" AND u.id={_ph()}"
         am_params.append(int(am_id))
 
     am_rows = [dict(r) for r in con.execute(
@@ -295,28 +299,29 @@ def summary():
     am_stats = []
     for am in am_rows:
         lid = am["login_id"]
+        p = _ph()
         total = con.execute(
-            "SELECT COUNT(*) c FROM lead_activity WHERE updated_by=? AND updated_at BETWEEN ? AND ?",
+            f"SELECT COUNT(*) c FROM lead_activity WHERE updated_by={p} AND updated_at BETWEEN {p} AND {p}",
             (lid, start, end)
         ).fetchone()["c"]
         interested = con.execute(
-            "SELECT COUNT(*) c FROM lead_activity WHERE updated_by=? AND status='Interested' AND updated_at BETWEEN ? AND ?",
+            f"SELECT COUNT(*) c FROM lead_activity WHERE updated_by={p} AND status='Interested' AND updated_at BETWEEN {p} AND {p}",
             (lid, start, end)
         ).fetchone()["c"]
         enrolled = con.execute(
-            "SELECT COUNT(*) c FROM lead_activity WHERE updated_by=? AND status='Enrolled' AND updated_at BETWEEN ? AND ?",
+            f"SELECT COUNT(*) c FROM lead_activity WHERE updated_by={p} AND status='Enrolled' AND updated_at BETWEEN {p} AND {p}",
             (lid, start, end)
         ).fetchone()["c"]
         calls = con.execute(
-            "SELECT COUNT(*) c FROM lead_activity WHERE updated_by=? AND status IN ('Called','Not Picked','Not Connected','No WhatsApp','Invalid No.') AND updated_at BETWEEN ? AND ?",
+            f"SELECT COUNT(*) c FROM lead_activity WHERE updated_by={p} AND status IN ('Called','Not Picked','Not Connected','No WhatsApp','Invalid No.') AND updated_at BETWEEN {p} AND {p}",
             (lid, start, end)
         ).fetchone()["c"]
         followups = con.execute(
-            "SELECT COUNT(*) c FROM lead_activity WHERE updated_by=? AND status IN ('Follow Up','Follow-up','Call Back','Discussion') AND updated_at BETWEEN ? AND ?",
+            f"SELECT COUNT(*) c FROM lead_activity WHERE updated_by={p} AND status IN ('Follow Up','Follow-up','Call Back','Discussion') AND updated_at BETWEEN {p} AND {p}",
             (lid, start, end)
         ).fetchone()["c"]
         visits = con.execute(
-            "SELECT COUNT(*) c FROM lead_activity WHERE updated_by=? AND status='Office Visit' AND updated_at BETWEEN ? AND ?",
+            f"SELECT COUNT(*) c FROM lead_activity WHERE updated_by={p} AND status='Office Visit' AND updated_at BETWEEN {p} AND {p}",
             (lid, start, end)
         ).fetchone()["c"]
         am_stats.append({
@@ -332,14 +337,14 @@ def summary():
         })
 
     # Detailed activity log
-    act_where = ["a.updated_at BETWEEN ? AND ?"]
+    act_where = [f"a.updated_at BETWEEN {_ph()} AND {_ph()}"]
     act_params = [start, end]
 
     if company:
-        act_where.append("l.company_code=?")
+        act_where.append(f"l.company_code={_ph()}")
         act_params.append(company)
     if am_id and am_id.isdigit():
-        act_where.append("l.assigned_am=?")
+        act_where.append(f"l.assigned_am={_ph()}")
         act_params.append(int(am_id))
 
     w = " AND ".join(act_where)
@@ -375,7 +380,7 @@ def detail(user_id):
     u   = current_user()
     con = db()
 
-    am = con.execute("SELECT * FROM users WHERE id=? AND role='AM'", (user_id,)).fetchone()
+    am = con.execute(f"SELECT * FROM users WHERE id={_ph()} AND role='AM'", (user_id,)).fetchone()
     if not am:
         con.close()
         flash("AM not found", "error")
@@ -394,34 +399,36 @@ def detail(user_id):
     lid = am["login_id"]
 
     # Stats
+    p = _ph()
     def cnt(extra_where, extra_params=[]):
         return con.execute(
-            f"SELECT COUNT(*) c FROM lead_activity WHERE updated_by=? AND updated_at BETWEEN ? AND ? {extra_where}",
+            f"SELECT COUNT(*) c FROM lead_activity WHERE updated_by={p} AND updated_at BETWEEN {p} AND {p} {extra_where}",
             [lid, start, end] + extra_params
         ).fetchone()["c"]
 
     stats = {
         "total":         cnt(""),
-        "interested":    cnt("AND status='Interested'"),
-        "not_interested":cnt("AND status='Not Interested'"),
-        "enrolled":      cnt("AND status='Enrolled'"),
-        "followup":      cnt("AND status IN ('Follow Up','Follow-up','Call Back','Discussion')"),
-        "calls":         cnt("AND status IN ('Called','Not Picked','Not Connected','No WhatsApp','Invalid No.')"),
-        "visits":        cnt("AND status='Office Visit'"),
+        "interested":    cnt(f"AND status='Interested'"),
+        "not_interested":cnt(f"AND status='Not Interested'"),
+        "enrolled":      cnt(f"AND status='Enrolled'"),
+        "followup":      cnt(f"AND status IN ('Follow Up','Follow-up','Call Back','Discussion')"),
+        "calls":         cnt(f"AND status IN ('Called','Not Picked','Not Connected','No WhatsApp','Invalid No.')"),
+        "visits":        cnt(f"AND status='Office Visit'"),
         "leads_assigned":con.execute(
-            "SELECT COUNT(*) c FROM leads WHERE assigned_am=? AND COALESCE(deleted_at,'')=''",
+            f"SELECT COUNT(*) c FROM leads WHERE assigned_am={p} AND COALESCE(deleted_at,'')=''",
             (user_id,)
         ).fetchone()["c"],
     }
 
     # Full activity
     try:
-        activities = [dict(r) for r in con.execute("""
+        p = _ph()
+        activities = [dict(r) for r in con.execute(f"""
             SELECT a.id, a.lead_id as lead_db_id, a.status, a.remarks, a.followup_date, a.updated_by, a.updated_at,
                    l.lead_id as lead_code, l.client_name, l.mobile
             FROM lead_activity a
             JOIN leads l ON l.id = a.lead_id
-            WHERE a.updated_by=? AND a.updated_at BETWEEN ? AND ?
+            WHERE a.updated_by={p} AND a.updated_at BETWEEN {p} AND {p}
             ORDER BY a.updated_at DESC
             LIMIT 1000
         """, (lid, start, end)).fetchall()]
