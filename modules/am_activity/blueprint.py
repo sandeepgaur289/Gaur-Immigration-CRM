@@ -343,22 +343,23 @@ def summary():
         act_params.append(int(am_id))
 
     w = " AND ".join(act_where)
-    activities = [dict(r) for r in con.execute(f"""
-        SELECT a.id, a.lead_id, a.status, a.remarks, a.followup_date, a.updated_by, a.updated_at,
-               l.lead_id lead_code, l.client_name, l.mobile, l.company_code,
-               u.full_name am_name
-        FROM lead_activity a
-        JOIN leads l ON l.id = a.lead_id
-        LEFT JOIN users u ON u.login_id = a.updated_by
-        WHERE {w}
-        ORDER BY a.updated_at DESC
-        LIMIT 500
-    """, act_params).fetchall()]
+    try:
+        activities = [dict(r) for r in con.execute(f"""
+            SELECT a.id, a.lead_id as lead_db_id, a.status, a.remarks, a.followup_date, a.updated_by, a.updated_at,
+                   l.lead_id as lead_code, l.client_name, l.mobile, l.company_code,
+                   u.full_name as am_name
+            FROM lead_activity a
+            JOIN leads l ON l.id = a.lead_id
+            LEFT JOIN users u ON u.login_id = a.updated_by
+            WHERE {w}
+            ORDER BY a.updated_at DESC
+            LIMIT 500
+        """, act_params).fetchall()]
+    except Exception:
+        activities = []
 
-    # Rename to avoid conflict
     for act in activities:
-        act["lead_db_id"] = act["lead_id"]
-        act["lead_id"]    = act.get("lead_code", "")
+        act["lead_id"] = act.get("lead_code", "")
 
     con.close()
 
@@ -414,19 +415,21 @@ def detail(user_id):
     }
 
     # Full activity
-    activities = [dict(r) for r in con.execute("""
-        SELECT a.id, a.lead_id, a.status, a.remarks, a.followup_date, a.updated_by, a.updated_at,
-               l.lead_id lead_code, l.client_name, l.mobile
-        FROM lead_activity a
-        JOIN leads l ON l.id = a.lead_id
-        WHERE a.updated_by=? AND a.updated_at BETWEEN ? AND ?
-        ORDER BY a.updated_at DESC
-        LIMIT 1000
-    """, (lid, start, end)).fetchall()]
+    try:
+        activities = [dict(r) for r in con.execute("""
+            SELECT a.id, a.lead_id as lead_db_id, a.status, a.remarks, a.followup_date, a.updated_by, a.updated_at,
+                   l.lead_id as lead_code, l.client_name, l.mobile
+            FROM lead_activity a
+            JOIN leads l ON l.id = a.lead_id
+            WHERE a.updated_by=? AND a.updated_at BETWEEN ? AND ?
+            ORDER BY a.updated_at DESC
+            LIMIT 1000
+        """, (lid, start, end)).fetchall()]
+    except Exception:
+        activities = []
 
     for act in activities:
-        act["lead_db_id"] = act["lead_id"]
-        act["lead_id"]    = act.get("lead_code", "")
+        act["lead_id"] = act.get("lead_code", "")
 
     con.close()
 
