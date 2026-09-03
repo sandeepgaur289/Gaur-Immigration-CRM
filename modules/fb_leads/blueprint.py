@@ -121,11 +121,14 @@ def _get_token(con=None):
     if db_token:
         return db_token
     return os.environ.get("FB_PAGE_ACCESS_TOKEN", "").strip()
+
+
+def _fetch_lead_from_fb(lead_id, page_token):
     """
     Call Graph API to get a single lead's field data.
     Returns dict of {field_name: value} or raises on error.
     """
-    import urllib.request, urllib.parse
+    import urllib.request
     url = f"https://graph.facebook.com/v19.0/{lead_id}?fields=field_data,created_time,ad_id,form_id,page_id&access_token={page_token}"
     with urllib.request.urlopen(url, timeout=15) as resp:
         return json.loads(resp.read().decode())
@@ -600,16 +603,41 @@ def auto_import_forms():
     errors = []
 
     try:
-        pages = _fetch_all_pages(token)
-        if not pages:
-            # Try using token directly as a page token (system user token)
-            import urllib.request
-            url = f"https://graph.facebook.com/v19.0/me/leadgen_forms?fields=id,name,leads_count&limit=100&access_token={token}"
+        import urllib.request
+
+        # ── Step 1: token se page ID pata karo (Page token ka case) ──
+        def _get_page_id_from_token(tkn):
+            """Token se page ID fetch karo via /me endpoint."""
             try:
+                url = f"https://graph.facebook.com/v19.0/me?fields=id,name&access_token={tkn}"
                 with urllib.request.urlopen(url, timeout=15) as resp:
                     data = json.loads(resp.read().decode())
-                pages_forms = data.get("data", [])
-                for form in pages_forms:
+                return data.get("id"), data.get("name", "")
+            except Exception:
+                return None, ""
+
+        # ── Step 2: pehle User token se sub-page tokens try karo ──
+        pages = _fetch_all_pages(token)
+
+        if not pages:
+            # User token ne pages nahi diye — token directly Page token hai
+            # Page ID khud token se nikalo
+            page_id, page_name = _get_page_id_from_token(token)
+            if page_id:
+                pages = [{"id": page_id, "name": page_name, "access_token": token}]
+            else:
+                errors.append("Token se page ID nahi mila. Token valid hai? Page token use karo.")
+
+        # ── Step 3: har page ke forms fetch karke register karo ──
+        for page in pages:
+            page_id = page.get("id")
+            page_token_local = page.get("access_token") or token
+            try:
+                forms = _fetch_forms_for_page(page_id, page_token_local)
+                if not forms:
+                    errors.append(f"Page {page.get('name', page_id)}: koi Lead Ad form nahi mila. Kya is page pe Lead Ads hain?")
+                    continue
+                for form in forms:
                     form_id = str(form.get("id", ""))
                     form_name = form.get("name", f"Form-{form_id[-6:]}")
                     if not form_id:
@@ -624,45 +652,15 @@ def auto_import_forms():
                         con.execute("""
                             INSERT INTO fb_form_map(form_id,company_code,page_token,form_name,active)
                             VALUES(%s,%s,%s,%s,%s) ON CONFLICT(form_id) DO NOTHING
-                        """, (form_id, "WWIC", "", form_name, 1))
+                        """, (form_id, "WWIC", page_token_local, form_name, 1))
                     else:
                         con.execute("""
                             INSERT OR IGNORE INTO fb_form_map(form_id,company_code,page_token,form_name,active)
                             VALUES(?,?,?,?,?)
-                        """, (form_id, "WWIC", "", form_name, 1))
+                        """, (form_id, "WWIC", page_token_local, form_name, 1))
                     added += 1
             except Exception as e:
-                errors.append(str(e)[:200])
-        else:
-            for page in pages:
-                page_id = page.get("id")
-                page_token_local = page.get("access_token") or token
-                try:
-                    forms = _fetch_forms_for_page(page_id, page_token_local)
-                    for form in forms:
-                        form_id = str(form.get("id", ""))
-                        form_name = form.get("name", f"Form-{form_id[-6:]}")
-                        if not form_id:
-                            continue
-                        existing = con.execute(
-                            f"SELECT form_id FROM fb_form_map WHERE form_id={_ph()}", (form_id,)
-                        ).fetchone()
-                        if existing:
-                            skipped += 1
-                            continue
-                        if IS_POSTGRES:
-                            con.execute("""
-                                INSERT INTO fb_form_map(form_id,company_code,page_token,form_name,active)
-                                VALUES(%s,%s,%s,%s,%s) ON CONFLICT(form_id) DO NOTHING
-                            """, (form_id, "WWIC", "", form_name, 1))
-                        else:
-                            con.execute("""
-                                INSERT OR IGNORE INTO fb_form_map(form_id,company_code,page_token,form_name,active)
-                                VALUES(?,?,?,?,?)
-                            """, (form_id, "WWIC", "", form_name, 1))
-                        added += 1
-                except Exception as e:
-                    errors.append(f"Page {page_id}: {str(e)[:150]}")
+                errors.append(f"Page {page_id}: {str(e)[:200]}")
 
         con.commit()
     except Exception as e:
