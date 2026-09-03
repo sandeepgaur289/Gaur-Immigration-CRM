@@ -119,6 +119,28 @@ def _fetch_lead_from_fb(lead_id, page_token):
         return json.loads(resp.read().decode())
 
 
+def _fetch_all_pages(token):
+    """Fetch all Facebook pages the token has access to."""
+    import urllib.request
+    url = f"https://graph.facebook.com/v19.0/me/accounts?fields=id,name,access_token&limit=50&access_token={token}"
+    with urllib.request.urlopen(url, timeout=15) as resp:
+        data = json.loads(resp.read().decode())
+    return data.get("data", [])
+
+
+def _fetch_forms_for_page(page_id, page_token):
+    """Fetch all lead ad forms for a given page."""
+    import urllib.request
+    forms = []
+    url = f"https://graph.facebook.com/v19.0/{page_id}/leadgen_forms?fields=id,name,leads_count&limit=100&access_token={page_token}"
+    while url:
+        with urllib.request.urlopen(url, timeout=15) as resp:
+            data = json.loads(resp.read().decode())
+        forms.extend(data.get("data", []))
+        url = data.get("paging", {}).get("next")
+    return forms
+
+
 def _fetch_leads_for_form(form_id, page_token, after_cursor=None):
     """
     Fetch all leads from a form via Graph API (paginated).
@@ -529,6 +551,101 @@ def settings_save():
             flash(f"Form '{form_name or form_id}' saved for {company_code}.", "success")
     
     con.close()
+    return redirect(url_for("fb_leads.settings"))
+
+
+@bp.post("/settings/auto-import-forms")
+@require_roles("MD")
+def auto_import_forms():
+    """Fetch all Lead Ad forms from all pages via Graph API and register them in CRM."""
+    token = os.environ.get("FB_PAGE_ACCESS_TOKEN", "").strip()
+    if not token:
+        flash("FB_PAGE_ACCESS_TOKEN not set. Add it in Render Environment Variables.", "error")
+        return redirect(url_for("fb_leads.settings"))
+
+    con = db()
+    _ensure_tables(con)
+
+    added = 0
+    skipped = 0
+    errors = []
+
+    try:
+        pages = _fetch_all_pages(token)
+        if not pages:
+            # Try using token directly as a page token (system user token)
+            import urllib.request
+            url = f"https://graph.facebook.com/v19.0/me/leadgen_forms?fields=id,name,leads_count&limit=100&access_token={token}"
+            try:
+                with urllib.request.urlopen(url, timeout=15) as resp:
+                    data = json.loads(resp.read().decode())
+                pages_forms = data.get("data", [])
+                for form in pages_forms:
+                    form_id = str(form.get("id", ""))
+                    form_name = form.get("name", f"Form-{form_id[-6:]}")
+                    if not form_id:
+                        continue
+                    existing = con.execute(
+                        f"SELECT form_id FROM fb_form_map WHERE form_id={_ph()}", (form_id,)
+                    ).fetchone()
+                    if existing:
+                        skipped += 1
+                        continue
+                    if IS_POSTGRES:
+                        con.execute("""
+                            INSERT INTO fb_form_map(form_id,company_code,page_token,form_name,active)
+                            VALUES(%s,%s,%s,%s,%s) ON CONFLICT(form_id) DO NOTHING
+                        """, (form_id, "WWIC", "", form_name, 1))
+                    else:
+                        con.execute("""
+                            INSERT OR IGNORE INTO fb_form_map(form_id,company_code,page_token,form_name,active)
+                            VALUES(?,?,?,?,?)
+                        """, (form_id, "WWIC", "", form_name, 1))
+                    added += 1
+            except Exception as e:
+                errors.append(str(e)[:200])
+        else:
+            for page in pages:
+                page_id = page.get("id")
+                page_token_local = page.get("access_token") or token
+                try:
+                    forms = _fetch_forms_for_page(page_id, page_token_local)
+                    for form in forms:
+                        form_id = str(form.get("id", ""))
+                        form_name = form.get("name", f"Form-{form_id[-6:]}")
+                        if not form_id:
+                            continue
+                        existing = con.execute(
+                            f"SELECT form_id FROM fb_form_map WHERE form_id={_ph()}", (form_id,)
+                        ).fetchone()
+                        if existing:
+                            skipped += 1
+                            continue
+                        if IS_POSTGRES:
+                            con.execute("""
+                                INSERT INTO fb_form_map(form_id,company_code,page_token,form_name,active)
+                                VALUES(%s,%s,%s,%s,%s) ON CONFLICT(form_id) DO NOTHING
+                            """, (form_id, "WWIC", "", form_name, 1))
+                        else:
+                            con.execute("""
+                                INSERT OR IGNORE INTO fb_form_map(form_id,company_code,page_token,form_name,active)
+                                VALUES(?,?,?,?,?)
+                            """, (form_id, "WWIC", "", form_name, 1))
+                        added += 1
+                except Exception as e:
+                    errors.append(f"Page {page_id}: {str(e)[:150]}")
+
+        con.commit()
+    except Exception as e:
+        errors.append(str(e)[:200])
+    finally:
+        con.close()
+
+    if errors:
+        flash(f"Auto-import: {added} forms added, {skipped} already existed. Errors: {'; '.join(errors[:3])}", "error")
+    else:
+        flash(f"✓ {added} new forms imported from Facebook! {skipped} already existed.", "success")
+
     return redirect(url_for("fb_leads.settings"))
 
 

@@ -80,6 +80,20 @@
   </div>
 </div>
 
+<!-- Auto Import All Forms -->
+<div class="card" style="border-color:#e6b73f">
+  <h3 style="color:#e6b73f;margin:0 0 8px">⚡ Auto-Import All Forms from Facebook</h3>
+  <p style="opacity:.8;font-size:14px;margin:0 0 12px">
+    Ek click mein saare Facebook Lead Ad forms automatically CRM mein register ho jaayenge. FB_PAGE_ACCESS_TOKEN set hona chahiye.
+  </p>
+  <form method="post" action="{{url_for('fb_leads.auto_import_forms')}}">
+    <button class="btn" style="background:#e6b73f;color:#07192b;font-weight:bold"
+            onclick="this.disabled=true;this.textContent='Importing…';this.form.submit()">
+      🔄 Auto-Import All Forms from Facebook
+    </button>
+  </form>
+</div>
+
 <!-- Add / Edit Form -->
 <div class="card">
   <h3 style="color:#e6b73f;margin:0 0 14px">➕ Form Mapping Add / Update karo</h3>
