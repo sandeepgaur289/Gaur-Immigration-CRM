@@ -8,6 +8,7 @@ from .runtime_lite import install_runtime_lite
 from .no_chat import install_no_chat
 from .direct_lead import bp as direct_lead_bp, install_direct_lead
 from .fb_leads import bp as fb_leads_bp, install_fb_leads
+from .am_activity.blueprint import bp as am_activity_bp, install_am_activity
 
 def register_modules(app):
     if app.extensions.get("gaur_v4_modules_registered"):
@@ -24,11 +25,13 @@ def register_modules(app):
     app.register_blueprint(lead_statuses_bp)
     app.register_blueprint(direct_lead_bp)
     app.register_blueprint(fb_leads_bp)
+    app.register_blueprint(am_activity_bp)
     install_report_tools(app)
     install_security_settings(app)
     install_lead_statuses(app)
     install_direct_lead(app)
     install_fb_leads(app)
+    install_am_activity(app)
 
     app.extensions["gaur_v4_modules_registered"]=True
     return app
