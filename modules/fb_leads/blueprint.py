@@ -135,12 +135,16 @@ def _fetch_lead_from_fb(lead_id, page_token):
 
 
 def _fetch_all_pages(token):
-    """Fetch all Facebook pages the token has access to."""
+    """Fetch all Facebook pages the token has access to (paginated)."""
     import urllib.request
-    url = f"https://graph.facebook.com/v19.0/me/accounts?fields=id,name,access_token&limit=50&access_token={token}"
-    with urllib.request.urlopen(url, timeout=15) as resp:
-        data = json.loads(resp.read().decode())
-    return data.get("data", [])
+    pages = []
+    url = f"https://graph.facebook.com/v19.0/me/accounts?fields=id,name,access_token&limit=100&access_token={token}"
+    while url:
+        with urllib.request.urlopen(url, timeout=15) as resp:
+            data = json.loads(resp.read().decode())
+        pages.extend(data.get("data", []))
+        url = data.get("paging", {}).get("next")
+    return pages
 
 
 def _fetch_forms_for_page(page_id, page_token):
@@ -641,11 +645,22 @@ def auto_import_forms():
         # ── Step 3: har page ke forms fetch karke register karo ──
         for page in pages:
             page_id = page.get("id")
+            page_name = page.get("name", "")
             page_token_local = page.get("access_token") or token
+
+            # Company auto-assign based on page name
+            name_lower = page_name.lower()
+            if "smart choice" in name_lower or "scic" in name_lower:
+                company = "SCIC"
+            elif "white wave" in name_lower or "wwic" in name_lower:
+                company = "WWIC"
+            else:
+                company = "WWIC"  # default
+
             try:
                 forms = _fetch_forms_for_page(page_id, page_token_local)
                 if not forms:
-                    errors.append(f"Page {page.get('name', page_id)}: koi Lead Ad form nahi mila. Kya is page pe Lead Ads hain?")
+                    errors.append(f"Page {page_name or page_id}: koi Lead Ad form nahi mila. Kya is page pe Lead Ads hain?")
                     continue
                 for form in forms:
                     form_id = str(form.get("id", ""))
@@ -662,15 +677,15 @@ def auto_import_forms():
                         con.execute("""
                             INSERT INTO fb_form_map(form_id,company_code,page_token,form_name,active)
                             VALUES(%s,%s,%s,%s,%s) ON CONFLICT(form_id) DO NOTHING
-                        """, (form_id, "WWIC", page_token_local, form_name, 1))
+                        """, (form_id, company, page_token_local, form_name, 1))
                     else:
                         con.execute("""
                             INSERT OR IGNORE INTO fb_form_map(form_id,company_code,page_token,form_name,active)
                             VALUES(?,?,?,?,?)
-                        """, (form_id, "WWIC", page_token_local, form_name, 1))
+                        """, (form_id, company, page_token_local, form_name, 1))
                     added += 1
             except Exception as e:
-                errors.append(f"Page {page_id}: {str(e)[:200]}")
+                errors.append(f"Page {page_name or page_id}: {str(e)[:200]}")
 
         con.commit()
     except Exception as e:
