@@ -18,7 +18,7 @@ Env vars (add to .env):
 
 import os, json, hmac, hashlib, datetime, traceback
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
-from legacy_core import current_user, require_roles, db
+from legacy_core import current_user, require_roles, db, IS_POSTGRES
 
 bp = Blueprint("fb_leads", __name__, url_prefix="/fb-leads", template_folder="templates")
 
@@ -26,48 +26,85 @@ bp = Blueprint("fb_leads", __name__, url_prefix="/fb-leads", template_folder="te
 # HELPERS
 # ─────────────────────────────────────────────
 
+def _ph(n=1):
+    """Return placeholder(s) for current DB: %s for Postgres, ? for SQLite."""
+    p = "%s" if IS_POSTGRES else "?"
+    return p if n == 1 else ",".join([p]*n)
+
+
 def _get_setting(con, key, default=""):
-    row = con.execute("SELECT val FROM fb_settings WHERE key=?", (key,)).fetchone()
+    ph = _ph()
+    row = con.execute(f"SELECT val FROM fb_settings WHERE key={ph}", (key,)).fetchone()
     return row["val"] if row else default
 
 
 def _set_setting(con, key, val):
-    con.execute("INSERT OR REPLACE INTO fb_settings(key,val) VALUES(?,?)", (key, val))
+    if IS_POSTGRES:
+        con.execute("INSERT INTO fb_settings(key,val) VALUES(%s,%s) ON CONFLICT(key) DO UPDATE SET val=EXCLUDED.val", (key, val))
+    else:
+        con.execute("INSERT OR REPLACE INTO fb_settings(key,val) VALUES(?,?)", (key, val))
 
 
 def _log(con, level, message, lead_id=None):
+    ph = _ph(4)
     con.execute(
-        "INSERT INTO fb_fetch_log(level,message,lead_id,created_at) VALUES(?,?,?,?)",
+        f"INSERT INTO fb_fetch_log(level,message,lead_id,created_at) VALUES({ph})",
         (level, message[:1000], lead_id, datetime.datetime.now().isoformat())
     )
 
 
 def _ensure_tables(con):
     """Create FB module tables if not exist."""
-    con.execute("""
-        CREATE TABLE IF NOT EXISTS fb_settings (
-            key   TEXT PRIMARY KEY,
-            val   TEXT NOT NULL DEFAULT ''
-        )
-    """)
-    con.execute("""
-        CREATE TABLE IF NOT EXISTS fb_fetch_log (
-            id         INTEGER PRIMARY KEY AUTOINCREMENT,
-            level      TEXT NOT NULL DEFAULT 'INFO',
-            message    TEXT NOT NULL DEFAULT '',
-            lead_id    TEXT,
-            created_at TEXT NOT NULL DEFAULT ''
-        )
-    """)
-    con.execute("""
-        CREATE TABLE IF NOT EXISTS fb_form_map (
-            form_id      TEXT PRIMARY KEY,
-            company_code TEXT NOT NULL DEFAULT 'SCIC',
-            page_token   TEXT NOT NULL DEFAULT '',
-            form_name    TEXT NOT NULL DEFAULT '',
-            active       INTEGER NOT NULL DEFAULT 1
-        )
-    """)
+    if IS_POSTGRES:
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS fb_settings (
+                key   TEXT PRIMARY KEY,
+                val   TEXT NOT NULL DEFAULT ''
+            )
+        """)
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS fb_fetch_log (
+                id         SERIAL PRIMARY KEY,
+                level      TEXT NOT NULL DEFAULT 'INFO',
+                message    TEXT NOT NULL DEFAULT '',
+                lead_id    TEXT,
+                created_at TEXT NOT NULL DEFAULT ''
+            )
+        """)
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS fb_form_map (
+                form_id      TEXT PRIMARY KEY,
+                company_code TEXT NOT NULL DEFAULT 'SCIC',
+                page_token   TEXT NOT NULL DEFAULT '',
+                form_name    TEXT NOT NULL DEFAULT '',
+                active       INTEGER NOT NULL DEFAULT 1
+            )
+        """)
+    else:
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS fb_settings (
+                key   TEXT PRIMARY KEY,
+                val   TEXT NOT NULL DEFAULT ''
+            )
+        """)
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS fb_fetch_log (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                level      TEXT NOT NULL DEFAULT 'INFO',
+                message    TEXT NOT NULL DEFAULT '',
+                lead_id    TEXT,
+                created_at TEXT NOT NULL DEFAULT ''
+            )
+        """)
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS fb_form_map (
+                form_id      TEXT PRIMARY KEY,
+                company_code TEXT NOT NULL DEFAULT 'SCIC',
+                page_token   TEXT NOT NULL DEFAULT '',
+                form_name    TEXT NOT NULL DEFAULT '',
+                active       INTEGER NOT NULL DEFAULT 1
+            )
+        """)
     con.commit()
 
 
@@ -113,8 +150,9 @@ def _insert_lead(con, lead_data, company_code, source="facebook"):
     fb_lead_id = str(lead_data.get("id", ""))
     
     # Check if already imported (avoid duplicates)
+    ph = _ph()
     existing = con.execute(
-        "SELECT id FROM leads WHERE fb_lead_id=?", (fb_lead_id,)
+        f"SELECT id FROM leads WHERE fb_lead_id={ph}", (fb_lead_id,)
     ).fetchone()
     if existing:
         return False, None
@@ -179,32 +217,57 @@ def _insert_lead(con, lead_data, company_code, source="facebook"):
     lead_id_str = f"FB-{fb_lead_id[-8:]}" if fb_lead_id else f"FB-{datetime.datetime.now().strftime('%H%M%S%f')}"
 
     try:
-        cur = con.execute("""
-            INSERT INTO leads (
-                lead_id, company_code, client_name, mobile, email,
-                city, notes, source, fb_lead_id, fb_ad_id, fb_form_id,
-                imported_at, upload_batch
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-        """, (
-            lead_id_str, company_code, client_name, mobile, email,
-            city, notes, source, fb_lead_id, ad_id, form_id,
-            created_at, f"fb_{form_id[:8]}_{datetime.date.today().isoformat()}"
-        ))
+        if IS_POSTGRES:
+            cur = con.execute("""
+                INSERT INTO leads (
+                    lead_id, company_code, client_name, mobile, email,
+                    city, notes, source, fb_lead_id, fb_ad_id, fb_form_id,
+                    imported_at, upload_batch
+                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (
+                lead_id_str, company_code, client_name, mobile, email,
+                city, notes, source, fb_lead_id, ad_id, form_id,
+                created_at, f"fb_{form_id[:8]}_{datetime.date.today().isoformat()}"
+            ))
+        else:
+            cur = con.execute("""
+                INSERT INTO leads (
+                    lead_id, company_code, client_name, mobile, email,
+                    city, notes, source, fb_lead_id, fb_ad_id, fb_form_id,
+                    imported_at, upload_batch
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """, (
+                lead_id_str, company_code, client_name, mobile, email,
+                city, notes, source, fb_lead_id, ad_id, form_id,
+                created_at, f"fb_{form_id[:8]}_{datetime.date.today().isoformat()}"
+            ))
         con.commit()
         return True, cur.lastrowid
     except Exception:
         # If leads table doesn't have fb columns yet, try minimal insert
         try:
-            cur = con.execute("""
-                INSERT INTO leads (
-                    lead_id, company_code, client_name, mobile, email,
-                    city, notes, source, imported_at, upload_batch
-                ) VALUES (?,?,?,?,?,?,?,?,?,?)
-            """, (
-                lead_id_str, company_code, client_name, mobile, email,
-                city, notes[:500], source,
-                created_at, f"fb_{datetime.date.today().isoformat()}"
-            ))
+            if IS_POSTGRES:
+                cur = con.execute("""
+                    INSERT INTO leads (
+                        lead_id, company_code, client_name, mobile, email,
+                        city, notes, source, imported_at, upload_batch
+                    ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """, (
+                    lead_id_str, company_code, client_name, mobile, email,
+                    city, notes[:500], source,
+                    created_at, f"fb_{datetime.date.today().isoformat()}"
+                ))
+            else:
+                cur = con.execute("""
+                    INSERT INTO leads (
+                        lead_id, company_code, client_name, mobile, email,
+                        city, notes, source, imported_at, upload_batch
+                    ) VALUES (?,?,?,?,?,?,?,?,?,?)
+                """, (
+                    lead_id_str, company_code, client_name, mobile, email,
+                    city, notes[:500], source,
+                    created_at, f"fb_{datetime.date.today().isoformat()}"
+                ))
             con.commit()
             return True, cur.lastrowid
         except Exception:
@@ -350,8 +413,9 @@ def webhook_receive():
                     continue
                 
                 # Find token and company for this form
+                ph = _ph()
                 fm = con.execute(
-                    "SELECT * FROM fb_form_map WHERE form_id=? AND active=1", (form_id,)
+                    f"SELECT * FROM fb_form_map WHERE form_id={ph} AND active=1", (form_id,)
                 ).fetchone()
                 
                 company_code = dict(fm)["company_code"] if fm else "SCIC"
@@ -407,7 +471,8 @@ def settings_save():
     if action == "delete":
         form_id = request.form.get("form_id", "").strip()
         if form_id:
-            con.execute("DELETE FROM fb_form_map WHERE form_id=?", (form_id,))
+            ph = _ph()
+            con.execute(f"DELETE FROM fb_form_map WHERE form_id={ph}", (form_id,))
             con.commit()
             flash("Form mapping deleted.", "success")
     
@@ -421,10 +486,21 @@ def settings_save():
         if not form_id:
             flash("Form ID is required.", "error")
         else:
-            con.execute("""
-                INSERT OR REPLACE INTO fb_form_map(form_id, company_code, page_token, form_name, active)
-                VALUES (?,?,?,?,?)
-            """, (form_id, company_code, page_token, form_name, active))
+            if IS_POSTGRES:
+                con.execute("""
+                    INSERT INTO fb_form_map(form_id, company_code, page_token, form_name, active)
+                    VALUES (%s,%s,%s,%s,%s)
+                    ON CONFLICT(form_id) DO UPDATE SET
+                        company_code=EXCLUDED.company_code,
+                        page_token=EXCLUDED.page_token,
+                        form_name=EXCLUDED.form_name,
+                        active=EXCLUDED.active
+                """, (form_id, company_code, page_token, form_name, active))
+            else:
+                con.execute("""
+                    INSERT OR REPLACE INTO fb_form_map(form_id, company_code, page_token, form_name, active)
+                    VALUES (?,?,?,?,?)
+                """, (form_id, company_code, page_token, form_name, active))
             con.commit()
             flash(f"Form '{form_name or form_id}' saved for {company_code}.", "success")
     
