@@ -6168,13 +6168,70 @@ _GAUR_V337_TEMPLATES['accounts_reports.html']=r"""{% extends "base.html" %}{% bl
 <div class="acc-kpis"><div class="acc-kpi">Total Receipt<b>₹{{"{:,.0f}".format(total_in)}}</b></div><div class="acc-kpi">Total Expenses / Refunds<b>₹{{"{:,.0f}".format(total_out)}}</b></div><div class="acc-kpi">Net Cash Flow<b>₹{{"{:,.0f}".format(net)}}</b></div><div class="acc-kpi">Receipt Entries<b>{{inflow|length}}</b></div></div>
 <div class="card"><h2 style="color:#e6b73f">🏦 Bank / Cash-wise Receipt</h2><div class="bank-grid">{% for bank,total in bank_totals %}<div class="bank-card"><span>{{bank}}</span><b>₹{{"{:,.0f}".format(total)}}</b></div>{% else %}<div>No receipts.</div>{% endfor %}</div></div>
 <div class="card"><h2 style="color:#e6b73f">💳 Payment Method-wise Receipt</h2><div class="bank-grid">{% for method,total in method_totals %}<div class="bank-card"><span>{{method}}</span><b>₹{{"{:,.0f}".format(total)}}</b></div>{% else %}<div>No methods recorded.</div>{% endfor %}</div></div>
-<div class="card" style="border-color:#e6b73f"><h2 style="text-align:center;color:#e6b73f">Payment Inflow And Outflow • {{label}}</h2><div class="tablewrap"><table>
-<thead><tr><th>Date / Co.</th><th>Inflow Particular</th><th>Bank</th><th>Method</th><th>Amount</th><th>Date / Co.</th><th>Outflow Particular</th><th>Bank / Method</th><th>Amount</th></tr></thead>
-<tbody>{% for p in paired %}<tr>
-{% if p['in'] %}<td>{{p['in']['date']}}<br><small>{{p['in']['company']}}</small></td><td>{{p['in']['party']}}<br><small>{{p['in']['stage']}} • {{p['in']['ref']}}</small></td><td>{{p['in']['bank']}}</td><td>{{p['in']['method']}}</td><td class="inmoney">₹{{"{:,.0f}".format(p['in']['amount'])}}</td>{% else %}<td></td><td></td><td></td><td></td><td></td>{% endif %}
-{% if p['out'] %}<td>{{p['out']['date']}}<br><small>{{p['out']['company']}}</small></td><td>{{p['out']['party']}}<br><small>{{p['out']['stage']}} • {{p['out']['ref']}}</small></td><td>{{p['out']['bank']}}<br><small>{{p['out']['method']}}</small></td><td class="outmoney">₹{{"{:,.0f}".format(p['out']['amount'])}}</td>{% else %}<td></td><td></td><td></td><td></td>{% endif %}
-</tr>{% else %}<tr><td colspan="9">No transactions.</td></tr>{% endfor %}</tbody>
-<tfoot><tr><th colspan="4">Total Receipt</th><th>₹{{"{:,.0f}".format(total_in)}}</th><th colspan="3">Total Expenses</th><th>₹{{"{:,.0f}".format(total_out)}}</th></tr><tr><th colspan="8">Net</th><th>₹{{"{:,.0f}".format(net)}}</th></tr></tfoot>
+<div class="card" style="border-color:#e6b73f"><h2 style="text-align:center;color:#e6b73f;font-size:20px;letter-spacing:1px">💰 Payment Inflow And Outflow • {{label}}</h2>
+<div class="tablewrap"><table style="width:100%;border-collapse:collapse">
+<thead>
+<tr style="background:#0a2540">
+  <th colspan="5" style="text-align:center;color:#48d58b;padding:8px;border-bottom:2px solid #1e4060;font-size:13px;letter-spacing:1px">📥 INFLOW — RECEIPTS</th>
+  <th colspan="4" style="text-align:center;color:#ff7a7a;padding:8px;border-bottom:2px solid #1e4060;font-size:13px;letter-spacing:1px">📤 OUTFLOW — EXPENSES</th>
+</tr>
+<tr style="background:#071d32">
+  <th style="padding:9px 10px;color:#e6b73f;font-size:12px;border-bottom:1px solid #1e4060">Date / Co.</th>
+  <th style="padding:9px 10px;color:#e6b73f;font-size:12px;border-bottom:1px solid #1e4060">Client / Particular</th>
+  <th style="padding:9px 10px;color:#e6b73f;font-size:12px;border-bottom:1px solid #1e4060">Bank</th>
+  <th style="padding:9px 10px;color:#e6b73f;font-size:12px;border-bottom:1px solid #1e4060">Method</th>
+  <th style="padding:9px 10px;color:#48d58b;font-size:12px;border-bottom:1px solid #1e4060;text-align:right">Amount</th>
+  <th style="padding:9px 10px;color:#e6b73f;font-size:12px;border-bottom:1px solid #1e4060">Date / Co.</th>
+  <th style="padding:9px 10px;color:#e6b73f;font-size:12px;border-bottom:1px solid #1e4060">Particular</th>
+  <th style="padding:9px 10px;color:#e6b73f;font-size:12px;border-bottom:1px solid #1e4060">Bank / Method</th>
+  <th style="padding:9px 10px;color:#ff7a7a;font-size:12px;border-bottom:1px solid #1e4060;text-align:right">Amount</th>
+</tr>
+</thead>
+<tbody>{% for p in paired %}<tr style="border-bottom:1px solid #0d2e4a">
+{% if p['in'] %}
+  <td style="padding:9px 10px;font-size:13px;color:#ccc;vertical-align:top">
+    <b style="color:#fff">{{p['in']['date']}}</b><br>
+    <span style="background:{{'#1a3a5c' if p['in']['company']=='SCIC' else '#1a3a2a'}};color:{{'#8fc8ff' if p['in']['company']=='SCIC' else '#48d58b'}};padding:2px 7px;border-radius:10px;font-size:11px;font-weight:600">{{p['in']['company']}}</span>
+  </td>
+  <td style="padding:9px 10px;font-size:13px;vertical-align:top">
+    <b style="color:#e6b73f">{{p['in']['party']}}</b><br>
+    <small style="color:#8899aa">{{p['in']['stage']}} • {{p['in']['ref']}}</small>
+  </td>
+  <td style="padding:9px 10px;font-size:13px;color:#8fc8ff;vertical-align:top">{{p['in']['bank']}}</td>
+  <td style="padding:9px 10px;vertical-align:top">
+    <span style="background:#0d2e4a;color:#f0a030;padding:3px 8px;border-radius:10px;font-size:12px;font-weight:600">{{p['in']['method']}}</span>
+  </td>
+  <td style="padding:9px 10px;text-align:right;vertical-align:top">
+    <b style="color:#48d58b;font-size:14px">₹{{"{:,.0f}".format(p['in']['amount'])}}</b>
+  </td>
+{% else %}<td></td><td></td><td></td><td></td><td></td>{% endif %}
+{% if p['out'] %}
+  <td style="padding:9px 10px;font-size:13px;color:#ccc;vertical-align:top">
+    <b style="color:#fff">{{p['out']['date']}}</b><br>
+    <span style="background:#2a1a1a;color:#ff9999;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:600">{{p['out']['company']}}</span>
+  </td>
+  <td style="padding:9px 10px;font-size:13px;vertical-align:top">
+    <b style="color:#ffb3b3">{{p['out']['party']}}</b><br>
+    <small style="color:#8899aa">{{p['out']['stage']}} • {{p['out']['ref']}}</small>
+  </td>
+  <td style="padding:9px 10px;font-size:12px;color:#8fc8ff;vertical-align:top">{{p['out']['bank']}}<br><small style="color:#8899aa">{{p['out']['method']}}</small></td>
+  <td style="padding:9px 10px;text-align:right;vertical-align:top">
+    <b style="color:#ff7a7a;font-size:14px">₹{{"{:,.0f}".format(p['out']['amount'])}}</b>
+  </td>
+{% else %}<td></td><td></td><td></td><td></td>{% endif %}
+</tr>{% else %}<tr><td colspan="9" style="text-align:center;padding:20px;color:#8899aa">No transactions.</td></tr>{% endfor %}</tbody>
+<tfoot>
+  <tr style="background:#0a2540;border-top:2px solid #1e4060">
+    <th colspan="4" style="padding:10px;color:#48d58b;font-size:13px;text-align:right">✅ Total Receipt</th>
+    <th style="padding:10px;color:#48d58b;font-size:15px;text-align:right">₹{{"{:,.0f}".format(total_in)}}</th>
+    <th colspan="3" style="padding:10px;color:#ff7a7a;font-size:13px;text-align:right">❌ Total Expenses</th>
+    <th style="padding:10px;color:#ff7a7a;font-size:15px;text-align:right">₹{{"{:,.0f}".format(total_out)}}</th>
+  </tr>
+  <tr style="background:#071d32;border-top:1px solid #1e4060">
+    <th colspan="8" style="padding:10px;color:#e6b73f;font-size:14px;text-align:right">💰 Net Cash Flow</th>
+    <th style="padding:10px;color:#e6b73f;font-size:16px;font-weight:800;text-align:right">₹{{"{:,.0f}".format(net)}}</th>
+  </tr>
+</tfoot>
 </table></div></div><div class="no-print"><button class="toolbtn" onclick="window.print()">Print / Save PDF</button></div>
 {% endblock %}"""
 
