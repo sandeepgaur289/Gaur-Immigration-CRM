@@ -4883,14 +4883,35 @@ def enrollment_permanent_delete(case_id):
 
 
 @app.route("/cases", methods=["GET"])
-@require_roles("MD","GM")
+@require_roles("MD","GM","AM")
 def cases():
     u=current_user()
     con=db()
 
     # Core client account rows only.
     try:
-        if u["role"]=="GM":
+        if u["role"]=="AM":
+            # AM sirf apne assigned leads ke cases dekh sakta hai
+            try:
+                raw=con.execute("""SELECT cc.* FROM client_cases cc
+                                   JOIN leads l ON l.id=cc.lead_db_id
+                                   WHERE COALESCE(cc.deleted_at,'')='' AND l.assigned_am=?
+                                   ORDER BY cc.id DESC""",(u["id"],)).fetchall()
+            except Exception:
+                try: con.rollback()
+                except Exception: pass
+                raw=[]
+            if not raw:
+                # fallback: am_name se match karo
+                try:
+                    raw=con.execute("""SELECT * FROM client_cases
+                                       WHERE COALESCE(deleted_at,'')='' AND am_name=?
+                                       ORDER BY id DESC""",(u["full_name"],)).fetchall()
+                except Exception:
+                    try: con.rollback()
+                    except Exception: pass
+                    raw=[]
+        elif u["role"]=="GM":
             raw=con.execute("SELECT * FROM client_cases WHERE company_code=? AND COALESCE(deleted_at,'')='' ORDER BY id DESC",(u["company_code"],)).fetchall()
         else:
             raw=con.execute("SELECT * FROM client_cases WHERE COALESCE(deleted_at,'')='' ORDER BY id DESC").fetchall()
@@ -5225,12 +5246,17 @@ def client_payment_proof(proof_id):
 
 
 @app.route("/cases/<int:case_id>/update", methods=["POST"])
-@require_roles("MD","GM")
+@require_roles("MD","GM","AM")
 def update_case(case_id):
     ensure_enrollment_payment_schema(); ensure_bank_manager_schema()
     u=current_user();con=db();r=con.execute("SELECT * FROM client_cases WHERE id=?",(case_id,)).fetchone()
     if not r or (u["role"]=="GM" and r["company_code"]!=u["company_code"]):
         con.close();flash("Case not found or access denied","error");return redirect(url_for("cases"))
+    # AM sirf pehli baar add kar sakta hai — agar payment already entered hai toh block
+    if u["role"]=="AM":
+        already_paid = float(r["total_received"] or 0) > 0
+        if already_paid:
+            con.close();flash("Payment already recorded. Only GM/MD can update payment details.","error");return redirect(url_for("cases"))
     def a(k,old): return float(request.form.get(k,old or 0) or 0)
     fc,fr,fy,fa=a("first_cash",r["first_cash"]),a("first_rbl",r["first_rbl"]),a("first_yes_bank",r["first_yes_bank"]),a("first_au_bank",r["first_au_bank"])
     sc,sr,sy,sa=a("second_cash",r["second_cash"]),a("second_rbl",r["second_rbl"]),a("second_yes_bank",r["second_yes_bank"]),a("second_au_bank",r["second_au_bank"])
@@ -6506,11 +6532,17 @@ _GAUR_V337_TEMPLATES['cases_safe.html']=r"""{% extends "base.html" %}{% block co
     <div><small>Package</small><br><b>₹{{"{:,.0f}".format(r.package_amount or 0)}}</b></div>
     <div><small>Balance</small><br><b class="cs-balance">₹{{"{:,.0f}".format(balance if balance>0 else 0)}}</b></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">
+{% if u.role in ('MD','GM') or (u.role=='AM' and (r.total_received or 0)==0) %}
 <button class="toolbtn" type="button" onclick="document.getElementById('edit{{r.id}}').classList.toggle('open')">✏ Update Payment</button>
+{% else %}
+<span style="display:inline-block;padding:5px 10px;border:1px solid #315f85;border-radius:8px;color:#8899aa;font-size:13px">👁 View Only</span>
+{% endif %}
+{% if u.role in ('MD','GM') %}
 <form method="post" action="{{url_for('enrollment_soft_delete',case_id=r.id)}}" onsubmit="return confirm('Delete this enrollment? It will move to Recycle Bin.')" style="margin:0">
 <input type="hidden" name="reason" value="Deleted from Payment Completion">
 <button class="toolbtn danger" type="submit">🗑 Delete</button>
 </form>
+{% endif %}
 </div>
   </div>
 
