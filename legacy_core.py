@@ -129,6 +129,9 @@ def inject_pending_enrollments():
     return {"pending_enrollments": 0}
 
 
+@app.context_processor
+def inject_report_brand():
+    """Report branding context — SCIC / WWIC / BOTH based on request param."""
     u=current_user()
     code=""
     try:
@@ -136,7 +139,7 @@ def inject_pending_enrollments():
     except Exception:
         code=""
     if code not in ("SCIC","WWIC"):
-        if u and u["role"]!="MD" and u["company_code"] in ("SCIC","WWIC"):
+        if u and u["role"]!="MD" and u.get("company_code") in ("SCIC","WWIC"):
             code=u["company_code"]
         else:
             code="BOTH"
