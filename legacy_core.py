@@ -4770,6 +4770,27 @@ def edit_employee(employee_id):
     return render_template("employee_edit.html",u=u,row=row)
 
 
+@app.route("/ams/<int:user_id>/employee")
+@require_roles("MD","GM")
+def am_employee_redirect(user_id):
+    """AM Directory se name click karne pe employee edit form pe redirect karta hai."""
+    u=current_user(); con=db()
+    am=con.execute("SELECT * FROM users WHERE id=? AND role='AM'",(user_id,)).fetchone()
+    if not am or (u["role"]=="GM" and am["company_code"]!=u["company_code"]):
+        con.close(); flash("Access denied","error"); return redirect(url_for("ams"))
+    # Try employee_id link first
+    emp=None
+    if am["employee_id"]:
+        emp=con.execute("SELECT id FROM employee_master WHERE id=?",(am["employee_id"],)).fetchone()
+    # Fallback: search by portal_user_id
+    if not emp:
+        emp=con.execute("SELECT id FROM employee_master WHERE portal_user_id=?",(user_id,)).fetchone()
+    con.close()
+    if emp:
+        return redirect(url_for("edit_employee",employee_id=emp["id"]))
+    flash("Is AM ka employee record nahi mila. Pehle Employee Information mein add karein.","error")
+    return redirect(url_for("ams"))
+
 
 @app.route("/ams/<int:user_id>/toggle", methods=["POST"])
 @require_roles("MD","GM")
