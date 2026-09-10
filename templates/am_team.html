@@ -1,0 +1,97 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="title">AM Team Assignment</h1>
+<p style="opacity:.7;margin:-8px 0 16px">Har AM ko assign karo: 1 Team Leader + 2 Counsellors + 2 Telecallers</p>
+
+<style>
+.team-card{background:#071d32;border:1px solid #315a7b;border-radius:14px;padding:16px;margin-bottom:18px}
+.team-card h3{color:#e6b73f;margin:0 0 10px}
+.team-member{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:#0a2540;border-radius:8px;margin:5px 0;border:1px solid #1e4060}
+.desig-badge{font-size:12px;padding:2px 8px;border-radius:10px;background:#133050;border:1px solid #315a7b}
+.slot-empty{opacity:.5;font-size:13px;padding:5px 0}
+</style>
+
+{% for am in ams %}
+{% set tm = am_teams[am.id] %}
+{% set team = tm.team %}
+
+<div class="team-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <h3>👤 {{am.full_name}} <span style="font-size:13px;color:#8fc8ff">{{am.company_code}} • {{am.login_id}}</span></h3>
+    <span style="font-size:13px;opacity:.7">{{team|length}}/5 assigned</span>
+  </div>
+
+  {% set tl = team|selectattr('designation','lower')|list %}
+  {% set tl_list = team|selectattr('designation','search','(?i)team leader')|list %}
+  {% set co_list = team|selectattr('designation','search','(?i)counsel')|list %}
+  {% set tc_list = team|selectattr('designation','search','(?i)telecall')|list %}
+
+  <div class="grid3" style="margin-bottom:10px">
+    <div>
+      <b style="color:#e6b73f;font-size:13px">🏅 Team Leader (1)</b>
+      {% for m in tl_list %}
+      <div class="team-member">
+        <span>{{m.full_name}}<br><small style="opacity:.6">{{m.mobile}}</small></span>
+        <form method="post" action="{{url_for('am_team_assign')}}" style="margin:0">
+          <input type="hidden" name="am_user_id" value="{{am.id}}">
+          <input type="hidden" name="emp_id" value="{{m.id}}">
+          <input type="hidden" name="action" value="remove">
+          <button class="toolbtn" style="border-color:#e46767;color:#ff9a9a;padding:4px 8px;font-size:12px">Remove</button>
+        </form>
+      </div>
+      {% endfor %}
+      {% if tl_list|length == 0 %}<div class="slot-empty">— Assign karo</div>{% endif %}
+    </div>
+
+    <div>
+      <b style="color:#48d58b;font-size:13px">👨‍💼 Counsellors (2)</b>
+      {% for m in co_list %}
+      <div class="team-member">
+        <span>{{m.full_name}}<br><small style="opacity:.6">{{m.mobile}}</small></span>
+        <form method="post" action="{{url_for('am_team_assign')}}" style="margin:0">
+          <input type="hidden" name="am_user_id" value="{{am.id}}">
+          <input type="hidden" name="emp_id" value="{{m.id}}">
+          <input type="hidden" name="action" value="remove">
+          <button class="toolbtn" style="border-color:#e46767;color:#ff9a9a;padding:4px 8px;font-size:12px">Remove</button>
+        </form>
+      </div>
+      {% endfor %}
+      {% for i in range(2 - co_list|length) %}<div class="slot-empty">— Slot {{co_list|length + i + 1}}</div>{% endfor %}
+    </div>
+
+    <div>
+      <b style="color:#8fc8ff;font-size:13px">📞 Telecallers (2)</b>
+      {% for m in tc_list %}
+      <div class="team-member">
+        <span>{{m.full_name}}<br><small style="opacity:.6">{{m.mobile}}</small></span>
+        <form method="post" action="{{url_for('am_team_assign')}}" style="margin:0">
+          <input type="hidden" name="am_user_id" value="{{am.id}}">
+          <input type="hidden" name="emp_id" value="{{m.id}}">
+          <input type="hidden" name="action" value="remove">
+          <button class="toolbtn" style="border-color:#e46767;color:#ff9a9a;padding:4px 8px;font-size:12px">Remove</button>
+        </form>
+      </div>
+      {% endfor %}
+      {% for i in range(2 - tc_list|length) %}<div class="slot-empty">— Slot {{tc_list|length + i + 1}}</div>{% endfor %}
+    </div>
+  </div>
+
+  {% if available %}
+  <form method="post" action="{{url_for('am_team_assign')}}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <input type="hidden" name="am_user_id" value="{{am.id}}">
+    <input type="hidden" name="action" value="assign">
+    <select name="emp_id" style="min-width:220px">
+      <option value="">— Employee select karo —</option>
+      {% for e in available %}
+      <option value="{{e.id}}">{{e.full_name}} ({{e.designation}}){% if e.company_code is defined %} — {{e.company_code}}{% endif %}</option>
+      {% endfor %}
+    </select>
+    <button class="btn" style="padding:8px 16px">+ Assign to {{am.full_name}}</button>
+  </form>
+  {% else %}
+  <p style="opacity:.5;font-size:13px">Koi available employee nahi hai. Employee Information mein pehle add karo.</p>
+  {% endif %}
+</div>
+{% else %}
+<div class="card"><p style="text-align:center;opacity:.6">Koi AM nahi mila.</p></div>
+{% endfor %}
+{% endblock %}
