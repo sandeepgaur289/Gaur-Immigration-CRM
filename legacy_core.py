@@ -2064,17 +2064,11 @@ def competition_live_api():
         events.append(e)
     latest_id=con.execute("SELECT COALESCE(MAX(id),0) m FROM competition_events").fetchone()["m"]
     show_payment=(u["role"]=="MD")
-    # SECURITY: WWIC users only see their own company data — backend enforced
+    # SECURITY: Company isolation — but GM sees BOTH companies in competition tab
     user_company=u.get("company_code","")
-    is_wwic_only=(u["role"]!="MD" and user_company=="WWIC")
-    is_scic_only=(u["role"]!="MD" and user_company=="SCIC")
-    if is_wwic_only:
-        # WWIC users: remove SCIC scores, filter events to WWIC only
-        scores={"WWIC":scores.get("WWIC",{"enrollments":0,"revenue":0})}
-        events=[e for e in events if e.get("company_code")=="WWIC"]
-    elif is_scic_only:
-        scores={"SCIC":scores.get("SCIC",{"enrollments":0,"revenue":0})}
-        events=[e for e in events if e.get("company_code")=="SCIC"]
+    # GM can see both companies in competition (it's a cross-company competition view)
+    is_wwic_only=False
+    is_scic_only=False
     if not show_payment:
         for code_key in scores:
             scores[code_key]["revenue"]=0
