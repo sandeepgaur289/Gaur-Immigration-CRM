@@ -104,8 +104,10 @@ app.jinja_env.globals["role_display"] = role_display
 
 @app.context_processor
 def inject_pending_enrollments():
-    """GM ke liye pending enrollments count — payment received = 0."""
+    """GM ke liye pending enrollments count — payment received = 0. Cached per request in flask.g."""
     try:
+        if hasattr(g, '_pending_enrollments'):
+            return {"pending_enrollments": g._pending_enrollments}
         u = current_user()
         if u and u["role"] in ("GM", "MD"):
             con = db()
@@ -120,12 +122,14 @@ def inject_pending_enrollments():
                         "SELECT COUNT(*) c FROM client_cases WHERE COALESCE(deleted_at,'')='' AND COALESCE(total_received,0)=0"
                     ).fetchone()["c"]
                 con.close()
-                return {"pending_enrollments": int(count or 0)}
+                g._pending_enrollments = int(count or 0)
+                return {"pending_enrollments": g._pending_enrollments}
             except Exception:
                 try: con.close()
                 except Exception: pass
     except Exception:
         pass
+    g._pending_enrollments = 0
     return {"pending_enrollments": 0}
 
 
@@ -778,9 +782,13 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
 def current_user():
     uid = session.get("uid")
     if not uid: return None
+    # Cache in flask.g so multiple calls in same request hit DB only once
+    if hasattr(g, '_cached_user'):
+        return g._cached_user
     con=db()
     u=con.execute("SELECT * FROM users WHERE id=? AND active=1",(uid,)).fetchone()
     con.close()
+    g._cached_user = u
     return u
 
 def require_roles(*roles):
@@ -3952,12 +3960,13 @@ def ams():
         rows=con.execute("SELECT * FROM users WHERE role='AM' ORDER BY id DESC").fetchall()
     else:
         rows=con.execute("SELECT * FROM users WHERE role='AM' AND company_code=? ORDER BY id DESC",(u["company_code"],)).fetchall()
-    # Build emp_map: user_id -> employee_master row
-    emp_map={}
-    for r in rows:
-        emp=con.execute("SELECT id,full_name FROM employee_master WHERE portal_user_id=?",(r["id"],)).fetchone()
-        if emp:
-            emp_map[r["id"]]=dict(emp)
+    # Build emp_map via single JOIN — no N+1
+    row_ids = [r["id"] for r in rows]
+    emp_map = {}
+    if row_ids:
+        ph = ",".join("?" * len(row_ids))
+        for emp in con.execute(f"SELECT id,full_name,portal_user_id FROM employee_master WHERE portal_user_id IN ({ph})", row_ids).fetchall():
+            emp_map[emp["portal_user_id"]] = dict(emp)
     con.close()
     return render_template("ams.html",u=u,rows=rows,emp_map=emp_map)
 

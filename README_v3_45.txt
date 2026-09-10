@@ -1,1 +1,0 @@
-Official Mobile, Official Email, Department and Branch are editable. Login ID, Company, Designation and Reporting Manager remain management-controlled.
