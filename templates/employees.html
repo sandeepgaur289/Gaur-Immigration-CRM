@@ -1,19 +1,51 @@
 {% extends "base.html" %}{% block content %}
 <h1 class="title">Employee Information</h1>
-<div class="card" style="border-color:#e6b73f">
-<h2 style="color:#e6b73f">Performance Module Active</h2>
-<p>Har employee ke saamne <b>Performance</b> button hai. Weekly, Monthly, Yearly reports aur WhatsApp sharing us page par available hain.</p>
-<a class="btn" href="{{url_for('performance_directory')}}">Open Employee Performance Dashboard</a>
-</div>
+
+<style>
+.emp-dir-row{cursor:pointer;transition:.12s}
+.emp-dir-row:hover td{background:rgba(230,183,63,.10)!important}
+.emp-dir-row.selected td{background:rgba(230,183,63,.18)!important;border-top:1px solid #e6b73f;border-bottom:1px solid #e6b73f}
+</style>
 
 <div class="card">
-<h2>Add New Employee</h2>
-<form method="post" enctype="multipart/form-data">
+<h2>Employee Directory</h2>
+<p style="opacity:.7;margin:0 0 12px;font-size:14px">Kisi bhi employee ke naam pe click karein — form mein data auto-fill ho jaayega.</p>
+<div class="tablewrap">
+<table>
+<tr>
+  <th>Photo</th><th>Employee Code</th><th>Name</th><th>Company</th><th>Designation</th><th>Department</th>
+  <th>Mobile</th><th>Status</th><th>Documents</th><th>Action</th>
+</tr>
+{% for r in rows %}
+<tr class="emp-dir-row" onclick="fillForm({{r['id']}},{{r|tojson}})">
+  <td>{% if r['photo_path'] %}<img src="{{url_for('employee_photo',employee_id=r['id'])}}" style="width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid #427398">{% else %}<div style="width:52px;height:52px;border-radius:8px;background:#0a223a;border:1px solid #315a7b;display:flex;align-items:center;justify-content:center;color:#e6b73f;font-size:20px;font-weight:bold">{{(r['full_name'] or '?')[0]|upper}}</div>{% endif %}</td>
+  <td><b style="color:#e6b73f">{{r['employee_code']}}</b></td>
+  <td><b>{{r['full_name']}}</b><br><small style="opacity:.7">{{r['father_spouse_name']}}</small></td>
+  <td>{{r['company_code']}}</td>
+  <td>{{r['designation']}}</td>
+  <td>{{r['department']}}</td>
+  <td>{{r['mobile']}}</td>
+  <td><span style="padding:3px 8px;border-radius:10px;font-size:12px;background:{% if r['employment_status']=='Active' %}#174f34{% else %}#4a1a1a{% endif %}">{{r['employment_status']}}</span></td>
+  <td><a class="toolbtn" href="{{url_for('employee_documents',employee_id=r['id'])}}">Documents ({{doc_counts.get(r['id'],0)}})</a></td>
+  <td><a class="toolbtn" href="{{url_for('edit_employee',employee_id=r['id'])}}">Edit</a></td>
+</tr>
+{% else %}
+<tr><td colspan="10" style="text-align:center;padding:20px;opacity:.6">Koi employee record nahi hai.</td></tr>
+{% endfor %}
+</table>
+</div>
+</div>
+
+<div class="card" id="empFormCard">
+<h2 id="empFormTitle">Add New Employee</h2>
+<form method="post" enctype="multipart/form-data" id="empForm">
+<input type="hidden" name="employee_id_edit" id="empIdEdit" value="">
+
 <div class="grid3">
-  <div><label>Employee Name *</label><input name="full_name" required></div>
-  <div><label>Father / Spouse Name</label><input name="father_spouse_name"></div>
+  <div><label>Employee Name *</label><input name="full_name" id="f_full_name" required></div>
+  <div><label>Father / Spouse Name</label><input name="father_spouse_name" id="f_father_spouse_name"></div>
   <div><label>Designation</label>
-    <select name="designation">
+    <select name="designation" id="f_designation">
       <option>General Manager</option><option>Assistant Manager</option><option>Senior Counselor</option>
       <option>Counselor</option><option>Telecaller</option><option>Receptionist</option>
       <option>Filing Officer</option><option>Account Staff</option><option>HR</option><option>Other</option>
@@ -21,75 +53,110 @@
   </div>
 
   <div><label>Department</label>
-    <select name="department">
+    <select name="department" id="f_department">
       <option>Management</option><option>Sales</option><option>Telecalling</option><option>Counseling</option>
       <option>Reception</option><option>Filing</option><option>Accounts</option><option>HR</option><option>Other</option>
     </select>
   </div>
-  <div><label>Mobile Number</label><input name="mobile"></div>
-  <div><label>Alternate Mobile</label><input name="alternate_mobile"></div>
+  <div><label>Mobile Number</label><input name="mobile" id="f_mobile"></div>
+  <div><label>Alternate Mobile</label><input name="alternate_mobile" id="f_alternate_mobile"></div>
 
-  <div><label>Email ID</label><input type="email" name="email"></div>
-  <div><label>Date of Birth</label><input type="date" name="date_of_birth"></div>
-  <div><label>Joining Date</label><input type="date" name="joining_date"></div>
+  <div><label>Email ID</label><input type="email" name="email" id="f_email"></div>
+  <div><label>Date of Birth</label><input type="date" name="date_of_birth" id="f_date_of_birth"></div>
+  <div><label>Joining Date</label><input type="date" name="joining_date" id="f_joining_date"></div>
 
-  <div><label>City</label><input name="city"></div>
-  <div><label>State</label><input name="state"></div>
-  <div><label>PIN Code</label><input name="pin_code"></div>
+  <div><label>City</label><input name="city" id="f_city"></div>
+  <div><label>State</label><input name="state" id="f_state"></div>
+  <div><label>PIN Code</label><input name="pin_code" id="f_pin_code"></div>
 
-  <div><label>Emergency Contact Name</label><input name="emergency_contact_name"></div>
-  <div><label>Emergency Contact Number</label><input name="emergency_contact_number"></div>
+  <div><label>Emergency Contact Name</label><input name="emergency_contact_name" id="f_emergency_contact_name"></div>
+  <div><label>Emergency Contact Number</label><input name="emergency_contact_number" id="f_emergency_contact_number"></div>
   <div><label>Employment Status</label>
-    <select name="employment_status">
+    <select name="employment_status" id="f_employment_status">
       <option>Active</option><option>On Leave</option><option>Resigned</option>
       <option>Transferred</option><option>Suspended</option><option>Terminated</option>
     </select>
   </div>
 
-  <div><label>Aadhaar Last 4 Digits</label><input name="aadhaar_last4" maxlength="4"></div>
-  <div><label>PAN Number</label><input name="pan_number"></div>
-  <div><label>Salary / Employee Reference</label><input name="salary_reference"></div>
+  <div><label>Aadhaar Last 4 Digits</label><input name="aadhaar_last4" id="f_aadhaar_last4" maxlength="4"></div>
+  <div><label>PAN Number</label><input name="pan_number" id="f_pan_number"></div>
+  <div><label>Salary / Employee Reference</label><input name="salary_reference" id="f_salary_reference"></div>
 
-  <div><label>Bank Name</label><input name="bank_name"></div>
-  <div><label>Bank Account Last 4 Digits</label><input name="account_last4" maxlength="4"></div>
-  <div><label>IFSC Code</label><input name="ifsc_code"></div>
+  <div><label>Bank Name</label><input name="bank_name" id="f_bank_name"></div>
+  <div><label>Bank Account Last 4 Digits</label><input name="account_last4" id="f_account_last4" maxlength="4"></div>
+  <div><label>IFSC Code</label><input name="ifsc_code" id="f_ifsc_code"></div>
 
   <div><label>Employee Photograph</label><input type="file" name="photograph" accept=".jpg,.jpeg,.png,.webp"></div>
   {% if u['role']=='MD' %}
   <div><label>Company</label>
-    <select name="company_code"><option value="SCIC">Smart Choice</option><option value="WWIC">White Wave</option></select>
+    <select name="company_code" id="f_company_code">
+      <option value="SCIC">Smart Choice</option><option value="WWIC">White Wave</option>
+    </select>
   </div>
   {% endif %}
 </div>
 
-<label>Residential Address</label><textarea name="address"></textarea>
-<label>Remarks</label><textarea name="remarks"></textarea>
-<br><button class="btn">Save Employee Information</button>
+<label>Residential Address</label><textarea name="address" id="f_address"></textarea>
+<label>Remarks</label><textarea name="remarks" id="f_remarks"></textarea>
+<br>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+  <button class="btn" type="submit">💾 Save Employee Information</button>
+  <button type="button" class="toolbtn" onclick="resetForm()">✕ Clear / New Employee</button>
+</div>
 </form>
 </div>
 
-<div class="card">
-<h2>Employee Directory</h2>
-<div class="tablewrap">
-<table>
-<tr>
-  <th>Photo</th><th>Employee Code</th><th>Name</th><th>Company</th><th>Designation</th><th>Department</th>
-  <th>Mobile</th><th>Email</th><th>Joining Date</th><th>Status</th><th>Performance</th><th>Documents</th><th>Action</th>
-</tr>
-{% for r in rows %}
-<tr>
-  <td>{% if r['photo_path'] %}<img src="{{url_for('employee_photo',employee_id=r['id'])}}" style="width:58px;height:58px;object-fit:cover;border-radius:8px;border:1px solid #427398">{% else %}-{% endif %}</td>
-  <td>{{r['employee_code']}}</td>
-  <td><b>{{r['full_name']}}</b><br><small>{{r['father_spouse_name']}}</small></td>
-  <td>{{r['company_code']}}</td><td>{{r['designation']}}</td><td>{{r['department']}}</td>
-  <td>{{r['mobile']}}</td><td>{{r['email']}}</td><td>{{r['joining_date']}}</td>
-  <td>{{r['employment_status']}}</td>
-  <td><a class="btn" href="{{url_for('employee_performance',employee_id=r['id'])}}">Performance</a></td>
-  <td><a class="btn" href="{{url_for('employee_documents',employee_id=r['id'])}}">Documents ({{doc_counts.get(r['id'],0)}})</a></td>
-  <td><a class="btn" href="{{url_for('edit_employee',employee_id=r['id'])}}">Edit</a></td>
-</tr>
-{% endfor %}
-</table>
-</div>
-</div>
+<script>
+function fillForm(id, data) {
+  // Highlight selected row
+  document.querySelectorAll('.emp-dir-row').forEach(function(r){ r.classList.remove('selected'); });
+  event.currentTarget.classList.add('selected');
+
+  // Update form title
+  document.getElementById('empFormTitle').textContent = 'Edit Employee: ' + (data.full_name || '');
+  document.getElementById('empIdEdit').value = id;
+
+  // Fill text/input fields
+  var fields = ['full_name','father_spouse_name','mobile','alternate_mobile','email',
+                'date_of_birth','joining_date','city','state','pin_code',
+                'emergency_contact_name','emergency_contact_number',
+                'aadhaar_last4','pan_number','salary_reference',
+                'bank_name','account_last4','ifsc_code','address','remarks'];
+  fields.forEach(function(f){
+    var el = document.getElementById('f_'+f);
+    if(el) el.value = data[f] || '';
+  });
+
+  // Fill select fields
+  var selects = ['designation','department','employment_status'];
+  selects.forEach(function(f){
+    var el = document.getElementById('f_'+f);
+    if(el && data[f]){
+      for(var i=0;i<el.options.length;i++){
+        if(el.options[i].value === data[f] || el.options[i].text === data[f]){
+          el.selectedIndex = i; break;
+        }
+      }
+    }
+  });
+
+  // Company select for MD
+  var cc = document.getElementById('f_company_code');
+  if(cc && data.company_code){
+    for(var i=0;i<cc.options.length;i++){
+      if(cc.options[i].value === data.company_code){ cc.selectedIndex=i; break; }
+    }
+  }
+
+  // Scroll to form
+  document.getElementById('empFormCard').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function resetForm(){
+  document.getElementById('empFormTitle').textContent = 'Add New Employee';
+  document.getElementById('empIdEdit').value = '';
+  document.getElementById('empForm').reset();
+  document.querySelectorAll('.emp-dir-row').forEach(function(r){ r.classList.remove('selected'); });
+}
+</script>
 {% endblock %}
