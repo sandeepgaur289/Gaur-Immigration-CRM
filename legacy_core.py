@@ -5837,13 +5837,8 @@ _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
     1
 )
 
-_GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
-    '<main>',
-    '''<div id="mobileNavOverlay" class="mobile-nav-overlay"></div>
-<main>
-<button type="button" id="mobileNavBtn" class="mobile-nav-btn" aria-label="Open navigation"><b>☰</b> Menu</button>''',
-    1
-)
+
+# Mobile nav button already embedded in base.html template above - no injection needed.
 
 _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
     '</body>',
@@ -5852,12 +5847,12 @@ _GAUR_V337_TEMPLATES['base.html']=_GAUR_V337_TEMPLATES['base.html'].replace(
  const btn=document.getElementById('mobileNavBtn');
  const overlay=document.getElementById('mobileNavOverlay');
  function closeNav(){document.body.classList.remove('mobile-nav-open')}
- if(btn)btn.addEventListener('click',()=>document.body.classList.toggle('mobile-nav-open'));
+ if(btn)btn.addEventListener('click',function(){document.body.classList.toggle('mobile-nav-open');});
  if(overlay)overlay.addEventListener('click',closeNav);
- document.querySelectorAll('aside a').forEach(a=>a.addEventListener('click',closeNav));
- window.addEventListener('resize',()=>{if(window.innerWidth>900)closeNav()});
+ document.querySelectorAll('aside a').forEach(function(a){a.addEventListener('click',closeNav);});
+ window.addEventListener('resize',function(){if(window.innerWidth>900)closeNav();});
  if('serviceWorker' in navigator){
-   window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js').catch(()=>{}));
+   window.addEventListener('load',function(){navigator.serviceWorker.register('/service-worker.js').catch(function(){});});
  }
 })();
 </script>
