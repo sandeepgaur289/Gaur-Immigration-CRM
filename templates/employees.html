@@ -1,24 +1,21 @@
 {% extends "base.html" %}{% block content %}
 <h1 class="title">Employee Information</h1>
-
 <div class="card">
 <h2>Employee Directory</h2>
 <p style="opacity:.7;margin:0 0 12px;font-size:14px">Kisi bhi employee ke naam pe click karein — us employee ki full information dekhein aur edit karein.</p>
 <div class="tablewrap">
 <table>
 <tr>
-  <th>Photo</th><th>Employee Code</th><th>Name</th><th>Company</th><th>Designation</th><th>Department</th>
-  <th>Mobile</th><th>Status</th><th>Documents</th><th>Action</th>
+  <th>Photo</th><th>Employee Code</th><th>Name</th><th>Company</th><th>Designation</th>
+  <th>Department</th><th>Mobile</th><th>Status</th><th>Documents</th><th>Action</th>
 </tr>
 {% for r in rows %}
-<tr style="cursor:pointer" onclick="window.location='{{url_for("edit_employee",employee_id=r["id"])}}'">
+<tr class="emp-row" data-url="{{url_for('edit_employee',employee_id=r['id'])}}" style="cursor:pointer">
   <td>
     {% if r['photo_path'] %}
       <img src="{{url_for('employee_photo',employee_id=r['id'])}}" style="width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid #427398">
     {% else %}
-      <div style="width:52px;height:52px;border-radius:8px;background:#0a223a;border:1px solid #315a7b;display:flex;align-items:center;justify-content:center;color:#e6b73f;font-size:20px;font-weight:bold">
-        {{(r['full_name'] or '?')[0]|upper}}
-      </div>
+      <div style="width:52px;height:52px;border-radius:8px;background:#0a223a;border:1px solid #315a7b;display:flex;align-items:center;justify-content:center;color:#e6b73f;font-size:20px;font-weight:bold">{{(r['full_name'] or '?')[0]|upper}}</div>
     {% endif %}
   </td>
   <td><b style="color:#e6b73f">{{r['employee_code']}}</b></td>
@@ -27,9 +24,9 @@
   <td>{{r['designation']}}</td>
   <td>{{r['department'] or '-'}}</td>
   <td>{{r['mobile'] or '-'}}</td>
-  <td><span style="padding:3px 8px;border-radius:10px;font-size:12px;background:{% if r['employment_status']=='Active' %}#174f34{% else %}#4a1a1a{% endif %}">{{r['employment_status']}}</span></td>
-  <td onclick="event.stopPropagation()"><a class="toolbtn" href="{{url_for('employee_documents',employee_id=r['id'])}}">Documents ({{doc_counts.get(r['id'],0)}})</a></td>
-  <td onclick="event.stopPropagation()"><a class="toolbtn" href="{{url_for('edit_employee',employee_id=r['id'])}}">Edit</a></td>
+  <td><span style="padding:3px 8px;border-radius:10px;font-size:12px;background:{{'#174f34' if r['employment_status']=='Active' else '#4a1a1a'}}">{{r['employment_status']}}</span></td>
+  <td class="no-row-click"><a class="toolbtn" href="{{url_for('employee_documents',employee_id=r['id'])}}">Docs ({{doc_counts.get(r['id'],0)}})</a></td>
+  <td class="no-row-click"><a class="toolbtn" href="{{url_for('edit_employee',employee_id=r['id'])}}">Edit</a></td>
 </tr>
 {% else %}
 <tr><td colspan="10" style="text-align:center;padding:20px;opacity:.6">Koi employee record nahi hai.</td></tr>
@@ -37,4 +34,14 @@
 </table>
 </div>
 </div>
+<script>
+document.querySelectorAll('tr.emp-row').forEach(function(row){
+  row.addEventListener('click',function(e){
+    if(e.target.closest('.no-row-click')) return;
+    window.location = row.getAttribute('data-url');
+  });
+  row.addEventListener('mouseenter',function(){row.style.background='rgba(230,183,63,.08)';});
+  row.addEventListener('mouseleave',function(){row.style.background='';});
+});
+</script>
 {% endblock %}
