@@ -24,24 +24,25 @@
   <td>{{r['designation']}}</td>
   <td>{{r['department'] or '-'}}</td>
   <td>{{r['mobile'] or '-'}}</td>
-  <td><span style="padding:3px 8px;border-radius:10px;font-size:12px;{% if r['employment_status']=='Active' %}background:#174f34{% else %}background:#4a1a1a{% endif %}">{{r['employment_status']}}</span></td>
+  <td><span class="emp-status {% if r['employment_status']=='Active' %}status-active{% else %}status-inactive{% endif %}">{{r['employment_status']}}</span></td>
   <td class="no-row-click"><a class="toolbtn" href="{{url_for('employee_documents',employee_id=r['id'])}}">Docs ({{doc_counts.get(r['id'],0)}})</a></td>
   <td class="no-row-click"><a class="toolbtn" href="{{url_for('edit_employee',employee_id=r['id'])}}">Edit</a></td>
 </tr>
 {% else %}
 <tr><td colspan="10" style="text-align:center;padding:20px;opacity:.6">Koi employee record nahi hai.</td></tr>
 {% endfor %}
-</table>
+</table> 
 </div>
 </div>
-<script>
+<script> 
 document.querySelectorAll('tr.emp-row').forEach(function(row){
   row.addEventListener('click',function(e){
-    if(e.target.closest('.no-row-click')) return;
+    if(e.target.closest('.no-row-click')) return;   
     window.location = row.getAttribute('data-url');
   });
-  row.addEventListener('mouseenter',function(){row.style.background='rgba(230,183,63,.08)';});
+  row.addEventListener('mouseenter',function(){row.style.background='rgba(230,183, 63,.08)';});
   row.addEventListener('mouseleave',function(){row.style.background='';});
-});
+}); 
 </script>
 {% endblock %}
+   
