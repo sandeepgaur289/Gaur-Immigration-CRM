@@ -71,9 +71,9 @@
               {% set slots_left = 2 - am.tc %}
               {% set label = am.full_name + ' (' + am.company_code + ') — Telecallers: ' + am.tc|string + '/2' %}
             {% endif %}
-            {% if slots_left > 0 and am.emp_id %}
-              <option value="{{am.emp_id}}">✅ {{label}} — {{slots_left}} slot{{'' if slots_left==1 else 's'}} free</option>
-            {% elif am.emp_id %}
+            {% if slots_left > 0 %}
+              <option value="{{am.user_id}}">✅ {{label}} — {{slots_left}} slot{{'' if slots_left==1 else 's'}} free</option>
+            {% else %}
               <option value="" disabled>🚫 {{label}} — Full</option>
             {% endif %}
           {% endfor %}

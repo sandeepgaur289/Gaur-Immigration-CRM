@@ -4008,29 +4008,30 @@ def _save_staff_employee(con, u, designation):
     if not full_name:
         flash("Employee name is required","error"); return
 
-    # AM assignment (optional)
+    # AM assignment (optional) — form sends user_id, resolve to employee_master.id
     am_emp_id = None
     assign_am_id = request.form.get("assign_am_id","").strip()
     if assign_am_id and assign_am_id.isdigit():
-        am_emp_id = int(assign_am_id)
+        am_user_id = int(assign_am_id)
+        # Look up employee_master record for this AM user
+        am_emp_row = con.execute("SELECT id FROM employee_master WHERE portal_user_id=?",(am_user_id,)).fetchone()
+        if not am_emp_row:
+            flash("Selected AM ka employee record nahi mila. Pehle AM ka employee profile create karo.","error"); return
+        am_emp_id = am_emp_row["id"]
         # Validate limits before saving
         desig_lower = designation.lower()
         team = con.execute("SELECT designation FROM employee_master WHERE reporting_employee_id=?",(am_emp_id,)).fetchall()
         desigs = [t["designation"].lower() for t in team]
+        am_name_row = con.execute("SELECT full_name FROM users WHERE id=?",(am_user_id,)).fetchone()
+        am_name = am_name_row["full_name"] if am_name_row else "this AM"
         if "team leader" in desig_lower:
-            count = sum(1 for d in desigs if "team leader" in d)
-            if count >= 1:
-                am_name = (con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone() or {}).get("full_name","this AM")
+            if sum(1 for d in desigs if "team leader" in d) >= 1:
                 flash(f"Is AM ({am_name}) ke paas pehle se ek Team Leader assigned hai. Pehle remove karo.","error"); return
         elif "counsel" in desig_lower:
-            count = sum(1 for d in desigs if "counsel" in d)
-            if count >= 2:
-                am_name = (con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone() or {}).get("full_name","this AM")
+            if sum(1 for d in desigs if "counsel" in d) >= 2:
                 flash(f"Is AM ({am_name}) ke paas pehle se 2 Counsellors assigned hain. Limit full hai.","error"); return
         elif "telecall" in desig_lower:
-            count = sum(1 for d in desigs if "telecall" in d)
-            if count >= 2:
-                am_name = (con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone() or {}).get("full_name","this AM")
+            if sum(1 for d in desigs if "telecall" in d) >= 2:
                 flash(f"Is AM ({am_name}) ke paas pehle se 2 Telecallers assigned hain. Limit full hai.","error"); return
 
     seq = con.execute("SELECT COUNT(*) c FROM employee_master WHERE company_code=?",(company,)).fetchone()["c"]+1
@@ -4075,8 +4076,9 @@ def _save_staff_employee(con, u, designation):
     con.commit()
     assigned_msg = ""
     if am_emp_id:
-        am_name = (con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone() or {}).get("full_name","AM")
-        assigned_msg = f" → Assigned to {am_name}"
+        am_name_r = con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone()
+        if am_name_r:
+            assigned_msg = f" → Assigned to {am_name_r['full_name']}"
     flash(f"{designation} saved. Employee Code: {employee_code}{assigned_msg}","success")
 
 
