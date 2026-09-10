@@ -539,10 +539,12 @@ profile_bio TEXT DEFAULT '',account_created_at TEXT DEFAULT '',last_login_at TEX
       ("first_rbl","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
       ("first_yes_bank","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
       ("first_au_bank","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
+      ("first_indusind","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
       ("second_cash","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
       ("second_rbl","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
       ("second_yes_bank","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
-      ("second_au_bank","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0")]
+      ("second_au_bank","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0"),
+      ("second_indusind","DOUBLE PRECISION DEFAULT 0" if IS_POSTGRES else "REAL DEFAULT 0")]
     if IS_POSTGRES:
         for col,ctype in v343_case_cols: cur.execute(f"ALTER TABLE client_cases ADD COLUMN IF NOT EXISTS {col} {ctype}")
     else:
@@ -1396,9 +1398,9 @@ def dashboard():
         try:
             _r=con.execute("""SELECT
                 COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(first_payment_datetime,''),1,10)=?
-                     THEN COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0) ELSE 0 END),0) f,
+                     THEN COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0)+COALESCE(first_indusind,0) ELSE 0 END),0) f,
                 COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(second_payment_datetime,''),1,10)=?
-                     THEN COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0) ELSE 0 END),0) s,
+                     THEN COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0)+COALESCE(second_indusind,0) ELSE 0 END),0) s,
                 COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(other_payment_datetime,''),1,10)=?
                      THEN COALESCE(other_payment_received,0) ELSE 0 END),0) o
                 FROM client_cases WHERE company_code=? AND """+_active_case_sql,
@@ -1424,8 +1426,8 @@ def dashboard():
             _menr=0
         try:
             _mr=con.execute("""SELECT
-                COALESCE(SUM(COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0)+
-                             COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0)+
+                COALESCE(SUM(COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0)+COALESCE(first_indusind,0)+
+                             COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0)+COALESCE(second_indusind,0)+
                              COALESCE(other_payment_received,0)),0) total
                 FROM client_cases WHERE company_code=? AND enrollment_date BETWEEN ? AND ? AND """+_active_case_sql,
                 (_co,month_start,month_end)).fetchone()
@@ -1822,9 +1824,9 @@ def _management_am_report_rows(con,u,report_date,company_filter=""):
             # Revenue follows actual payment received timestamps, not enrollment date.
             r=con.execute("""SELECT
               COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(first_payment_datetime,''),1,10)=?
-                   THEN COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0) ELSE 0 END),0) f,
+                   THEN COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0)+COALESCE(first_indusind,0) ELSE 0 END),0) f,
               COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(second_payment_datetime,''),1,10)=?
-                   THEN COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0) ELSE 0 END),0) s,
+                   THEN COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0)+COALESCE(second_indusind,0) ELSE 0 END),0) s,
               COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(other_payment_datetime,''),1,10)=?
                    THEN COALESCE(other_payment_received,0) ELSE 0 END),0) o
               FROM client_cases WHERE assigned_employee_id=?""",
@@ -1833,9 +1835,9 @@ def _management_am_report_rows(con,u,report_date,company_filter=""):
 
             r=con.execute("""SELECT
               COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(first_payment_datetime,''),1,10) BETWEEN ? AND ?
-                   THEN COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0) ELSE 0 END),0) f,
+                   THEN COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0)+COALESCE(first_indusind,0) ELSE 0 END),0) f,
               COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(second_payment_datetime,''),1,10) BETWEEN ? AND ?
-                   THEN COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0) ELSE 0 END),0) s,
+                   THEN COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0)+COALESCE(second_indusind,0) ELSE 0 END),0) s,
               COALESCE(SUM(CASE WHEN SUBSTR(COALESCE(other_payment_datetime,''),1,10) BETWEEN ? AND ?
                    THEN COALESCE(other_payment_received,0) ELSE 0 END),0) o
               FROM client_cases WHERE assigned_employee_id=?""",
@@ -2292,8 +2294,8 @@ def ensure_enrollment_payment_schema():
       ("other_payment_received",money),("other_payment_datetime","TEXT DEFAULT ''"),
       ("lead_db_id",integer),("counselor_name","TEXT DEFAULT ''"),("am_name","TEXT DEFAULT ''"),
       ("interaction_date","TEXT DEFAULT ''"),
-      ("first_cash",money),("first_rbl",money),("first_yes_bank",money),("first_au_bank",money),
-      ("second_cash",money),("second_rbl",money),("second_yes_bank",money),("second_au_bank",money),
+      ("first_cash",money),("first_rbl",money),("first_yes_bank",money),("first_au_bank",money),("first_indusind",money),
+      ("second_cash",money),("second_rbl",money),("second_yes_bank",money),("second_au_bank",money),("second_indusind",money),
       ("first_payment_method","TEXT DEFAULT ''"),("second_payment_method","TEXT DEFAULT ''"),
       ("other_payment_method","TEXT DEFAULT ''"),("other_payment_bank","TEXT DEFAULT ''"),
       ("first_payment_bank_id",integer),("second_payment_bank_id",integer),("other_payment_bank_id",integer),
@@ -2374,8 +2376,8 @@ def ensure_enrollment_recycle_schema():
     integer="BIGINT" if IS_POSTGRES else "INTEGER"
     cols=[
         ("deleted_at","TEXT DEFAULT ''"),("deleted_by","TEXT DEFAULT ''"),("deletion_reason","TEXT DEFAULT ''"),
-        ("first_cash",money),("first_rbl",money),("first_yes_bank",money),("first_au_bank",money),
-        ("second_cash",money),("second_rbl",money),("second_yes_bank",money),("second_au_bank",money),
+        ("first_cash",money),("first_rbl",money),("first_yes_bank",money),("first_au_bank",money),("first_indusind",money),
+        ("second_cash",money),("second_rbl",money),("second_yes_bank",money),("second_au_bank",money),("second_indusind",money),
         ("first_payment_method","TEXT DEFAULT ''"),("second_payment_method","TEXT DEFAULT ''"),
         ("other_payment_method","TEXT DEFAULT ''"),("other_payment_bank","TEXT DEFAULT ''"),
         ("first_payment_status","TEXT DEFAULT 'Pending'"),("first_payment_datetime","TEXT DEFAULT ''"),
@@ -4742,8 +4744,8 @@ def enrollment_report():
       "first_payment_datetime":"","second_payment":0,"second_payment_status":"Pending",
       "second_payment_datetime":"","other_payment_received":0,"other_payment_datetime":"",
       "total_received":0,"payment_status":"Pending","filing_status":"Documents Pending","remarks":"",
-      "first_cash":0,"first_rbl":0,"first_yes_bank":0,"first_au_bank":0,
-      "second_cash":0,"second_rbl":0,"second_yes_bank":0,"second_au_bank":0,
+      "first_cash":0,"first_rbl":0,"first_yes_bank":0,"first_au_bank":0,"first_indusind":0,
+      "second_cash":0,"second_rbl":0,"second_yes_bank":0,"second_au_bank":0,"second_indusind":0,
       "first_payment_method":"","second_payment_method":"","other_payment_method":"","other_payment_bank":"",
       "first_payment_bank_id":None,"second_payment_bank_id":None,"other_payment_bank_id":None,
       "lead_code":"","linked_am_name":"","passport_no":"","assigned_am":None,"first_bank_name":"","second_bank_name":"","other_bank_name":"",
@@ -4983,8 +4985,8 @@ def cases():
       "second_payment":0,"second_payment_status":"Pending","second_payment_datetime":"",
       "other_payment_received":0,"other_payment_datetime":"","total_received":0,
       "payment_status":"Pending","filing_status":"Documents Pending","remarks":"",
-      "first_cash":0,"first_rbl":0,"first_yes_bank":0,"first_au_bank":0,
-      "second_cash":0,"second_rbl":0,"second_yes_bank":0,"second_au_bank":0,
+      "first_cash":0,"first_rbl":0,"first_yes_bank":0,"first_au_bank":0,"first_indusind":0,
+      "second_cash":0,"second_rbl":0,"second_yes_bank":0,"second_au_bank":0,"second_indusind":0,
       "first_payment_method":"","second_payment_method":"","other_payment_method":"","other_payment_bank":"",
       "first_payment_bank_id":None,"second_payment_bank_id":None,"other_payment_bank_id":None,
       "lead_code":"","linked_am_name":"","passport_no":"",
@@ -5103,9 +5105,9 @@ def cases_legacy():
         while con.execute("SELECT id FROM client_cases WHERE case_id=?",(case_id,)).fetchone():
             seq+=1;case_id=f"{company}-CASE-{datetime.date.today().strftime('%y%m%d')}-{seq:04d}"
         def amt(k): return float(request.form.get(k,"0") or 0)
-        fc,fr,fy,fa=amt("first_cash"),amt("first_rbl"),amt("first_yes_bank"),amt("first_au_bank")
-        sc,sr,sy,sa=amt("second_cash"),amt("second_rbl"),amt("second_yes_bank"),amt("second_au_bank")
-        first=fc+fr+fy+fa;second=sc+sr+sy+sa;other=amt("other_payment_received")
+        fc,fr,fy,fa,fi=amt("first_cash"),amt("first_rbl"),amt("first_yes_bank"),amt("first_au_bank"),amt("first_indusind")
+        sc,sr,sy,sa,si=amt("second_cash"),amt("second_rbl"),amt("second_yes_bank"),amt("second_au_bank"),amt("second_indusind")
+        first=fc+fr+fy+fa+fi;second=sc+sr+sy+sa+si;other=amt("other_payment_received")
         pkg=amt("package_amount");avp=amt("after_visa_payment");total=first+second+other
         fs=request.form.get("first_payment_status") or ("Received" if first else "Pending")
         ss=request.form.get("second_payment_status") or ("Received" if second else "Pending")
@@ -5120,13 +5122,13 @@ def cases_legacy():
         visa=(request.form.get("visa_type") or (lead["visa_type"] if lead else "") or "").strip()
         con.execute("""INSERT INTO client_cases(case_id,company_code,client_name,mobile,country,visa_type,enrollment_date,
           lead_db_id,counselor_name,am_name,interaction_date,package_amount,after_visa_payment,
-          first_cash,first_rbl,first_yes_bank,first_au_bank,booking_amount,first_payment_status,first_payment_datetime,
-          second_cash,second_rbl,second_yes_bank,second_au_bank,second_payment,second_payment_status,second_payment_datetime,
+          first_cash,first_rbl,first_yes_bank,first_au_bank,first_indusind,booking_amount,first_payment_status,first_payment_datetime,
+          second_cash,second_rbl,second_yes_bank,second_au_bank,second_indusind,second_payment,second_payment_status,second_payment_datetime,
           other_payment_received,other_payment_datetime,total_received,payment_status,filing_status,remarks,created_by,created_at,updated_at)
-          VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+          VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
           (case_id,company,cname,mobile,country,visa,request.form.get("enrollment_date") or datetime.date.today().isoformat(),
            lead_db_id,counselor,am_name,request.form.get("interaction_date",""),pkg,avp,
-           fc,fr,fy,fa,first,fs,fdt,sc,sr,sy,sa,second,ss,sdt,other,odt,total,ss,
+           fc,fr,fy,fa,fi,first,fs,fdt,sc,sr,sy,sa,si,second,ss,sdt,other,odt,total,ss,
            request.form.get("filing_status","Documents Pending"),request.form.get("remarks",""),u["login_id"],now,now))
         _new_case_row=con.execute("SELECT id FROM client_cases WHERE case_id=?",(case_id,)).fetchone()
         if _new_case_row:
@@ -5170,8 +5172,8 @@ def cases_legacy():
     _defaults={
       "lead_db_id":None,"counselor_name":"","am_name":"","interaction_date":"",
       "package_amount":0,"after_visa_payment":0,
-      "first_cash":0,"first_rbl":0,"first_yes_bank":0,"first_au_bank":0,
-      "second_cash":0,"second_rbl":0,"second_yes_bank":0,"second_au_bank":0,
+      "first_cash":0,"first_rbl":0,"first_yes_bank":0,"first_au_bank":0,"first_indusind":0,
+      "second_cash":0,"second_rbl":0,"second_yes_bank":0,"second_au_bank":0,"second_indusind":0,
       "booking_amount":0,"second_payment":0,"other_payment_received":0,"total_received":0,
       "first_payment_status":"Pending","second_payment_status":"Pending",
       "first_payment_datetime":"","second_payment_datetime":"","other_payment_datetime":"",
@@ -5313,9 +5315,9 @@ def update_case(case_id):
         if already_submitted:
             con.close();flash("Tum pehle hi yeh enrollment submit kar chuke ho. Ab sirf GM/MD edit kar sakte hain.","error");return redirect(url_for("cases"))
     def a(k,old): return float(request.form.get(k,old or 0) or 0)
-    fc,fr,fy,fa=a("first_cash",r["first_cash"]),a("first_rbl",r["first_rbl"]),a("first_yes_bank",r["first_yes_bank"]),a("first_au_bank",r["first_au_bank"])
-    sc,sr,sy,sa=a("second_cash",r["second_cash"]),a("second_rbl",r["second_rbl"]),a("second_yes_bank",r["second_yes_bank"]),a("second_au_bank",r["second_au_bank"])
-    first=fc+fr+fy+fa;second=sc+sr+sy+sa;other=a("other_payment_received",r["other_payment_received"])
+    fc,fr,fy,fa,fi=a("first_cash",r["first_cash"]),a("first_rbl",r["first_rbl"]),a("first_yes_bank",r["first_yes_bank"]),a("first_au_bank",r["first_au_bank"]),a("first_indusind",r.get("first_indusind",0) if hasattr(r,"keys") else 0)
+    sc,sr,sy,sa,si=a("second_cash",r["second_cash"]),a("second_rbl",r["second_rbl"]),a("second_yes_bank",r["second_yes_bank"]),a("second_au_bank",r["second_au_bank"]),a("second_indusind",r.get("second_indusind",0) if hasattr(r,"keys") else 0)
+    first=fc+fr+fy+fa+fi;second=sc+sr+sy+sa+si;other=a("other_payment_received",r["other_payment_received"])
     pkg=a("package_amount",r["package_amount"]);avp=a("after_visa_payment",r["after_visa_payment"])
     fs=request.form.get("first_payment_status",r["first_payment_status"] or "Pending");ss=request.form.get("second_payment_status",r["second_payment_status"] or "Pending")
     now=datetime.datetime.now().isoformat(timespec="seconds")
@@ -5324,14 +5326,14 @@ def update_case(case_id):
     odt=request.form.get("other_payment_datetime","") or r["other_payment_datetime"] or (now if other else "")
     total=first+second+other
     con.execute("""UPDATE client_cases SET package_amount=?,after_visa_payment=?,interaction_date=?,counselor_name=?,am_name=?,
-      first_cash=?,first_rbl=?,first_yes_bank=?,first_au_bank=?,booking_amount=?,first_payment_status=?,first_payment_datetime=?,
-      first_payment_method=?,second_cash=?,second_rbl=?,second_yes_bank=?,second_au_bank=?,second_payment=?,second_payment_status=?,second_payment_datetime=?,
+      first_cash=?,first_rbl=?,first_yes_bank=?,first_au_bank=?,first_indusind=?,booking_amount=?,first_payment_status=?,first_payment_datetime=?,
+      first_payment_method=?,second_cash=?,second_rbl=?,second_yes_bank=?,second_au_bank=?,second_indusind=?,second_payment=?,second_payment_status=?,second_payment_datetime=?,
       second_payment_method=?,other_payment_received=?,other_payment_datetime=?,other_payment_method=?,other_payment_bank=?,
       total_received=?,payment_status=?,remarks=?,updated_at=? WHERE id=?""",
       (pkg,avp,request.form.get("interaction_date",r["interaction_date"] or ""),request.form.get("counselor_name",r["counselor_name"] or ""),
-       request.form.get("am_name",r["am_name"] or ""),fc,fr,fy,fa,first,fs,fdt,
+       request.form.get("am_name",r["am_name"] or ""),fc,fr,fy,fa,fi,first,fs,fdt,
        request.form.get("first_payment_method",r["first_payment_method"] or "Net Banking"),
-       sc,sr,sy,sa,second,ss,sdt,request.form.get("second_payment_method",r["second_payment_method"] or "Net Banking"),
+       sc,sr,sy,sa,si,second,ss,sdt,request.form.get("second_payment_method",r["second_payment_method"] or "Net Banking"),
        other,odt,request.form.get("other_payment_method",r["other_payment_method"] or ""),
        request.form.get("other_payment_bank",r["other_payment_bank"] or ""),
        total,ss,request.form.get("remarks",r["remarks"] or ""),now,case_id))
@@ -5684,11 +5686,11 @@ _GAUR_V337_TEMPLATES['cases.html']=r"""{% extends "base.html" %}{% block content
 <div><label>Enrollment Date</label><input type="date" name="enrollment_date"></div><div><label>Client Name</label><input name="client_name" id="nm" required></div><div><label>Contact No.</label><input name="mobile" id="mob"></div><div><label>Country / Program</label><input name="country" id="ctry"></div><div><label>Visa Type</label><input name="visa_type" id="visa"></div>
 <div><label>Counselor</label><select name="counselor_name"><option value="">Select Counselor</option>{% for c in counselors %}<option>{{c.full_name}}</option>{% endfor %}</select></div><div><label>AM</label><input name="am_name" id="am" readonly></div><div><label>Date of Interaction Call</label><input type="date" name="interaction_date"></div><div><label>Package</label><input type="number" step=".01" name="package_amount" id="pkg" value="0"></div><div><label>After Visa</label><input type="number" step=".01" name="after_visa_payment" value="0"></div></div>
 
-<div class="mod-head" onclick="tog('one')"><b>1st Payment — Cash + RBL + Yes Bank + AU Bank</b><span>Open ▾</span></div><div class="mod-body" id="one"><div class="paygrid">
-{% for n,l in [('first_cash','Cash'),('first_rbl','RBL'),('first_yes_bank','Yes Bank'),('first_au_bank','AU Bank')] %}<div><label>{{l}}</label><input type="number" step=".01" name="{{n}}" class="f" value="0"></div>{% endfor %}
+<div class="mod-head" onclick="tog('one')"><b>1st Payment — Cash + RBL + Yes Bank + AU Bank + IndusInd</b><span>Open ▾</span></div><div class="mod-body" id="one"><div class="paygrid">
+{% for n,l in [('first_cash','Cash'),('first_rbl','RBL'),('first_yes_bank','Yes Bank'),('first_au_bank','AU Bank'),('first_indusind','IndusInd')] %}<div><label>{{l}}</label><input type="number" step=".01" name="{{n}}" class="f" value="0"></div>{% endfor %}
 <div><label>1st Payment Total</label><input id="ft" readonly></div><div><label>Status</label><select name="first_payment_status"><option>Received</option><option>Partially Received</option><option>Pending</option></select></div><div><label>Date & Time</label><input type="datetime-local" name="first_payment_datetime"></div><div><label>Payment Screenshot / Proof</label><input type="file" name="first_payment_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf"></div></div></div>
-<div class="mod-head" onclick="tog('two')"><b>2nd Payment — Cash + RBL + Yes Bank + AU Bank</b><span>Open ▾</span></div><div class="mod-body" id="two"><div class="paygrid">
-{% for n,l in [('second_cash','Cash'),('second_rbl','RBL'),('second_yes_bank','Yes Bank'),('second_au_bank','AU Bank')] %}<div><label>{{l}}</label><input type="number" step=".01" name="{{n}}" class="s" value="0"></div>{% endfor %}
+<div class="mod-head" onclick="tog('two')"><b>2nd Payment — Cash + RBL + Yes Bank + AU Bank + IndusInd</b><span>Open ▾</span></div><div class="mod-body" id="two"><div class="paygrid">
+{% for n,l in [('second_cash','Cash'),('second_rbl','RBL'),('second_yes_bank','Yes Bank'),('second_au_bank','AU Bank'),('second_indusind','IndusInd')] %}<div><label>{{l}}</label><input type="number" step=".01" name="{{n}}" class="s" value="0"></div>{% endfor %}
 <div><label>2nd Payment Total</label><input id="st" readonly></div><div><label>Status</label><select name="second_payment_status"><option>Pending</option><option>Received</option><option>Partially Received</option></select></div><div><label>Date & Time</label><input type="datetime-local" name="second_payment_datetime"></div><div><label>Payment Screenshot / Proof</label><input type="file" name="second_payment_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf"></div></div></div>
 <div class="mod-head" onclick="tog('final')"><b>Other Payment + Final Calculation</b><span>Open ▾</span></div><div class="mod-body" id="final"><div class="grid3"><div><label>Other Payment Received</label><input type="number" step=".01" name="other_payment_received" id="oth" value="0"></div><div><label>Other Date & Time</label><input type="datetime-local" name="other_payment_datetime"></div><div><label>Payment Screenshot / Proof</label><input type="file" name="other_payment_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf"></div><div><label>Total Received</label><input id="tot" readonly></div><div><label>Balance Pending</label><input id="bal" readonly></div><div><label>Filing Status</label><select name="filing_status"><option>Documents Pending</option><option>Documents Complete</option><option>Filed</option></select></div><div><label>Remarks</label><textarea name="remarks"></textarea></div></div></div>
 <button class="btn" style="margin-top:14px">Save Enrollment & Account</button></form></div>
@@ -5698,8 +5700,8 @@ _GAUR_V337_TEMPLATES['cases.html']=r"""{% extends "base.html" %}{% block content
 <td>{% if r.lead_db_id %}<a class="toolbtn" onclick="event.stopPropagation()" href="{{url_for('edit_client_record',lead_db_id=r.lead_db_id)}}">✏️ Edit</a>{% else %}<span style="opacity:.55">No linked lead</span>{% endif %}</td></tr>
 <tr><td colspan="12" style="padding:0"><div class="mod-body" id="r{{r.id}}"><form method="post" enctype="multipart/form-data" action="{{url_for('update_case',case_id=r.id)}}">
 <div class="grid3"><div><b>Mobile:</b> {{r.mobile}}</div><div><b>Country:</b> {{r.country}}</div><div><b>Interaction:</b> {{r.interaction_date or '-'}}</div></div>
-<div class="mod-head" onclick="event.stopPropagation();tog('f{{r.id}}')"><b>1st Payment Breakup</b><span>▾</span></div><div class="mod-body" id="f{{r.id}}"><div class="paygrid">{% for n,l,v in [('first_cash','Cash',r.first_cash),('first_rbl','RBL',r.first_rbl),('first_yes_bank','Yes Bank',r.first_yes_bank),('first_au_bank','AU Bank',r.first_au_bank)] %}<div><label>{{l}}</label><input type="number" step=".01" name="{{n}}" value="{{v or 0}}"></div>{% endfor %}<div><label>Status</label><select name="first_payment_status"><option selected>{{r.first_payment_status}}</option><option>Received</option><option>Partially Received</option><option>Pending</option></select></div><div><label>Date & Time</label><input type="datetime-local" name="first_payment_datetime" value="{{(r.first_payment_datetime or '')[:16]}}"></div><div><label>New Screenshot / Proof</label><input type="file" name="first_payment_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf">{% if r.first_proof_id %}<a class="toolbtn" target="_blank" href="{{url_for('client_payment_proof',proof_id=r.first_proof_id)}}">View Existing Proof</a>{% endif %}</div></div></div>
-<div class="mod-head" onclick="event.stopPropagation();tog('s{{r.id}}')"><b>2nd Payment Breakup</b><span>▾</span></div><div class="mod-body" id="s{{r.id}}"><div class="paygrid">{% for n,l,v in [('second_cash','Cash',r.second_cash),('second_rbl','RBL',r.second_rbl),('second_yes_bank','Yes Bank',r.second_yes_bank),('second_au_bank','AU Bank',r.second_au_bank)] %}<div><label>{{l}}</label><input type="number" step=".01" name="{{n}}" value="{{v or 0}}"></div>{% endfor %}<div><label>Status</label><select name="second_payment_status"><option selected>{{r.second_payment_status}}</option><option>Received</option><option>Partially Received</option><option>Pending</option></select></div><div><label>Date & Time</label><input type="datetime-local" name="second_payment_datetime" value="{{(r.second_payment_datetime or '')[:16]}}"></div><div><label>New Screenshot / Proof</label><input type="file" name="second_payment_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf">{% if r.second_proof_id %}<a class="toolbtn" target="_blank" href="{{url_for('client_payment_proof',proof_id=r.second_proof_id)}}">View Existing Proof</a>{% endif %}</div></div></div>
+<div class="mod-head" onclick="event.stopPropagation();tog('f{{r.id}}')"><b>1st Payment Breakup</b><span>▾</span></div><div class="mod-body" id="f{{r.id}}"><div class="paygrid">{% for n,l,v in [('first_cash','Cash',r.first_cash),('first_rbl','RBL',r.first_rbl),('first_yes_bank','Yes Bank',r.first_yes_bank),('first_au_bank','AU Bank',r.first_au_bank),('first_indusind','IndusInd',r.first_indusind)] %}<div><label>{{l}}</label><input type="number" step=".01" name="{{n}}" value="{{v or 0}}"></div>{% endfor %}<div><label>Status</label><select name="first_payment_status"><option selected>{{r.first_payment_status}}</option><option>Received</option><option>Partially Received</option><option>Pending</option></select></div><div><label>Date & Time</label><input type="datetime-local" name="first_payment_datetime" value="{{(r.first_payment_datetime or '')[:16]}}"></div><div><label>New Screenshot / Proof</label><input type="file" name="first_payment_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf">{% if r.first_proof_id %}<a class="toolbtn" target="_blank" href="{{url_for('client_payment_proof',proof_id=r.first_proof_id)}}">View Existing Proof</a>{% endif %}</div></div></div>
+<div class="mod-head" onclick="event.stopPropagation();tog('s{{r.id}}')"><b>2nd Payment Breakup</b><span>▾</span></div><div class="mod-body" id="s{{r.id}}"><div class="paygrid">{% for n,l,v in [('second_cash','Cash',r.second_cash),('second_rbl','RBL',r.second_rbl),('second_yes_bank','Yes Bank',r.second_yes_bank),('second_au_bank','AU Bank',r.second_au_bank),('second_indusind','IndusInd',r.second_indusind)] %}<div><label>{{l}}</label><input type="number" step=".01" name="{{n}}" value="{{v or 0}}"></div>{% endfor %}<div><label>Status</label><select name="second_payment_status"><option selected>{{r.second_payment_status}}</option><option>Received</option><option>Partially Received</option><option>Pending</option></select></div><div><label>Date & Time</label><input type="datetime-local" name="second_payment_datetime" value="{{(r.second_payment_datetime or '')[:16]}}"></div><div><label>New Screenshot / Proof</label><input type="file" name="second_payment_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf">{% if r.second_proof_id %}<a class="toolbtn" target="_blank" href="{{url_for('client_payment_proof',proof_id=r.second_proof_id)}}">View Existing Proof</a>{% endif %}</div></div></div>
 <div class="grid3"><div><label>Package</label><input type="number" step=".01" name="package_amount" value="{{r.package_amount or 0}}"></div><div><label>After Visa</label><input type="number" step=".01" name="after_visa_payment" value="{{r.after_visa_payment or 0}}"></div><div><label>Other Received</label><input type="number" step=".01" name="other_payment_received" value="{{r.other_payment_received or 0}}"></div><div><label>Other Date/Time</label><input type="datetime-local" name="other_payment_datetime" value="{{(r.other_payment_datetime or '')[:16]}}"></div><div><label>New Screenshot / Proof</label><input type="file" name="other_payment_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf">{% if r.other_proof_id %}<a class="toolbtn" target="_blank" href="{{url_for('client_payment_proof',proof_id=r.other_proof_id)}}">View Existing Proof</a>{% endif %}</div><div><label>Counselor</label><input name="counselor_name" value="{{r.counselor_name or ''}}"></div><div><label>AM</label><input name="am_name" value="{{r.am_name or r.linked_am_name or ''}}"></div><div><label>Interaction</label><input type="date" name="interaction_date" value="{{r.interaction_date or ''}}"></div><div><label>Remarks</label><input name="remarks" value="{{r.remarks or ''}}"></div></div><button class="btn" style="margin-top:10px">Update Account</button></form></div></td></tr>{% else %}<tr><td colspan="12">No records.</td></tr>{% endfor %}</tbody></table></div></div>
 <script>
 function tog(id){let e=document.getElementById(id);if(e)e.classList.toggle('open')}function num(x){return Number(x||0)}
