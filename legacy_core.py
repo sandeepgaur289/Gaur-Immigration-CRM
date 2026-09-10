@@ -3965,12 +3965,74 @@ def ams():
 
 # ── Staff helpers (Team Leader / Counsellor / Telecaller) ────────────────────
 
+def _get_am_list(con, u):
+    """Return list of AMs with their employee_master id + current team counts for limit display."""
+    if u["role"]=="MD":
+        ams = con.execute("""
+            SELECT u.id AS user_id, u.full_name, u.company_code, e.id AS emp_id
+            FROM users u
+            LEFT JOIN employee_master e ON e.portal_user_id = u.id
+            WHERE u.role='AM' AND u.active=1
+            ORDER BY u.company_code, u.full_name
+        """).fetchall()
+    else:
+        ams = con.execute("""
+            SELECT u.id AS user_id, u.full_name, u.company_code, e.id AS emp_id
+            FROM users u
+            LEFT JOIN employee_master e ON e.portal_user_id = u.id
+            WHERE u.role='AM' AND u.active=1 AND u.company_code=?
+            ORDER BY u.full_name
+        """, (u["company_code"],)).fetchall()
+    result = []
+    for am in ams:
+        emp_id = am["emp_id"]
+        tl=co=tc=0
+        if emp_id:
+            team = con.execute("SELECT designation FROM employee_master WHERE reporting_employee_id=?",(emp_id,)).fetchall()
+            for t in team:
+                dl = (t["designation"] or "").lower()
+                if "team leader" in dl: tl+=1
+                elif "counsel" in dl: co+=1
+                elif "telecall" in dl: tc+=1
+        result.append({"emp_id": emp_id, "user_id": am["user_id"],
+                        "full_name": am["full_name"], "company_code": am["company_code"],
+                        "tl": tl, "co": co, "tc": tc})
+    return result
+
+
 def _save_staff_employee(con, u, designation):
-    """Save a new staff employee (TL / Counsellor / Telecaller) from POST form."""
+    """Save a new staff employee (TL / Counsellor / Telecaller) from POST form.
+    Optionally assign to an AM immediately with limit enforcement."""
     company = request.form.get("company_code") if u["role"]=="MD" else u["company_code"]
     full_name = request.form.get("full_name","").strip()
     if not full_name:
         flash("Employee name is required","error"); return
+
+    # AM assignment (optional)
+    am_emp_id = None
+    assign_am_id = request.form.get("assign_am_id","").strip()
+    if assign_am_id and assign_am_id.isdigit():
+        am_emp_id = int(assign_am_id)
+        # Validate limits before saving
+        desig_lower = designation.lower()
+        team = con.execute("SELECT designation FROM employee_master WHERE reporting_employee_id=?",(am_emp_id,)).fetchall()
+        desigs = [t["designation"].lower() for t in team]
+        if "team leader" in desig_lower:
+            count = sum(1 for d in desigs if "team leader" in d)
+            if count >= 1:
+                am_name = (con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone() or {}).get("full_name","this AM")
+                flash(f"Is AM ({am_name}) ke paas pehle se ek Team Leader assigned hai. Pehle remove karo.","error"); return
+        elif "counsel" in desig_lower:
+            count = sum(1 for d in desigs if "counsel" in d)
+            if count >= 2:
+                am_name = (con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone() or {}).get("full_name","this AM")
+                flash(f"Is AM ({am_name}) ke paas pehle se 2 Counsellors assigned hain. Limit full hai.","error"); return
+        elif "telecall" in desig_lower:
+            count = sum(1 for d in desigs if "telecall" in d)
+            if count >= 2:
+                am_name = (con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone() or {}).get("full_name","this AM")
+                flash(f"Is AM ({am_name}) ke paas pehle se 2 Telecallers assigned hain. Limit full hai.","error"); return
+
     seq = con.execute("SELECT COUNT(*) c FROM employee_master WHERE company_code=?",(company,)).fetchone()["c"]+1
     employee_code = f"{company}-EMP-{seq:04d}"
     while con.execute("SELECT id FROM employee_master WHERE employee_code=?",(employee_code,)).fetchone():
@@ -3980,8 +4042,9 @@ def _save_staff_employee(con, u, designation):
         employee_code,company_code,full_name,father_spouse_name,designation,department,
         mobile,alternate_mobile,email,date_of_birth,joining_date,address,city,state,pin_code,
         emergency_contact_name,emergency_contact_number,aadhaar_last4,pan_number,bank_name,
-        account_last4,ifsc_code,salary_reference,employment_status,remarks,photo_path,created_by,created_at,updated_at
-    ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",(
+        account_last4,ifsc_code,salary_reference,employment_status,remarks,photo_path,
+        reporting_employee_id,created_by,created_at,updated_at
+    ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",(
         employee_code,company,full_name,
         request.form.get("father_spouse_name",""),designation,
         request.form.get("department",""),request.form.get("mobile",""),
@@ -3994,7 +4057,7 @@ def _save_staff_employee(con, u, designation):
         request.form.get("bank_name",""),request.form.get("account_last4",""),
         request.form.get("ifsc_code",""),request.form.get("salary_reference",""),
         request.form.get("employment_status","Active"),request.form.get("remarks",""),
-        "",u["login_id"],now,now
+        "",am_emp_id,u["login_id"],now,now
     ))
     employee_id = cur.lastrowid
     photo = request.files.get("photograph")
@@ -4010,7 +4073,11 @@ def _save_staff_employee(con, u, designation):
             con.execute("UPDATE employee_master SET photo_path=? WHERE id=?",
                         (os.path.relpath(full_path,APP_DIR).replace("\\","/"),employee_id))
     con.commit()
-    flash(f"{designation} saved. Employee Code: {employee_code}","success")
+    assigned_msg = ""
+    if am_emp_id:
+        am_name = (con.execute("SELECT full_name FROM employee_master WHERE id=?",(am_emp_id,)).fetchone() or {}).get("full_name","AM")
+        assigned_msg = f" → Assigned to {am_name}"
+    flash(f"{designation} saved. Employee Code: {employee_code}{assigned_msg}","success")
 
 
 def _get_staff_rows(con, u, designations):
@@ -4044,8 +4111,9 @@ def team_leaders():
     if request.method=="POST":
         _save_staff_employee(con, u, "Team Leader")
     rows=_get_staff_rows(con, u, ('team leader','teamleader','team lead'))
+    ams=_get_am_list(con, u)
     con.close()
-    return render_template("staff_directory.html",u=u,rows=rows,page_title="Team Leaders",role_label="Team Leader",back_url=url_for("employees"))
+    return render_template("staff_directory.html",u=u,rows=rows,ams=ams,page_title="Team Leaders",role_label="Team Leader",back_url=url_for("employees"))
 
 
 @app.route("/counsellors", methods=["GET","POST"])
@@ -4055,8 +4123,9 @@ def counsellors():
     if request.method=="POST":
         _save_staff_employee(con, u, "Counsellor")
     rows=_get_staff_rows(con, u, ('counselor','counsellor','senior counselor','visa counselor','sr. counselor'))
+    ams=_get_am_list(con, u)
     con.close()
-    return render_template("staff_directory.html",u=u,rows=rows,page_title="My Counsellors",role_label="Counsellor",back_url=url_for("employees"))
+    return render_template("staff_directory.html",u=u,rows=rows,ams=ams,page_title="My Counsellors",role_label="Counsellor",back_url=url_for("employees"))
 
 
 @app.route("/telecallers", methods=["GET","POST"])
@@ -4066,8 +4135,9 @@ def telecallers():
     if request.method=="POST":
         _save_staff_employee(con, u, "Telecaller")
     rows=_get_staff_rows(con, u, ('telecaller','tele caller','telecalling executive','telecalling'))
+    ams=_get_am_list(con, u)
     con.close()
-    return render_template("staff_directory.html",u=u,rows=rows,page_title="My Telecallers",role_label="Telecaller",back_url=url_for("employees"))
+    return render_template("staff_directory.html",u=u,rows=rows,ams=ams,page_title="My Telecallers",role_label="Telecaller",back_url=url_for("employees"))
 
 
 # ── AM Team Assignment (GM assigns team to each AM) ──────────────────────────

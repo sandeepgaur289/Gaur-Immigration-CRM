@@ -56,6 +56,29 @@
         </select>
       </div>
       {% endif %}
+      <div>
+        <label>Assign to AM <small style="opacity:.6;font-weight:normal">(Optional — assign immediately)</small></label>
+        <select name="assign_am_id">
+          <option value="">— Assign karo (optional) —</option>
+          {% for am in ams %}
+            {% if role_label == 'Team Leader' %}
+              {% set slots_left = 1 - am.tl %}
+              {% set label = am.full_name + ' (' + am.company_code + ') — TL: ' + am.tl|string + '/1' %}
+            {% elif role_label == 'Counsellor' %}
+              {% set slots_left = 2 - am.co %}
+              {% set label = am.full_name + ' (' + am.company_code + ') — Counsellors: ' + am.co|string + '/2' %}
+            {% else %}
+              {% set slots_left = 2 - am.tc %}
+              {% set label = am.full_name + ' (' + am.company_code + ') — Telecallers: ' + am.tc|string + '/2' %}
+            {% endif %}
+            {% if slots_left > 0 and am.emp_id %}
+              <option value="{{am.emp_id}}">✅ {{label}} — {{slots_left}} slot{{'' if slots_left==1 else 's'}} free</option>
+            {% elif am.emp_id %}
+              <option value="" disabled>🚫 {{label}} — Full</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
     </div>
     <label>Residential Address</label><textarea name="address"></textarea>
     <label>Remarks</label><textarea name="remarks"></textarea>
