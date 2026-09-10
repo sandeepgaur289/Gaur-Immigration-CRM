@@ -1410,6 +1410,32 @@ def dashboard():
             _rev=0.0
         today_report[_co]={"enrollments":int(_enr or 0),"revenue":_rev}
 
+    # v4.1 MONTHLY REPORT: company-wise enrollments & revenue for selected month
+    monthly_report={}
+    for _co in ("SCIC","WWIC"):
+        try:
+            _menr=con.execute(
+                "SELECT COUNT(*) c FROM client_cases WHERE company_code=? AND enrollment_date BETWEEN ? AND ? AND "+_active_case_sql,
+                (_co,month_start,month_end)
+            ).fetchone()["c"]
+        except Exception:
+            try: con.rollback()
+            except Exception: pass
+            _menr=0
+        try:
+            _mr=con.execute("""SELECT
+                COALESCE(SUM(COALESCE(first_cash,0)+COALESCE(first_rbl,0)+COALESCE(first_yes_bank,0)+COALESCE(first_au_bank,0)+
+                             COALESCE(second_cash,0)+COALESCE(second_rbl,0)+COALESCE(second_yes_bank,0)+COALESCE(second_au_bank,0)+
+                             COALESCE(other_payment_received,0)),0) total
+                FROM client_cases WHERE company_code=? AND enrollment_date BETWEEN ? AND ? AND """+_active_case_sql,
+                (_co,month_start,month_end)).fetchone()
+            _mrev=float(_mr["total"] or 0)
+        except Exception:
+            try: con.rollback()
+            except Exception: pass
+            _mrev=0.0
+        monthly_report[_co]={"enrollments":int(_menr or 0),"revenue":_mrev}
+
     where=["COALESCE(NULLIF(assigned_at,''),imported_at,'') BETWEEN ? AND ?","COALESCE(deleted_at,'')=''"]; params=[month_start,month_end_ts]
     if u["role"]!="MD":
         where.append("company_code=?"); params.append(u["company_code"])
@@ -1527,7 +1553,7 @@ def dashboard():
                            scic_am_rankings=scic_am_rankings,wwic_am_rankings=wwic_am_rankings,
                            my_monthly_performance=my_monthly_performance,best_am=best_am,
                            dashboard_employee=dashboard_employee,dashboard_rank=dashboard_rank,dashboard_score=dashboard_score,
-                           today_report=today_report,today_date=today_date)
+                           today_report=today_report,today_date=today_date,monthly_report=monthly_report)
 
 
 # ── Temporary debug endpoint ──────────────────────────────────────────────
