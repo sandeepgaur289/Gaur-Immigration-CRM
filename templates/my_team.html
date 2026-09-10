@@ -11,6 +11,8 @@
 .role-tl{background:rgba(230,183,63,.2);color:#e6b73f}
 .role-co{background:rgba(72,213,139,.2);color:#48d58b}
 .role-tc{background:rgba(143,200,255,.2);color:#8fc8ff}
+.status-active{font-size:12px;padding:3px 8px;border-radius:8px;background:#174f34}
+.status-inactive{font-size:12px;padding:3px 8px;border-radius:8px;background:#4a1a1a}
 </style>
 
 {% if team %}
@@ -34,7 +36,7 @@
     {% if m.mobile %}<div style="font-size:13px;opacity:.8">📱 {{m.mobile}}</div>{% endif %}
     {% if m.email %}<div style="font-size:12px;opacity:.6">{{m.email}}</div>{% endif %}
     <div style="margin-top:8px">
-      <span style="font-size:12px;padding:3px 8px;border-radius:8px;background:{% if m.employment_status=='Active' %}#174f34{% else %}#4a1a1a{% endif %}">
+      <span class="emp-status {% if m.employment_status=='Active' %}status-active{% else %}status-inactive{% endif %}">
         {{m.employment_status}}
       </span>
     </div>
