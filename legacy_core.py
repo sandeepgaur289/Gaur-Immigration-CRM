@@ -3046,7 +3046,7 @@ def finance_daily_report():
   </div>
 </div>
 {% endblock %}""")
-    return render_template_string(tmpl.source,u=u,banks=banks,rows=rows,
+    return render_template_string(tmpl.module.__loader__.get_source() if hasattr(tmpl,'module') else str(tmpl),u=u,banks=banks,rows=rows,
                                    inflows=inflows,outflows=outflows,
                                    balance_cf=balance_cf,bank_in=bank_in,bank_out=bank_out,
                                    total_in=total_in,total_out=total_out,
@@ -4186,7 +4186,24 @@ def ams():
                            (employee_code,company,name,"Assistant Manager",mobile,"Active",uid,u["login_id"],now,now))
             con.execute("UPDATE users SET employee_id=? WHERE id=?",(ec.lastrowid,uid))
             new_emp_id=ec.lastrowid
-            con.commit(); con.close(); flash(f"Assistant Manager professional identity created. Employee ID: {employee_code} • Login ID: {lid}","success")
+            con.commit(); con.close()
+
+            # ── OTP + credentials email to MD ────────────────────────────
+            otp_sent=False; otp_code=None
+            try:
+                from modules.security_settings.service import send_am_creation_otp, email_configured
+                if email_configured():
+                    new_user_obj={"full_name":name,"company_code":company,"login_id":lid}
+                    otp_code=send_am_creation_otp(new_user_obj, pw, u)
+                    otp_sent=True
+            except Exception:
+                pass  # email failure should not block creation
+
+            if otp_sent:
+                flash(f"✅ AM Portal Created! Login ID: {lid} | Password: {pw} | Employee ID: {employee_code} — OTP confirmation sent to MD email.","success")
+            else:
+                flash(f"✅ AM Portal Created! Login ID: {lid} | Password: {pw} | Employee ID: {employee_code} — (Email not configured, note these credentials)","success")
+
             return redirect(url_for("edit_employee",employee_id=new_emp_id))
     if u["role"]=="MD":
         rows=con.execute("SELECT * FROM users WHERE role='AM' ORDER BY id DESC").fetchall()

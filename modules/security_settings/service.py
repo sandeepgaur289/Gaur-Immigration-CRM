@@ -59,6 +59,43 @@ def audit(action,user_id=None,login_id="",actor=None,details=""):
        str(details or "")[:1000],now_iso()))
     con.commit();con.close()
 
+def send_am_creation_otp(new_user, plain_password, creator):
+    """MD ko OTP + new AM credentials bhejo jab nayi AM ID bane."""
+    sender = admin_email()
+    password = (os.environ.get("GAUR_GMAIL_APP_PASSWORD") or "").strip()
+    if not sender or not password:
+        raise RuntimeError("Gmail OTP sender is not configured in Railway Variables.")
+    otp = f"{secrets.randbelow(1000000):06d}"
+    msg = EmailMessage()
+    msg["Subject"] = f"THE GAUR • New AM Created • {new_user['full_name']} • OTP Confirmation"
+    msg["From"] = sender
+    msg["To"] = sender
+    msg.set_content(f"""THE GAUR — NEW AM PORTAL CREATED
+
+A new Assistant Manager portal has been created by {creator['full_name']} ({creator['role']}).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEW AM LOGIN CREDENTIALS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Employee Name  : {new_user['full_name']}
+Company        : {new_user['company_code'] or 'THE GAUR'}
+Login ID       : {new_user['login_id']}
+Password       : {plain_password}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MD CONFIRMATION OTP : {otp}
+
+This OTP is for your records only. It confirms that this AM was
+created under your authority. Expires in 10 minutes.
+
+THE GAUR • Security Center
+""")
+    context = ssl.create_default_context()
+    with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as smtp:
+        smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
+        smtp.login(sender, password); smtp.send_message(msg)
+    return otp
+
 def send_admin_otp(user,otp):
     sender=admin_email()
     password=(os.environ.get("GAUR_GMAIL_APP_PASSWORD") or "").strip()
