@@ -67,17 +67,13 @@
 {% endif %}
 {% endfor %}
 
-{# Auto-open modal if OTP was just sent for this AM #}
-{% with messages = get_flashed_messages(with_categories=true) %}{% endwith %}
 <script>
-  // Check if an OTP info flash is present — open correct modal
   document.addEventListener('DOMContentLoaded', function() {
-    var alerts = document.querySelectorAll('.alert-info');
-    alerts.forEach(function(el) {
-      // Find which AM id the modal belongs to by checking URL pattern
-      var match = window.location.search.match(/del_(\d+)/);
-      if (match) {
-        var modal = document.getElementById('otp-modal-' + match[1]);
+    var urlParams = new URLSearchParams(window.location.search);
+    urlParams.forEach(function(val, key) {
+      if (key.startsWith('del_')) {
+        var id = key.replace('del_', '');
+        var modal = document.getElementById('otp-modal-' + id);
         if (modal) modal.style.display = 'flex';
       }
     });
@@ -165,7 +161,7 @@
           {% if not r['active'] %}
           <form method="post" action="{{ url_for('request_delete_am', user_id=r['id']) }}">
             <button class="btn" style="background:#7b1a1a;border:1px solid #e74c3c;color:#fff;"
-              onclick="return confirm('{{ r[\'full_name\'] }} ko delete karne ke liye OTP MD ke Gmail pe bheja jayega. Confirm?')">
+              onclick="return confirm('{{ r.full_name }} ko delete karne ke liye OTP MD ke Gmail pe bheja jayega. Confirm?')">
               🗑 Delete
             </button>
           </form>
