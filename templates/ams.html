@@ -19,11 +19,13 @@
           <div style="background:#0a1f12;border:1px solid #28a74555;border-radius:6px;padding:14px 18px;margin-top:8px;font-family:monospace;">
             {% for part in parts %}
               {% if 'Login ID:' in part %}
-                <div style="margin:4px 0;"><span style="color:#aaa;width:130px;display:inline-block;">Login ID</span> <span style="color:#4cff91;font-size:16px;font-weight:bold;">{{ part.replace('✅ AM Portal Created! Login ID:','').replace('Login ID:','').strip() }}</span></div>
+                <div style="margin:6px 0;"><span style="color:#aaa;width:130px;display:inline-block;">Login ID</span> <span style="color:#4cff91;font-size:16px;font-weight:bold;">{{ part.replace('✅ AM Portal Created! Login ID:','').replace('Login ID:','').strip() }}</span></div>
               {% elif 'Password:' in part %}
-                <div style="margin:4px 0;"><span style="color:#aaa;width:130px;display:inline-block;">Password</span> <span style="color:#ffdd57;font-size:16px;font-weight:bold;">{{ part.replace('Password:','').split('—')[0].strip() }}</span></div>
+                <div style="margin:6px 0;"><span style="color:#aaa;width:130px;display:inline-block;">Password</span> <span style="color:#ffdd57;font-size:16px;font-weight:bold;">{{ part.replace('Password:','').strip() }}</span></div>
               {% elif 'Employee ID:' in part %}
-                <div style="margin:4px 0;"><span style="color:#aaa;width:130px;display:inline-block;">Employee ID</span> <span style="color:#74c0fc;">{{ part.replace('Employee ID:','').split('—')[0].strip() }}</span></div>
+                <div style="margin:6px 0;"><span style="color:#aaa;width:130px;display:inline-block;">Employee ID</span> <span style="color:#74c0fc;">{{ part.replace('Employee ID:','').strip() }}</span></div>
+              {% elif 'Company:' in part %}
+                <div style="margin:6px 0;"><span style="color:#aaa;width:130px;display:inline-block;">Company</span> <span style="color:#f8a5c2;">{{ part.replace('Company:','').split('—')[0].strip() }}</span></div>
               {% endif %}
             {% endfor %}
           </div>

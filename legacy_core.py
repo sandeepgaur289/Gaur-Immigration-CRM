@@ -4200,9 +4200,9 @@ def ams():
                 pass  # email failure should not block creation
 
             if otp_sent:
-                flash(f"✅ AM Portal Created! Login ID: {lid} | Password: {pw} | Employee ID: {employee_code} — OTP confirmation sent to MD email.","success")
+                flash(f"✅ AM Portal Created! Login ID: {lid} | Password: {pw} | Employee ID: {employee_code} | Company: {company} — OTP confirmation sent to MD email.","success")
             else:
-                flash(f"✅ AM Portal Created! Login ID: {lid} | Password: {pw} | Employee ID: {employee_code} — (Email not configured, note these credentials)","success")
+                flash(f"✅ AM Portal Created! Login ID: {lid} | Password: {pw} | Employee ID: {employee_code} | Company: {company} — (Email not configured, note these credentials)","success")
 
             return redirect(url_for("edit_employee",employee_id=new_emp_id))
     if u["role"]=="MD":
