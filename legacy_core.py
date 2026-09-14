@@ -5191,6 +5191,76 @@ def toggle_am(user_id):
     flash("Assistant Manager portal activated" if new_active else "Assistant Manager portal deactivated. Data has been preserved.","success")
     return redirect(url_for("ams"))
 
+@app.route("/ams/<int:user_id>/request-delete", methods=["POST"])
+@require_roles("MD","GM")
+def request_delete_am(user_id):
+    """Step 1: OTP generate karke MD ko email bhejo."""
+    u=current_user(); con=db()
+    am=con.execute("SELECT * FROM users WHERE id=? AND role='AM' AND active=0",(user_id,)).fetchone()
+    if not am or (u["role"]=="GM" and am["company_code"]!=u["company_code"]):
+        con.close(); flash("Only inactive AMs can be deleted, or access denied.","error")
+        return redirect(url_for("ams"))
+    import secrets as _secrets
+    otp=f"{_secrets.randbelow(1000000):06d}"
+    now=datetime.datetime.now()
+    expires=(now+datetime.timedelta(minutes=10)).isoformat(timespec="seconds")
+    import hmac as _hmac, hashlib as _hl, os as _os
+    secret=(_os.environ.get("SECRET_KEY") or "gaur-local-security-key").encode()
+    otp_h=_hmac.new(secret,(str(user_id)+"|delete|"+otp).encode(),_hl.sha256).hexdigest()
+    # Store in session
+    from flask import session
+    session[f"del_otp_{user_id}"]={"hash":otp_h,"expires":expires,"name":am["full_name"],"login_id":am["login_id"]}
+    con.close()
+    # Send OTP email
+    try:
+        from modules.security_settings.service import send_am_delete_otp, email_configured
+        if email_configured():
+            send_am_delete_otp(dict(am), otp, u)
+            flash(f"OTP MD ke Gmail pe bhej di gayi hai — '{am['full_name']}' ko delete karne ke liye OTP enter karein.","info")
+        else:
+            flash(f"Email configured nahi hai. Test OTP (dev only): {otp}","warning")
+    except Exception as e:
+        flash(f"OTP email error: {e}","error")
+    return redirect(url_for("ams") + f"?del_{user_id}=1")
+
+
+@app.route("/ams/<int:user_id>/confirm-delete", methods=["POST"])
+@require_roles("MD","GM")
+def confirm_delete_am(user_id):
+    """Step 2: OTP verify karke AM permanently delete karo."""
+    from flask import session
+    import hmac as _hmac, hashlib as _hl, os as _os
+    u=current_user()
+    entered_otp=(request.form.get("delete_otp","")).strip()
+    sess=session.get(f"del_otp_{user_id}")
+    if not sess:
+        flash("OTP session expire ho gayi. Dobara try karein.","error")
+        return redirect(url_for("ams"))
+    import datetime as _dt
+    if _dt.datetime.now()>_dt.datetime.fromisoformat(sess["expires"]):
+        session.pop(f"del_otp_{user_id}",None)
+        flash("OTP expire ho gayi. Dobara delete request karein.","error")
+        return redirect(url_for("ams"))
+    secret=(_os.environ.get("SECRET_KEY") or "gaur-local-security-key").encode()
+    expected=_hmac.new(secret,(str(user_id)+"|delete|"+entered_otp).encode(),_hl.sha256).hexdigest()
+    if not _hmac.compare_digest(expected, sess["hash"]):
+        flash("Galat OTP. Sahi OTP enter karein.","error")
+        return redirect(url_for("ams"))
+    # OTP correct — delete karo
+    con=db()
+    am=con.execute("SELECT * FROM users WHERE id=? AND role='AM' AND active=0",(user_id,)).fetchone()
+    if not am or (u["role"]=="GM" and am["company_code"]!=u["company_code"]):
+        con.close(); flash("Access denied or AM already active.","error")
+        return redirect(url_for("ams"))
+    # Delete employee_master record bhi
+    con.execute("DELETE FROM employee_master WHERE portal_user_id=?",(user_id,))
+    con.execute("DELETE FROM users WHERE id=?",(user_id,))
+    con.commit(); con.close()
+    session.pop(f"del_otp_{user_id}",None)
+    flash(f"AM '{sess['login_id']}' ({sess['name']}) permanently delete ho gaya.","success")
+    return redirect(url_for("ams"))
+
+
 @app.route("/ams/handover", methods=["POST"])
 @require_roles("MD","GM")
 def handover_am():

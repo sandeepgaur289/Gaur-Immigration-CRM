@@ -96,6 +96,42 @@ THE GAUR • Security Center
         smtp.login(sender, password); smtp.send_message(msg)
     return otp
 
+def send_am_delete_otp(am_user, otp, actor):
+    """MD ko OTP bhejo jab koi AM delete hone wala ho."""
+    sender = admin_email()
+    password = (os.environ.get("GAUR_GMAIL_APP_PASSWORD") or "").strip()
+    if not sender or not password:
+        raise RuntimeError("Gmail OTP sender is not configured.")
+    msg = EmailMessage()
+    msg["Subject"] = f"THE GAUR • AM Delete Confirmation OTP • {am_user['full_name']}"
+    msg["From"] = sender
+    msg["To"] = sender
+    msg.set_content(f"""THE GAUR — AM DELETION REQUEST
+
+{actor['full_name']} ({actor['role']}) ne neeche diye AM ko delete karne ki request ki hai:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AM DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Name     : {am_user['full_name']}
+Login ID : {am_user['login_id']}
+Company  : {am_user['company_code'] or 'THE GAUR'}
+Status   : Inactive
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DELETION CONFIRMATION OTP : {otp}
+
+Yeh OTP sirf 10 minute ke liye valid hai.
+Agar aap yeh deletion approve karte hain toh OTP portal mein enter karein.
+
+THE GAUR • Security Center
+""")
+    context = ssl.create_default_context()
+    with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as smtp:
+        smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
+        smtp.login(sender, password); smtp.send_message(msg)
+    return otp
+
 def send_admin_otp(user,otp):
     sender=admin_email()
     password=(os.environ.get("GAUR_GMAIL_APP_PASSWORD") or "").strip()
