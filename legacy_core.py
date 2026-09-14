@@ -5147,8 +5147,14 @@ def edit_employee(employee_id):
         flash("Employee information updated","success")
         return redirect(url_for("employees"))
 
+    portal_user=None
+    if row["portal_user_id"]:
+        portal_user=con.execute(
+            "SELECT login_id,role,active,identity_code FROM users WHERE id=?",
+            (row["portal_user_id"],)
+        ).fetchone()
     con.close()
-    return render_template("employee_edit.html",u=u,row=row)
+    return render_template("employee_edit.html",u=u,row=row,portal_user=portal_user)
 
 
 @app.route("/ams/<int:user_id>/employee")

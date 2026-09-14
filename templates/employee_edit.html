@@ -2,6 +2,36 @@
 <h1 class="title">Edit Employee Information</h1>
 <div class="card">
 <p><b>Employee Code:</b> {{row['employee_code']}}</p>
+
+{% if portal_user %}
+<div style="background:#0a1f12;border:1px solid #28a74566;border-radius:8px;padding:16px 20px;margin-bottom:20px;">
+  <div style="font-size:13px;font-weight:bold;color:#28a745;margin-bottom:10px;letter-spacing:.5px;">🔐 Portal Login Details</div>
+  <div style="display:flex;flex-wrap:wrap;gap:24px;font-family:monospace;font-size:14px;">
+    <div>
+      <span style="color:#aaa;display:block;font-size:11px;margin-bottom:2px;">LOGIN ID</span>
+      <span style="color:#4cff91;font-size:16px;font-weight:bold;">{{portal_user['login_id']}}</span>
+    </div>
+    <div>
+      <span style="color:#aaa;display:block;font-size:11px;margin-bottom:2px;">ROLE</span>
+      <span style="color:#74c0fc;font-size:15px;font-weight:bold;">{{portal_user['role']}}</span>
+    </div>
+    <div>
+      <span style="color:#aaa;display:block;font-size:11px;margin-bottom:2px;">COMPANY</span>
+      <span style="color:#f8a5c2;font-size:15px;font-weight:bold;">{{row['company_code']}}</span>
+    </div>
+    <div>
+      <span style="color:#aaa;display:block;font-size:11px;margin-bottom:2px;">STATUS</span>
+      <span style="color:{{'#28a745' if portal_user['active'] else '#e74c3c'}};font-size:15px;font-weight:bold;">
+        {{'Active' if portal_user['active'] else 'Inactive'}}
+      </span>
+    </div>
+  </div>
+  <div style="margin-top:10px;font-size:11px;color:#aaa;">
+    Password reset karne ke liye Security → User Management section use karein.
+  </div>
+</div>
+{% endif %}
+
 {% if row['photo_path'] %}<p><img src="{{url_for('employee_photo',employee_id=row['id'])}}" style="width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid #427398"></p>{% endif %}
 <form method="post" enctype="multipart/form-data">
 <div class="grid3">
