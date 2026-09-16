@@ -57,14 +57,16 @@
 <h2>Performance Progress</h2>
 <label>Collection Target Achievement</label>
 <div style="height:28px;background:#071d32;border:1px solid #427398;border-radius:8px;overflow:hidden">
-<div style="height:100%;width:{{[achievement,100]|min}}%;background:#e6b73f;color:#061629;text-align:center;font-weight:bold;line-height:28px">
+{% set ach_w = achievement if achievement <= 100 else 100 %}
+<div style="height:100%;width:{{ach_w}}%;background:#e6b73f;color:#061629;text-align:center;font-weight:bold;line-height:28px">
 {{"%.1f"|format(achievement)}}%
 </div>
 </div>
 <br>
 <label>Lead-to-Enrollment Conversion</label>
 <div style="height:28px;background:#071d32;border:1px solid #427398;border-radius:8px;overflow:hidden">
-<div style="height:100%;width:{{[conversion,100]|min}}%;background:#48a978;color:#061629;text-align:center;font-weight:bold;line-height:28px">
+{% set conv_w = conversion if conversion <= 100 else 100 %}
+<div style="height:100%;width:{{conv_w}}%;background:#48a978;color:#061629;text-align:center;font-weight:bold;line-height:28px">
 {{"%.1f"|format(conversion)}}%
 </div>
 </div>

@@ -126,7 +126,8 @@
           <td>{{"%.0f"|format(s.get('revenue_index',0))}}%</td>
           <td>
             <b>{{"%.0f"|format(r['score'])}}%</b>
-            <div class="scorebar"><span style="width:{{[r['score'],100]|min}}%"></span></div>
+            {% set bar_w = r['score'] if r['score'] <= 100 else 100 %}
+            <div class="scorebar"><span style="width:{{bar_w}}%"></span></div>
           </td>
           <td>{% if r['rank']==1 %}🥇{% elif r['rank']==2 %}🥈{% elif r['rank']==3 %}🥉{% else %}{{r['rank']}}{% endif %}</td>
           <td><a class="btn" href="{{url_for('employee_performance',employee_id=r['id'],period=period)}}">Open</a></td>
