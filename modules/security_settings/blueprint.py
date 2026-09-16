@@ -64,9 +64,22 @@ def update_user(user_id):
 @bp.get("/health")
 @require_roles("MD")
 def health():
-    return jsonify({"ok":True,"gmail_configured":email_configured(),
-                    "admin_gmail":admin_email() if email_configured() else "",
-                    "otp_expiry_minutes":10,"max_attempts":5})
+    import os
+    raw_gmail = os.environ.get("GAUR_ADMIN_GMAIL", "NOT_SET")
+    raw_pass = os.environ.get("GAUR_GMAIL_APP_PASSWORD", "NOT_SET")
+    stripped_gmail = (raw_gmail or "").strip()
+    stripped_pass = (raw_pass or "").strip()
+    configured = bool(stripped_gmail and stripped_pass)
+    return jsonify({
+        "ok": True,
+        "gmail_configured": configured,
+        "admin_gmail": stripped_gmail,
+        "gmail_len": len(stripped_gmail),
+        "pass_len": len(stripped_pass),
+        "pass_set": stripped_pass != "NOT_SET" and len(stripped_pass) > 0,
+        "otp_expiry_minutes": 10,
+        "max_attempts": 5
+    })
 
 def install_security_settings(app):
     ensure_schema()
