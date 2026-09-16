@@ -2901,8 +2901,7 @@ def finance_daily_report():
 
     con.close()
 
-    from jinja2 import Template
-    tmpl=Template("""{% extends "base.html" %}{% block content %}
+    return render_template_string("""{% extends "base.html" %}{% block content %}
 <style>
 .dr-card{background:#071d32;border:1px solid #315a7b;border-radius:14px;padding:16px;margin-bottom:16px}
 .dr-table{width:100%;border-collapse:collapse;font-size:13px}
@@ -2923,7 +2922,6 @@ def finance_daily_report():
   <a href="{{url_for('finance_center')}}" class="toolbtn">← Daily Passbook</a>
 </div>
 
-<!-- Filters -->
 <div class="dr-card">
   <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
     <div><label style="font-size:13px">Date</label><br>
@@ -2939,7 +2937,6 @@ def finance_daily_report():
   </form>
 </div>
 
-<!-- Summary -->
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px">
   <div class="dr-stat"><span>Total In Flow</span><b class="in-val">₹{{"{:,.0f}".format(total_in)}}</b></div>
   <div class="dr-stat"><span>Total Out Flow</span><b class="out-val">₹{{"{:,.0f}".format(total_out)}}</b></div>
@@ -2947,7 +2944,6 @@ def finance_daily_report():
   <div class="dr-stat"><span>Entries</span><b>{{rows|length}}</b></div>
 </div>
 
-<!-- Add Entry Form -->
 <div class="dr-card" id="add-entry">
   <h2 style="color:#e6b73f;margin:0 0 14px">➕ Add Entry for {{ sel_date }}</h2>
   <form method="post">
@@ -2988,7 +2984,6 @@ def finance_daily_report():
   </form>
 </div>
 
-<!-- Daily Report Table — Bank Wise -->
 <div class="dr-card">
   <h2 style="color:#e6b73f;margin:0 0 14px">{{ sel_company }} Payment Inflow & Outflow — {{ sel_date }}</h2>
   <div class="tablewrap">
@@ -3002,7 +2997,7 @@ def finance_daily_report():
     <tbody>
       <tr class="cf-row">
         <td>—</td><td>Balance C/F</td>
-        <td class="in-val">₹{{"{:,.0f}".format(balance_cf.get(None,0))}}</td>
+        <td class="in-val">₹{{"{:,.0f}".format(balance_cf.get(none_key,0))}}</td>
         {% for b in banks %}<td class="in-val">₹{{"{:,.0f}".format(balance_cf.get(b.id,0))}}</td>{% endfor %}
       </tr>
       {% for i,r in enumerate(inflows) %}
@@ -3015,12 +3010,12 @@ def finance_daily_report():
       {% endfor %}
       <tr class="total-row">
         <td colspan="2">📥 In Flow</td>
-        <td class="in-val">₹{{"{:,.0f}".format(bank_in.get(None,0))}}</td>
+        <td class="in-val">₹{{"{:,.0f}".format(bank_in.get(none_key,0))}}</td>
         {% for b in banks %}<td class="in-val">₹{{"{:,.0f}".format(bank_in.get(b.id,0))}}</td>{% endfor %}
       </tr>
       <tr class="total-row" style="color:#8fc8ff">
         <td colspan="2">Running Balance</td>
-        <td>₹{{"{:,.0f}".format(balance_cf.get(None,0)+bank_in.get(None,0))}}</td>
+        <td>₹{{"{:,.0f}".format(balance_cf.get(none_key,0)+bank_in.get(none_key,0))}}</td>
         {% for b in banks %}<td>₹{{"{:,.0f}".format(balance_cf.get(b.id,0)+bank_in.get(b.id,0))}}</td>{% endfor %}
       </tr>
       {% for i,r in enumerate(outflows) %}
@@ -3033,24 +3028,25 @@ def finance_daily_report():
       {% endfor %}
       <tr class="total-row">
         <td colspan="2">📤 Out Flow</td>
-        <td class="out-val">₹{{"{:,.0f}".format(bank_out.get(None,0))}}</td>
+        <td class="out-val">₹{{"{:,.0f}".format(bank_out.get(none_key,0))}}</td>
         {% for b in banks %}<td class="out-val">₹{{"{:,.0f}".format(bank_out.get(b.id,0))}}</td>{% endfor %}
       </tr>
       <tr class="total-row" style="background:#071828;border-top:2px solid #e6b73f">
         <td colspan="2">💰 Grand Total (Closing)</td>
-        <td>₹{{"{:,.0f}".format(balance_cf.get(None,0)+bank_in.get(None,0)-bank_out.get(None,0))}}</td>
+        <td>₹{{"{:,.0f}".format(balance_cf.get(none_key,0)+bank_in.get(none_key,0)-bank_out.get(none_key,0))}}</td>
         {% for b in banks %}<td>₹{{"{:,.0f}".format(balance_cf.get(b.id,0)+bank_in.get(b.id,0)-bank_out.get(b.id,0))}}</td>{% endfor %}
       </tr>
     </tbody>
   </table>
   </div>
 </div>
-{% endblock %}""")
-    return render_template_string(tmpl.module.__loader__.get_source() if hasattr(tmpl,'module') else str(tmpl),u=u,banks=banks,rows=rows,
-                                   inflows=inflows,outflows=outflows,
-                                   balance_cf=balance_cf,bank_in=bank_in,bank_out=bank_out,
-                                   total_in=total_in,total_out=total_out,
-                                   sel_date=sel_date,sel_company=sel_company,enumerate=enumerate)
+{% endblock %}""",
+        u=u, banks=banks, rows=rows,
+        inflows=inflows, outflows=outflows,
+        balance_cf=balance_cf, bank_in=bank_in, bank_out=bank_out,
+        total_in=total_in, total_out=total_out,
+        sel_date=sel_date, sel_company=sel_company,
+        enumerate=enumerate, none_key=None)
 
 
 @app.route("/finance",methods=["GET","POST"])
