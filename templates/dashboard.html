@@ -324,8 +324,8 @@
     </div>
     <h2>{% if c.code=='SCIC' %}Smart Choice{% else %}White Wave{% endif %} • Positive Data Pie</h2>
     <div class="pie-wrap">
-      <div class="pie-chart" style="background:conic-gradient(#ff4d61 0 {{c.hot_pct}}%, #48d58b {{c.hot_pct}}% {{c.positive_pct}}%, #4aa8ff {{c.positive_pct}}% 100%);">
-        <div class="pie-center"><b>{{c.positive}}</b><span>Positive Leads</span><small>{{c.positive_rate}}%</small></div>
+      {% set grad = "background:conic-gradient(#ff4d61 0 " ~ c.hot_pct ~ "%, #48d58b " ~ c.hot_pct ~ "% " ~ c.positive_pct ~ "%, #4aa8ff " ~ c.positive_pct ~ "% 100%)" %}
+      <div class="pie-chart" style="{{grad}}">        <div class="pie-center"><b>{{c.positive}}</b><span>Positive Leads</span><small>{{c.positive_rate}}%</small></div>
       </div>
       <div class="pie-legend">
         <div><span><i class="dot dot-hot"></i>Hot 71–100%</span><b>{{c.hot}}</b></div>
