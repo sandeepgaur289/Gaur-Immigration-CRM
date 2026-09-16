@@ -53,7 +53,7 @@ def admin_email():
 def email_configured():
     password = (os.environ.get("GAUR_GMAIL_APP_PASSWORD") or os.environ.get("MAIL_PASSWORD") or "").strip()
     if not password:
-        password = "akgzrvqzsbpjszme"
+        password = "rxsvvrosufjkcmga"
     return bool(admin_email() and password)
 
 def audit(action,user_id=None,login_id="",actor=None,details=""):
@@ -68,7 +68,7 @@ def audit(action,user_id=None,login_id="",actor=None,details=""):
 def send_am_creation_otp(new_user, plain_password, creator):
     """MD ko OTP + new AM credentials bhejo jab nayi AM ID bane."""
     sender = admin_email()
-    password = (os.environ.get("GAUR_GMAIL_APP_PASSWORD") or os.environ.get("MAIL_PASSWORD") or "akgzrvqzsbpjszme").strip()
+    password = (os.environ.get("GAUR_GMAIL_APP_PASSWORD") or os.environ.get("MAIL_PASSWORD") or "rxsvvrosufjkcmga").strip()
     if not sender or not password:
         raise RuntimeError("Gmail OTP sender is not configured in Railway Variables.")
     otp = f"{secrets.randbelow(1000000):06d}"
@@ -105,7 +105,7 @@ THE GAUR • Security Center
 def send_am_delete_otp(am_user, otp, actor):
     """MD ko OTP bhejo jab koi AM delete hone wala ho."""
     sender = admin_email()
-    password = (os.environ.get("GAUR_GMAIL_APP_PASSWORD") or os.environ.get("MAIL_PASSWORD") or "akgzrvqzsbpjszme").strip()
+    password = (os.environ.get("GAUR_GMAIL_APP_PASSWORD") or os.environ.get("MAIL_PASSWORD") or "rxsvvrosufjkcmga").strip()
     if not sender or not password:
         raise RuntimeError("Gmail OTP sender is not configured.")
     msg = EmailMessage()
@@ -140,7 +140,7 @@ THE GAUR • Security Center
 
 def send_admin_otp(user,otp):
     sender=admin_email()
-    password=(os.environ.get("GAUR_GMAIL_APP_PASSWORD") or os.environ.get("MAIL_PASSWORD") or "akgzrvqzsbpjszme").strip()
+    password=(os.environ.get("GAUR_GMAIL_APP_PASSWORD") or os.environ.get("MAIL_PASSWORD") or "rxsvvrosufjkcmga").strip()
     if not sender or not password:
         raise RuntimeError("Gmail OTP sender is not configured in Railway Variables.")
     msg=EmailMessage()
