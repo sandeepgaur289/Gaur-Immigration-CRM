@@ -21,9 +21,11 @@
     </div>
     <div>
       <span style="color:#aaa;display:block;font-size:11px;margin-bottom:2px;">STATUS</span>
-      <span style="color:{{'#28a745' if portal_user['active'] else '#e74c3c'}};font-size:15px;font-weight:bold;">
-        {{'Active' if portal_user['active'] else 'Inactive'}}
-      </span>
+      {% if portal_user['active'] %}
+      <span style="color:#28a745;font-size:15px;font-weight:bold;">Active</span>
+      {% else %}
+      <span style="color:#e74c3c;font-size:15px;font-weight:bold;">Inactive</span>
+      {% endif %}
     </div>
   </div>
   <div style="margin-top:10px;font-size:11px;color:#aaa;">
