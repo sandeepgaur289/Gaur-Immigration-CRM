@@ -97,9 +97,8 @@ created under your authority. Expires in 10 minutes.
 THE GAUR • Security Center
 """)
     context = ssl.create_default_context()
-    with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as smtp:
-        smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
-        smtp.login(sender, password); smtp.send_message(msg)
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context, timeout=20) as smtp:
+        smtp.ehlo(); smtp.login(sender, password); smtp.send_message(msg)
     return otp
 
 def send_am_delete_otp(am_user, otp, actor):
@@ -133,9 +132,8 @@ Agar aap yeh deletion approve karte hain toh OTP portal mein enter karein.
 THE GAUR • Security Center
 """)
     context = ssl.create_default_context()
-    with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as smtp:
-        smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
-        smtp.login(sender, password); smtp.send_message(msg)
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context, timeout=20) as smtp:
+        smtp.ehlo(); smtp.login(sender, password); smtp.send_message(msg)
     return otp
 
 def send_admin_otp(user,otp):
@@ -163,9 +161,8 @@ Do not share it unless you approve this employee password reset.
 THE GAUR • Security Center
 """)
     context=ssl.create_default_context()
-    with smtplib.SMTP("smtp.gmail.com",587,timeout=20) as smtp:
-        smtp.ehlo(); smtp.starttls(context=context); smtp.ehlo()
-        smtp.login(sender,password); smtp.send_message(msg)
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context, timeout=20) as smtp:
+        smtp.ehlo(); smtp.login(sender,password); smtp.send_message(msg)
 
 def create_reset_request(login_id,ip="",user_agent=""):
     login_id=(login_id or "").strip().lower()
